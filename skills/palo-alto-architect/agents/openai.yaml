@@ -1,0 +1,4 @@
+interface:
+  display_name: "Palo Alto 資安架構顧問"
+  short_description: "Palo Alto 架構、CVE、PQC、排障與文件顧問"
+  default_prompt: "使用 $palo-alto-architect 評估我的 Palo Alto 環境，提出可驗證、可回滾的架構與維運建議。"

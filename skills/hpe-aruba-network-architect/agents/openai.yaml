@@ -1,0 +1,4 @@
+interface:
+  display_name: "HPE Aruba 網路架構顧問"
+  short_description: "Aruba WLAN、ClearPass、CVE、PQC 與文件顧問"
+  default_prompt: "使用 $hpe-aruba-network-architect 評估 Aruba WLAN、ClearPass、交換器、CVE、PQC 或維運文件。"
