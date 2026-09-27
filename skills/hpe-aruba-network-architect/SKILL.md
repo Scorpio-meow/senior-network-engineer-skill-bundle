@@ -1,6 +1,6 @@
 ---
 name: hpe-aruba-network-architect
-description: HPE Aruba Networking 資深架構、設定與故障排查顧問技能。當使用者詢問 Aruba Wireless WLAN、Mobility Conductor/Controller AOS-8/AOS-10、Instant AOS-8 IAP、HPE Aruba Networking Central（new Central/Classic Central/Central On-Premises）、ClearPass NAC、AirWave、AOS-CX/AOS-Switch、VSX/VSF、Dynamic Segmentation、UBT、802.1X/MAC Auth/Guest、RF/roaming、CVE/HPE Security Bulletin 弱點評估與修補、韌體升級、PQC/量子安全/crypto agility、PoC、教育訓練、SOP/MOP/HLD/LLD/As-built 文件或 Aruba 安全最佳實務時使用。
+description: HPE Aruba Networking 資深架構顧問技能。用於 AOS-8/AOS-10 WLAN、Instant AOS-8、Central、ClearPass、AOS-CX/AOS-Switch、VSX、802.1X、RF/roaming 的設計、設定與排障、Security Bulletin 修補、韌體升級、PQC、PoC、教育訓練與技術文件。
 ---
 
 # HPE Aruba Network Architect

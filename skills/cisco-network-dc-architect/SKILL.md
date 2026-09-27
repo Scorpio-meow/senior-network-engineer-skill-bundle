@@ -1,6 +1,6 @@
 ---
 name: cisco-network-dc-architect
-description: Cisco 資深網路、資料中心、ACI、SD-WAN、Wireless 與企業網路架構顧問技能。當使用者詢問 Catalyst/Nexus/Nexus Dashboard/ACI/VXLAN EVPN/Catalyst SD-WAN/WLC/ISE/Secure Firewall ASA/FTD/FMC 架構、IOS XE/NX-OS/ACI 技術設定與封包排障、CVE/PSIRT 弱點評估與修補、軟體升級、PQC/量子安全/crypto agility/MACsec/IPsec、RFP/遷移/PoC、教育訓練、SOP/MOP/HLD/LLD/As-built 文件、網路自動化（DevNet 開發資源、CCNA/CCNP/CCIE Automation 認證）或客戶事件與進度信件時使用。
+description: Cisco 資深網路與資料中心架構顧問技能。用於 Catalyst、Nexus、ACI、VXLAN EVPN、Catalyst SD-WAN、WLC、ISE、Secure Firewall 的架構設計、IOS XE/NX-OS 設定與封包排障、PSIRT 修補、升級、PQC/MACsec、RFP/遷移、自動化與技術文件。
 ---
 
 # Cisco Network DC Architect

@@ -158,9 +158,9 @@ DEST=~/.claude/skills        # 專案範圍改用 .claude/skills
 3. 前往 **Customize > Skills**，選 **+** → **Create skill** → **Upload a skill**，依序上傳五個 ZIP，並全部開啟。
 4. 在對話中描述任務即可自動使用，或在輸入框輸入 `/` 選擇 Skill。
 
-**description 長度限制**：Claude 說明中心寫 description 上限為 200 字元，較新的 claude.com 開發者文件則寫 1,024 字元（Agent Skills 規格）。本套件的 description 為 348–497 字元，若上傳時被拒，可改用下方的 plugin 方式，或自行縮短 description。
+**description 長度限制**：Claude 說明中心寫 description 上限為 200 字元（claude.com 開發者文件與 Agent Skills 規格為 1,024 字元）。本套件依較嚴格的 200 字元撰寫，五個 description 皆為 161–177 字元。
 
-**替代方式：以 plugin 一次上傳五個 Skill**。Claude 的 plugin 需要 `.claude-plugin/plugin.json` 清單檔，本 repository 未內建，可在打包時產生：
+**替代方式：以 plugin 一次上傳五個 Skill**（Pro 以上方案）。Claude 的 plugin 需要 `.claude-plugin/plugin.json` 清單檔，本 repository 未內建，可在打包時產生：
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -300,7 +300,7 @@ git pull --ff-only
 
 - 只在 `skills/` 內修改 Skill 正本；不要直接改安裝位置的複製版本。
 - 保持五個 Skill 同層；`SKILL.md` 保持精簡且低於 500 行，細節放入一層深度的 `references/`。
-- Frontmatter `name` 必須與資料夾名稱一致；`description` 不超過 1,024 字元，並同時寫出功能與觸發時機。
+- Frontmatter `name` 必須與資料夾名稱一致；`description` 不超過 200 字元（配合 Claude 說明中心的上傳限制），並同時寫出功能與觸發時機。
 - 不憑記憶宣稱 CVE、fixed release、EoL、PQC、CLI、license 或 AI 平台功能；以原廠或官方文件為準並寫明查核日期。
 - 不提交客戶設定、PCAP、帳號、密碼、PSK、私鑰、API token、license 或工單附件。
 - 高風險建議必須包含證據、blast radius、停止條件、回滾與驗證。

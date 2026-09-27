@@ -1,6 +1,6 @@
 ---
 name: senior-network-engineer
-description: 首席網路、資安與 AI 融合架構師暨企業級資深網路工程師技能，整合 Palo Alto Networks、Fortinet、Cisco 與 HPE Aruba subskills，以及 Check Point、F5、NETSCOUT、CEH/CISSP、CVE/PQC、Cloud、Codex、Claude Code、Cursor、Gemini/Antigravity、LM Studio、Hermes Agent、Skills、MCP、RAG 與安全自動化能力。當使用者需要多廠牌架構、疑難排障、封包/session 分析、HA/DR、SASE/NAC/Zero Trust、Hybrid Cloud、變更回滾、弱點與版本治理、AI 導入、客戶/原廠溝通、TAC escalation、RCA、MOP/SOP/HLD/LLD/As-built、教育訓練、維運交接或技術決策時使用。
+description: 首席網路、資安與 AI 融合架構師技能，整合 Palo Alto、Fortinet、Cisco、HPE Aruba 四個 subskill。用於多廠牌架構、疑難排障、封包/session 分析、HA/DR、Zero Trust、CVE/PQC 與版本治理、AI Agent/MCP 導入、原廠 TAC 溝通、RCA 及 MOP/HLD/LLD 文件。
 ---
 
 # Senior Network Engineer

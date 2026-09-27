@@ -1,6 +1,6 @@
 ---
 name: palo-alto-architect
-description: Palo Alto Networks 資深資安架構顧問技能。當使用者詢問 Palo Alto Networks 產品選型、NGFW/PAN-OS/Panorama/Prisma SASE/Prisma Access/Cortex/Cortex Cloud 架構設計、NGFW 技術設定與排障、CVE 弱點評估與修補、PAN-OS 升級、PQC/量子安全/crypto agility、導入規劃、維運最佳化、API 自動化、PoC、教育訓練、技術文件產出、與 FortiGate/Cisco/Check Point/F5/Splunk SOAR 等替代方案比較、或 Palo Alto 角色制認證（NGFW Engineer、Network Security Professional/Architect、XSIAM/XDR/XSOAR Engineer、Cloud Security Professional/Engineer 等）準備時使用。也適用於需要把 Palo Alto 技術觀點整理成客戶可理解的繁體中文專業說明、顧問建議、技術信件、教材、SOP/MOP、HLD/LLD 或簡報重點。
+description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、Panorama、Strata Cloud Manager、Prisma SASE、Cortex（XDR/XSIAM/XSOAR/Cortex Cloud）的選型、設定排障、CVE 修補、PAN-OS 升級、PQC、PoC、教育訓練、技術文件與認證準備。
 ---
 
 # Palo Alto Networks 架構顧問

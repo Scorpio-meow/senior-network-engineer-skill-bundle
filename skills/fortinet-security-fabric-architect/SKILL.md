@@ -1,6 +1,6 @@
 ---
 name: fortinet-security-fabric-architect
-description: Fortinet Security Fabric 資深架構顧問技能，涵蓋 FortiGate/FortiOS、FortiManager、FortiAnalyzer、FortiSIEM、FortiSOAR、FortiEDR/FortiEndpoint、FortiWeb、FortiMail、FortiNAC-F、FortiAuthenticator、FortiClient、FortiAP、FortiSwitch、SD-WAN、SASE、ZTNA、IPsec/SSL VPN 遷移、HA、routing、logging、SOC、cloud firewall 與自動化。當使用者詢問產品選型、架構設計、FortiGate 技術設定與排障、CVE/PSIRT 弱點評估與修補、FortiOS 升級、PQC/量子安全/QKD/crypto agility、遷移、PoC、教育訓練、SOP/MOP/HLD/LLD/As-built 文件、NSE 1–8 認證或與其他廠牌比較時使用。
+description: Fortinet Security Fabric 資深架構顧問技能。用於 FortiGate/FortiOS、FortiManager、FortiAnalyzer、SD-WAN、ZTNA、SSL VPN 遷移與 HA 的選型、設定排障、PSIRT 修補、FortiOS 升級、PQC/QKD、PoC、教育訓練、技術文件與 NSE 認證。
 ---
 
 # Fortinet Security Fabric Architect
