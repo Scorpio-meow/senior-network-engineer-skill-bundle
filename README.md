@@ -1,5 +1,7 @@
 # Senior Network Engineer Skill Bundle
 
+**繁體中文** | [English](README/README.en.md) | [简体中文](README/README.zh-CN.md) | [粵語](README/README.yue.md) | [日本語](README/README.ja.md) | [한국어](README/README.ko.md) | [Español](README/README.es.md) | [Português (Brasil)](README/README.pt-BR.md) | [Français](README/README.fr.md) | [Deutsch](README/README.de.md) | [Русский](README/README.ru.md) | [Tiếng Việt](README/README.vi.md) | [Bahasa Indonesia](README/README.id.md) | [ไทย](README/README.th.md) | [Türkçe](README/README.tr.md) | [العربية](README/README.ar.md)
+
 個人使用的資深網路工程師 Skill 套件：一個跨廠牌主 Skill 加上四個廠牌 subskill，集中在同一個 Git repository，讓多台電腦、多種 AI 工具共用同一份正本。
 
 Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)（資料夾內含 `SKILL.md` 與選用的 `references/`），可安裝到 Claude、ChatGPT/Codex、Google Antigravity、Gemini CLI、Cursor、GitHub Copilot 等支援此格式的工具。
@@ -32,7 +34,9 @@ Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)�
 
 ```text
 .
-├── README.md
+├── README.md                             # 繁體中文（正本）
+├── README/                               # 翻譯版（15 種語言）
+│   └── README.<lang>.md
 ├── bundle-manifest.json                  # 套件名稱、版本與 Skill 清單
 └── skills/
     ├── senior-network-engineer/
@@ -304,3 +308,4 @@ git pull --ff-only
 - 不憑記憶宣稱 CVE、fixed release、EoL、PQC、CLI、license 或 AI 平台功能；以原廠或官方文件為準並寫明查核日期。
 - 不提交客戶設定、PCAP、帳號、密碼、PSK、私鑰、API token、license 或工單附件。
 - 高風險建議必須包含證據、blast radius、停止條件、回滾與驗證。
+- `README.md`（繁體中文）為 README 正本；修改時請在同一個 commit 同步更新所有 `README/README.<lang>.md` 翻譯版。
