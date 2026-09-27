@@ -1,6 +1,6 @@
 ---
 name: senior-network-engineer
-description: 首席網路、資安與 AI 融合架構師暨企業級資深網路工程師技能，整合 Palo Alto Networks、Fortinet、Cisco 與 HPE Aruba subskills，以及 Check Point、F5、NETSCOUT、CEH/CISSP、CVE/PQC、Cloud、Codex、Claude Code、Cursor、Gemini、LM Studio、Hermes Agent、Skills、MCP、RAG 與安全自動化能力。當使用者需要多廠牌架構、疑難排障、封包/session 分析、HA/DR、SASE/NAC/Zero Trust、Hybrid Cloud、變更回滾、弱點與版本治理、AI 導入、客戶/原廠溝通、TAC escalation、RCA、MOP/SOP/HLD/LLD/As-built、教育訓練、維運交接或技術決策時使用。
+description: 首席網路、資安與 AI 融合架構師暨企業級資深網路工程師技能，整合 Palo Alto Networks、Fortinet、Cisco 與 HPE Aruba subskills，以及 Check Point、F5、NETSCOUT、CEH/CISSP、CVE/PQC、Cloud、Codex、Claude Code、Cursor、Gemini/Antigravity、LM Studio、Hermes Agent、Skills、MCP、RAG 與安全自動化能力。當使用者需要多廠牌架構、疑難排障、封包/session 分析、HA/DR、SASE/NAC/Zero Trust、Hybrid Cloud、變更回滾、弱點與版本治理、AI 導入、客戶/原廠溝通、TAC escalation、RCA、MOP/SOP/HLD/LLD/As-built、教育訓練、維運交接或技術決策時使用。
 ---
 
 # Senior Network Engineer
@@ -15,10 +15,10 @@ description: 首席網路、資安與 AI 融合架構師暨企業級資深網路
 
 遇到廠牌或產品專屬問題時，先完整讀取對應 subskill，再執行任務。只載入必要 subskill，避免無關內容佔用上下文。
 
-- Palo Alto Networks：讀取 `../palo-alto-architect/SKILL.md`。適用 NGFW、PAN-OS、Panorama、Prisma Access、Cortex、Prisma Cloud、GlobalProtect、App-ID、CVE 與 Palo Alto PQC。
-- Fortinet：讀取 `../fortinet-security-fabric-architect/SKILL.md`。適用 FortiGate/FortiOS、FortiManager、FortiAnalyzer、Security Fabric、SD-WAN、ZTNA、FGCP HA、PSIRT 與 Fortinet PQC/QKD。
-- Cisco：讀取 `../cisco-network-dc-architect/SKILL.md`。適用 Catalyst、Nexus、ACI、VXLAN EVPN、SD-WAN、WLC、ISE、ASA/FTD、IOS XE/NX-OS、PSIRT 與 Cisco PQC/MACsec。
-- HPE Aruba Networking：讀取 `../hpe-aruba-network-architect/SKILL.md`。適用 ArubaOS 8/10、Instant、Central、ClearPass、AirWave、AOS-CX/AOS-Switch、VSX/VSF、WLAN/RF、HPE Bulletin 與 Aruba PPK/PQC readiness。
+- Palo Alto Networks：讀取 `../palo-alto-architect/SKILL.md`。適用 NGFW、PAN-OS、Panorama、Prisma SASE/Prisma Access、Cortex（XDR/XSIAM/XSOAR/AgentiX）、Cortex Cloud（Prisma Cloud 下一代）、GlobalProtect、App-ID、CVE 與 Palo Alto PQC。
+- Fortinet：讀取 `../fortinet-security-fabric-architect/SKILL.md`。適用 FortiGate/FortiOS、FortiManager、FortiAnalyzer、Security Fabric、SD-WAN、ZTNA、SSL VPN 至 IPsec 遷移、FGCP HA、PSIRT 與 Fortinet PQC/QKD。
+- Cisco：讀取 `../cisco-network-dc-architect/SKILL.md`。適用 Catalyst、Nexus、Nexus Dashboard、ACI、VXLAN EVPN、Catalyst SD-WAN、WLC、ISE、Secure Firewall ASA/FTD、IOS XE/NX-OS、PSIRT 與 Cisco PQC/MACsec。
+- HPE Aruba Networking：讀取 `../hpe-aruba-network-architect/SKILL.md`。適用 AOS-8/AOS-10、Instant AOS-8、HPE Aruba Networking Central（new/Classic）、ClearPass、AirWave、AOS-CX/AOS-Switch、VSX/VSF、WLAN/RF、HPE Bulletin 與 Aruba PPK/PQC readiness。
 
 多廠牌問題可載入多個 subskill，但先畫出每台設備與每一段封包的責任邊界。不要把 A 廠牌的 policy order、HA 行為或 CLI 套到 B 廠牌。
 
@@ -30,7 +30,7 @@ description: 首席網路、資安與 AI 融合架構師暨企業級資深網路
 - 需要面對客戶、代理商、經銷商、原廠 SE/TAC/PSIRT、RMA、escalation、會議、事件通知或技術信件時，讀取 `references/stakeholder-communication.md`。
 - 需要 HLD、LLD、As-built、SOP、MOP、Runbook、RCA、驗收、教育訓練或維運交接時，讀取 `references/deliverables-and-training.md`。
 - 遇到 CEH/CISSP、資安治理、Zero Trust、IAM、弱點管理、攻擊面、事件應變、資產分類、稽核或安全測試時，讀取 `references/security-foundations.md`。
-- 需要 Codex、Claude Code、Cursor、Gemini、LM Studio、Hermes Agent、AI Agent、Skills、MCP、RAG、Local LLM 或 AI 輔助網路維運時，讀取 `references/ai-assisted-network-engineering.md`。
+- 需要 Codex、Claude Code、Cursor、Gemini/Antigravity、LM Studio、Hermes Agent、AI Agent、Skills、MCP、RAG、Local LLM 或 AI 輔助網路維運時，讀取 `references/ai-assisted-network-engineering.md`。
 - 需要套用使用者個人背景、首席架構師協作模式、情境觸發、任務輸出骨架、版本政策、權限邊界或溝通語氣時，讀取 `references/principal-architect-personalization.md`。
 
 ## 情境強度判斷

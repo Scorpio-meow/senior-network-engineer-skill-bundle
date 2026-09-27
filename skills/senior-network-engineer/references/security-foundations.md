@@ -2,7 +2,7 @@
 
 本 reference 將 CEH 與 CISSP 知識框架轉成資深網路工程師可執行的工作方法。它不是證照題庫，也不授權任何未經同意的攻擊行為。
 
-官方基準查核日：2026-07-21。正式答覆仍應重新確認 EC-Council CEH Exam Blueprint、ISC2 CISSP Exam Outline、CISA/NIST 與產品原廠文件。
+官方基準查核日：2026-09-27。基準版本：CEH v13 與 CEH Exam Blueprint v5.0、ISC2 CISSP Exam Outline（2024-04-15 生效）、NIST SP 800-61r3。正式答覆仍應重新確認 EC-Council、ISC2、CISA/NIST 與產品原廠文件。
 
 ## 使用邊界
 
@@ -11,7 +11,9 @@
 - 不為了證明風險而破壞可用性、清除 log、維持未授權存取或接觸 scope 外資產。
 - CEH 提供攻擊者視角與技術驗證；CISSP 提供治理、風險、架構、營運與生命週期視角。兩者缺一都容易得到偏斜答案。
 
-## CEH v4 防禦導向能力
+## CEH v13（Exam Blueprint v5.0）防禦導向能力
+
+EC-Council 目前為 CEH v13，Exam Blueprint v5.0 共 9 個領域；以下依序對應，各領域權重以官方 blueprint 為準。
 
 ### 1. Information Security and Ethical Hacking Overview
 
@@ -49,7 +51,7 @@
 - 優先採 WPA3-Enterprise 或 WPA2-Enterprise/EAP-TLS、受控 supplicant、RADIUS 憑證驗證、WIDS/WIPS、rogue containment 治理與 RF/用戶端證據。
 - 不用降低 EAP/憑證驗證當作永久解法；只可在隔離 lab 做短暫 A/B test。
 
-### 7. Mobile, IoT and OT
+### 7. Mobile Platform, IoT, and OT Hacking
 
 - 建立 device identity、owner、firmware、protocol、通訊對象、可維護窗口、safety impact 與生命周期 inventory。
 - 以 NAC、micro-segmentation、allowlist、jump host、passive discovery、vendor remote-access control 與 compensating control 降低風險。
@@ -59,6 +61,12 @@
 
 - 納入 shared responsibility、IAM、security group/NACL、cloud firewall、transit routing、private endpoint、container/serverless、key management、audit log 與 CSPM。
 - Hybrid Cloud 問題同時驗證地端 route/NAT/IPsec/SD-WAN 與雲端 route table/security control，不把「雲端看得到」當作端到端可達。
+
+### 9. Cryptography
+
+- 理解對稱/非對稱加密、hash、digital signature、PKI、憑證生命週期、TLS/IPsec/SSH 與常見密碼學攻擊，例如弱演算法、協定降級、金鑰外洩與憑證誤用。
+- 對應控制：停用弱 cipher/protocol、建立憑證與金鑰 inventory、HSM/金鑰保護、憑證到期監控、crypto agility 與 PQC migration。
+- 以實際 handshake、cipher suite、憑證鏈與設備設定驗證，不以掃描報告的單一等級取代分析。
 
 ## CISSP 八大領域的工程落地
 
@@ -77,7 +85,7 @@
 
 - 使用 threat modeling、trust boundary、secure defaults、fail secure、Defense in Depth、HA/DR 與 crypto agility。
 - 將管理面、控制面、資料面、AI/MCP tool plane 與 OOB 分區；每一條跨區流量都有身分、policy、log 與 owner。
-- PQC 依 cryptographic inventory、HNDL、資料壽命、hybrid migration 與原廠 support matrix 推進，不以產品行銷字眼取代互通測試。
+- PQC 依 cryptographic inventory、HNDL、資料壽命、hybrid migration 與原廠 support matrix 推進，不以產品行銷字眼取代互通測試。FIPS 203/204/205 已正式發布；FIPS 206（FN-DSA）與 HQC 標準在查核時尚未正式發布；NIST IR 8547 仍為草案，規劃 112-bit 強度的量子脆弱演算法（如 RSA-2048）2030 年後 deprecated、所有 RSA/ECC 2035 年後 disallowed。
 
 ### 4. Communication and Network Security
 
@@ -98,7 +106,7 @@
 ### 7. Security Operations
 
 - 涵蓋 change/patch/vulnerability management、logging/SIEM/SOAR、incident response、BCP/DR、backup/restore、physical security 與 lessons learned。
-- 事件流程採 Preparation、Detection/Analysis、Containment、Eradication、Recovery、Post-Incident；服務恢復與 Root Cause 分開追蹤。
+- 事件應變以 NIST SP 800-61r3（2025-04，已取代 r2）為基準：以 CSF 2.0 的 Govern、Identify、Protect、Detect、Respond、Recover 組織事件應變的準備、偵測、處置與復原。若團隊沿用 Preparation、Detection/Analysis、Containment、Eradication、Recovery、Post-Incident 作為現場操作步驟，要註明這是實務模型而非現行 NIST 版本。服務恢復與 Root Cause 分開追蹤。
 
 ### 8. Software Development Security
 

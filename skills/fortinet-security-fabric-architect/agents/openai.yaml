@@ -1,4 +1,0 @@
-interface:
-  display_name: "Fortinet Security Fabric 架構顧問"
-  short_description: "Fortinet 架構、CVE、PQC、排障與文件顧問"
-  default_prompt: "使用 $fortinet-security-fabric-architect 評估 Fortinet 架構、CVE 修補、PQC、排障或技術文件。"

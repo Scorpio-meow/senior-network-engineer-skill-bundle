@@ -1,6 +1,6 @@
 # AI Agent 輔助資深網路工程
 
-本 reference 用於選擇與治理 Codex、Claude Code、Cursor、Gemini、LM Studio、Hermes Agent、Skills、MCP、RAG 與相關 AI 工具。官方基準查核日：2026-07-21。產品能力變動快速，涉及版本、費用、資料政策、模型、CLI、授權或企業功能時必須重查官方文件。
+本 reference 用於選擇與治理 Codex、Claude Code、Cursor、Google Antigravity/Gemini、LM Studio、Hermes Agent、Skills、MCP、RAG 與相關 AI 工具。官方基準查核日：2026-09-27。產品能力變動快速，涉及版本、費用、資料政策、模型、CLI、授權或企業功能時必須重查官方文件。
 
 使用者提到的 `harmes agent` 預設解讀為 Nous Research 的 `Hermes Agent`；若情境指向其他產品，先確認名稱。
 
@@ -17,25 +17,27 @@
 
 - 適合 repository/workspace 內的多步驟工程、檔案修改、shell、測試、review、Skills、MCP、AGENTS.md 與 subagent 工作流。
 - 使用 `AGENTS.md` 保存 repository 長期規則，Skill 保存可重用程序，MCP 連接外部工具/資料；repo-specific 與 user-wide instruction 要分層。
+- Skill 路徑：repository 層為 `.agents/skills`，使用者層為 `$HOME/.agents/skills`，另有 admin（`/etc/codex/skills`）與 system 範圍；`agents/openai.yaml` 定義 `interface`、`policy`（如 `allow_implicit_invocation`）與 `dependencies`。Custom agent 以 TOML 放在 `~/.codex/agents/` 或 `.codex/agents/`。舊的使用者層路徑 `$CODEX_HOME/skills`（預設 `~/.codex/skills`）已不在官方文件中，但原始碼仍以 deprecated 路徑載入以維持相容，同名 Skill 並存時會重複。`codex mcp-server` 已移除（2026-09 查核），改由 Codex app server 提供對外整合。
 - 依 sandbox、approval policy、network access 與 MCP tool scope 控制權限。即使 web/cache 或 project 被標記 trusted，外部內容仍視為不受信任。
 - 網路用途：解析設定與 log、生成 Netmiko/Nornir/Ansible/Terraform、建立 MOP/Runbook、比對 config diff、驗證測試與維護 Skill repository。
 
 ### Anthropic Claude Code
 
-- 適合 CLI/repository 內的 agentic coding、檔案與 terminal 工作、MCP、Skills、hooks、subagents/Agent SDK 與非互動自動化。
+- 適合 CLI/repository 內的 agentic coding、檔案與 terminal 工作、MCP、Skills、plugins、hooks、subagents、Claude Agent SDK（原 Claude Code SDK）與非互動自動化。
 - 以 `CLAUDE.md`/project instruction、permission mode、allow/deny tool、hooks 與 MCP scope 控制行為；危險的 skip-permission 模式不可作為企業預設。
 - 網路用途：多檔設定重構、API/automation、log/tech-support 摘要、文件與 code review；外部輸出仍需設備/官方文件驗證。
 
 ### Cursor
 
 - 適合 IDE 內互動開發、Agent、terminal、Rules/AGENTS.md、checkpoint、MCP 與 codebase context。
-- Project Rules 位於 `.cursor/rules`，MCP 可放 project 或 user scope；MCP tool 預設核准機制與 Auto-run 必須依環境風險設定。
+- Project Rules 為 `.cursor/rules` 下的 `.mdc` 檔（一般 `.md` 會被忽略），並支援根目錄與子目錄的巢狀 `AGENTS.md`；MCP 可放 project 或 user scope；shell、MCP 與 Fetch tool call 依 Run Mode 控制（Auto-review、Allowlist、Run Everything；官方建議 Auto-review），企業環境不可預設 Run Everything。
 - 網路用途：開發 parser、dashboard、IaC、自動化模組、單元測試與文件；不要讓 IDE Agent 直接持有 unrestricted production credential。
 
-### Google Gemini CLI / Gemini Code Assist
+### Google Antigravity CLI / Gemini CLI / Gemini Code Assist
 
-- 適合 CLI/IDE 工程、檔案與 shell tools、GEMINI.md、extensions、MCP、custom commands、memory 與 Google Cloud/Code Assist 工作流。
-- Extensions 可封裝 prompts、MCP servers 與 commands；應利用 excludeTools、workspace policy、approval mode、sandbox/container 與 corporate proxy 限制能力。
+- 2026-06-18 起 Gemini CLI 與 Gemini Code Assist IDE extensions 停止服務個人使用者（Code Assist for individuals、Google AI Pro/Ultra），官方遷移路徑為 Antigravity CLI 與 Antigravity 2.0 desktop app；Agent Skills、Hooks、Subagents 延續，Extensions 改稱 plugins。Gemini Code Assist Standard/Enterprise 授權，以及付費 Gemini API / Gemini Enterprise Agent Platform API key，仍可使用 Gemini CLI；Code Assist for GitHub 已不接受新的組織安裝。
+- 評估前先確認使用者的授權類型。GEMINI.md、AGENTS.md、MCP 與 sandbox/approval 機制在 Antigravity CLI 的支援方式要查官方文件，不沿用 Gemini CLI 的假設。
+- Gemini CLI（企業授權或付費 API key）可用 `tools.exclude`（個別 MCP server 為 `excludeTools`）、Policy Engine、`general.defaultApprovalMode`、sandbox/container 與 corporate proxy 限制能力；plugins/extensions 可封裝 prompts、MCP servers 與 commands，視同供應鏈輸入審查。
 - 網路用途：GCP/hybrid automation、設定分析、批次文件、測試與跨檔案工程；sandbox 降低風險但不消除惡意 MCP/套件與資料外洩。
 
 ### LM Studio
@@ -54,7 +56,7 @@
 ## 如何選擇
 
 - Repository/腳本/Skill 長期維護：優先 Codex、Claude Code 或 Cursor，依團隊 IDE/CLI 與治理能力選擇。
-- Google Cloud/Google 生態與 CLI extension：評估 Gemini CLI/Code Assist。
+- Google Cloud/Google 生態：個人或 AI Pro/Ultra 使用者評估 Antigravity CLI/Antigravity 2.0；具 Gemini Code Assist Standard/Enterprise 授權或付費 Gemini API key 者可續用 Gemini CLI。
 - 資料不可離開地端或需測試開源模型：評估 LM Studio；先確認算力、模型品質、license 與 API 暴露。
 - 跨訊息平台、長期 memory、自我學習與排程 Agent：評估 Hermes Agent；提高持久化、外掛與遠端執行控制。
 - 同一工作流需跨工具：把 vendor-neutral 流程放在 Skill/AGENTS.md，外部能力放 MCP，credential 留在受控 secret store，不複製進提示詞或 Git。
@@ -73,11 +75,13 @@
 
 MCP 由 Host、Client、Server 組成，Server 可暴露 Tools、Resources 與 Prompts。Skill 定義工作流，MCP 提供外部能力；兩者不是同一層。
 
+MCP 已於 2025-12 移交 Linux Foundation 旗下 Agentic AI Foundation 治理。2026-09-27 查核最新規格為 2026-07-28 版：改為無狀態協定（移除 `initialize` handshake 與 `Mcp-Session-Id`，新增 `server/discover`、`subscriptions/listen`），以 Multi Round-Trip Requests 取代所有 server 主動發起的 request（`roots/list`、`sampling/createMessage`、`elicitation/create`），並移除 `ping`、`logging/setLevel`、`notifications/roots/list_changed` 與 SSE resumability；Roots、Sampling、Logging 標示為 deprecated，Tasks 移至 extension。導入與稽核時先確認 client/server 實際支援的 protocol version，舊版 server 不可假設具備新版行為。
+
 ### 上線前檢查
 
 1. 建立 MCP registry：owner、來源、版本、transport、endpoint、tools/resources/prompts、資料分類、相依 API、auth、scope、egress、更新與停用方式。
 2. 區分 read-only 與 write/destructive tools；預設停用不需要的 tool，避免把整個 API surface 暴露給 Agent。
-3. HTTP MCP 採 OAuth 2.1/HTTPS、正確 audience/resource binding、最小 scope、短效 token、PKCE 與精確 redirect URI；禁止 token passthrough。
+3. HTTP MCP 採 OAuth 2.1/HTTPS、Protected Resource Metadata（RFC 9728）、正確 audience/resource binding（RFC 8707）、最小 scope、短效 token、PKCE 與精確 redirect URI；client 優先以 Client ID Metadata Documents 識別（Dynamic Client Registration 已 deprecated），並依 RFC 9207 驗證 `iss`、將 credential 綁定 issuer；禁止 token passthrough。企業環境可評估 Enterprise-Managed Authorization extension。
 4. STDIO MCP 以受限 OS account/container 執行，固定 package/version/hash，限制 cwd、filesystem、environment variables、subprocess 與 network。
 5. Secret 由 secret manager 或受控環境變數注入；不得放進 repository、Skill、prompt、MCP 回傳、debug log 或聊天紀錄。
 6. 驗證 tool schema、input、output、timeout、size limit、rate limit、idempotency、retry 與錯誤處理；避免 Agent 因模糊 tool description 呼叫錯誤動作。

@@ -18,7 +18,7 @@ Do not defend the product first. Ask for:
 
 - Exact model and FortiOS build.
 - HA mode and failover history.
-- Whether the issue is traffic drop, GUI slowness, SSL VPN, SD-WAN steering, conserve mode, routing, or UTM inspection.
+- Whether the issue is traffic drop, GUI slowness, remote access VPN (IPsec dial-up, legacy SSL VPN, or Agentless VPN), SD-WAN steering, conserve mode, routing, or UTM inspection.
 - Whether the device is on a feature release, mature release, or special build.
 
 First checks:
@@ -68,20 +68,30 @@ Ask before designing:
 
 Avoid defaulting to full mesh. Full mesh becomes operationally expensive. For many enterprises, Hub-and-Spoke with selective ADVPN or partial mesh is easier to operate.
 
-## ZTNA vs SSL VPN
+## SSL VPN Migration, ZTNA, and FortiSASE
 
-Do not recommend immediate full replacement unless there is a security mandate or SSL VPN is structurally unfit.
+SSL VPN is no longer a keep-as-is option:
+
+- FortiOS 7.6.0: SSL VPN tunnel and web mode removed on 2 GB RAM models.
+- FortiOS 7.6.3+: SSL VPN tunnel mode removed on all models and replaced by IPsec VPN; web mode renamed Agentless VPN.
+- FortiOS 7.6.x/8.0: Agentless VPN unavailable on 2 GB RAM and entry-level models (40F/50G/60F/61F/70G/90G/91G, FGR-60F 2 GB); G-series entry-level models have had no SSL VPN since 7.4.8.
+- FortiOS 7.6.5+: IKE over UDP can use port 443 (`set ike-port 443`).
+- FortiOS 8.0.0: IKE over TCP becomes a per-VDOM setting (`set ike-tcp-service enable`, disabled by default), and the TCP transport option is removed from dial-up phase1.
+- Tunnel-mode configuration and related policies are not converted during upgrade.
 
 Recommended migration path:
 
-1. Keep current SSL VPN for stable employee workflows.
-2. Introduce ZTNA for new applications, contractors, unmanaged or non-domain devices, and app-specific access.
-3. Use FortiClient EMS posture and ZTNA tags.
-4. Track adoption, failed access, helpdesk cases, and rollback paths.
+1. Inventory SSL VPN users, portals, realms, authentication servers (LDAP/RADIUS/SAML/FortiAuthenticator), MFA, split tunnel, routes, and policies.
+2. Build IPsec dial-up (IKEv2 with FortiClient/EMS; where UDP 500/4500 is blocked, use UDP 443 or IKE over TCP per the FortiOS version) in parallel and pilot it with a small user group before the firmware upgrade.
+3. Upgrade only after the pilot passes; keep the rollback image/config and a user communication plan.
+4. Introduce ZTNA (FortiClient EMS posture and ZTNA tags) or FortiSASE for new applications, contractors, unmanaged devices, and app-specific access.
+5. Track adoption, failed access, helpdesk cases, and rollback paths.
+
+Verify the exact model and build against the current release notes and the official SSL VPN to IPsec VPN migration guide.
 
 ## FortiEDR vs Microsoft Defender
 
-Defender is a baseline endpoint control. FortiEDR is stronger when behavior detection, automated isolation, and Security Fabric response matter.
+Defender is a baseline endpoint control. FortiEDR (also available inside the FortiEndpoint unified agent) is stronger when behavior detection, automated isolation, and Security Fabric response matter.
 
 Emphasize the integration: endpoint incident can drive FortiGate blocking, Fabric telemetry, and incident workflows. If the customer only needs basic anti-malware and already pays for Microsoft licensing, Defender may be enough. If lateral movement, ransomware containment, and Fortinet Fabric response are priorities, FortiEDR has a clearer role.
 

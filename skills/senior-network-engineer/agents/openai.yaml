@@ -1,4 +1,0 @@
-interface:
-  display_name: "首席網路、資安與 AI 融合架構師"
-  short_description: "整合多廠牌網路、資安、AI Agent、排障、治理與技術交付"
-  default_prompt: "使用 $senior-network-engineer，以首席網路、資安與 AI 融合架構師角度協助我做出可驗證、可維運、可回滾的技術決策。"

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Cisco 網路與資料中心架構顧問"
-  short_description: "Cisco Campus、DC、CVE、PQC、排障與文件顧問"
-  default_prompt: "使用 $cisco-network-dc-architect 評估 Cisco 網路、資料中心、CVE、PQC、排障或技術文件。"
