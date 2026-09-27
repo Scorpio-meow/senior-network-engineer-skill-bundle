@@ -71,7 +71,7 @@ Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)�
 **Windows（PowerShell）**
 
 ```powershell
-git clone https://github.com/JoeChin0416/senior-network-engineer-skill-bundle.git
+git clone https://github.com/Scorpio-meow/senior-network-engineer-skill-bundle.git
 Set-Location senior-network-engineer-skill-bundle
 
 $dest = Join-Path $HOME '.agents/skills'      # 依平台替換
@@ -89,7 +89,7 @@ Get-ChildItem ./skills -Directory | ForEach-Object {
 **macOS / Linux**
 
 ```bash
-git clone https://github.com/JoeChin0416/senior-network-engineer-skill-bundle.git
+git clone https://github.com/Scorpio-meow/senior-network-engineer-skill-bundle.git
 cd senior-network-engineer-skill-bundle
 
 DEST=~/.agents/skills        # 依平台替換
