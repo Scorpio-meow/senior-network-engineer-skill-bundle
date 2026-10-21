@@ -6,7 +6,7 @@
 
 Skill は [Agent Skills オープンフォーマット](https://agentskills.io/specification)（フォルダーに `SKILL.md` と任意の `references/` を含む）に準拠しており、Claude、ChatGPT/Codex、Google Antigravity、Gemini CLI、Cursor、GitHub Copilot など、このフォーマットに対応したツールにインストールできます。
 
-時効性のある内容（バージョン、EoL、CVE、PQC、AI ツールの機能とインストールパス）の確認基準日は **2026-09-27** です。
+時効性のある内容（バージョン、EoL、CVE、PQC、AI ツールの機能とインストールパス）の確認基準日は **2026-10-21** です。
 
 > **言語について：** Skill 本文は繁体字中国語で書かれており、AI には既定で繁体字中国語と台湾の企業 IT 用語で回答するよう指示しています。他の言語で回答が必要な場合は、リクエスト内で明示してください。
 
@@ -67,8 +67,9 @@ Skill は [Agent Skills オープンフォーマット](https://agentskills.io/s
 
 1. **5 つの Skill は同じフォルダーにまとめてインストールしてください。** メイン Skill は相対パス `../<subskill>/SKILL.md` で subskill を読み込むため、5 つのフォルダーが並んでいないと見つかりません。
 2. **フォルダー名を変更しないでください。** 多くのツールはフォルダー名と `SKILL.md` の `name` の一致を要求し、一致しない場合は読み込まずにスキップすることがあります。
-3. **アップロード方式のプラットフォーム（Claude Web 版/デスクトップ版、ChatGPT Web 版）では 5 つすべてをアップロードして有効化してください。** これらのプラットフォームでは各 Skill が独立しています。Anthropic ヘルプセンターによると Skill は他の Skill を明示的に参照できませんが、Claude は複数の Skill を自動的に組み合わせて使用します。
+3. **アップロード方式のプラットフォーム（Claude Web 版/デスクトップ版、ChatGPT Web 版）では 5 つすべてをアップロードして有効化してください。** これらのプラットフォームでは各 Skill が独立しており、メイン Skill は `../` の相対パスで他の Skill を読み込めません。5 つすべてを有効にすると、プラットフォームが各 Skill の description に基づいて該当する subskill を選択します。
 4. **一度のインストールで複数ツールから共有できます。** `~/.agents/skills` はツール横断の共有場所で、Codex/ChatGPT デスクトップ版、Cursor、GitHub Copilot、Gemini CLI が読み込みます。Claude Code と Antigravity はそれぞれ専用のディレクトリへのインストールが必要です。
+5. **重複インストールを避けてください。** Cursor と GitHub Copilot（VS Code）は `~/.claude/skills` も読み込みます。`~/.claude/skills` と `~/.agents/skills` の両方にインストールすると、これらのツールで同名の Skill が 2 つ表示されることがあります。
 
 ## 共通インストールコマンド
 
@@ -117,14 +118,14 @@ for d in "$PWD"/skills/*/; do ln -s "${d%/}" "$DEST/"; done
 | プラットフォーム | 個人（グローバル）パス | プロジェクトパス | リンク対応 | 手動呼び出し |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | あり | `/senior-network-engineer` |
-| Claude Web 版/デスクトップ版 | ZIP をアップロード（下記参照） | — | — | `/` を入力して選択 |
+| Claude Web 版/デスクトップ版 | ZIP をアップロード（下記参照） | — | — | 自動（plugin は `/` を入力可） |
 | ChatGPT デスクトップ版、Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | あり | ChatGPT：`@`、Codex：`$senior-network-engineer` または `/skills` |
 | ChatGPT Web 版 | アップロード（下記参照） | — | — | 自動または `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | 記載なし | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | 記載なし | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | 記載なし | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` または `~/.agents/skills` | `.gemini/skills` または `.agents/skills` | あり | 自動（`/skills list` で確認） |
 | Cursor | `~/.cursor/skills` または `~/.agents/skills` | `.cursor/skills` または `.agents/skills` | 記載なし | Agent chat で `/` を入力 |
-| GitHub Copilot（VS Code、CLI） | `~/.copilot/skills` または `~/.agents/skills` | `.github/skills` または `.agents/skills` | 記載なし | `/senior-network-engineer` |
+| GitHub Copilot（VS Code、CLI） | `~/.copilot/skills` または `~/.agents/skills` | `.github/skills`、`.agents/skills` または `.claude/skills` | 記載なし | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<カテゴリー>` | `.hermes/skills` または `.agents/skills` | 記載なし | `/senior-network-engineer` |
 
 どのツールも description がタスクに合致すれば Skill を自動的に読み込みます。「記載なし」のツールは公式ドキュメントにリンク対応の有無が書かれていないため、コピーでのインストールを推奨します。
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # プロジェクト範囲では .claude/skills を
 ```
 
 - 共通コマンドでコピーまたはリンクを作成します（公式ドキュメントでリンク対応が明記されています）。
-- 変更は現在の session で自動的に反映されます。起動時に `~/.claude/skills` が存在しなかった場合は `/reload-skills` を実行してください。
+- 変更は現在の session で自動的に反映されます。`~/.claude/skills` を session の起動後に作成した場合、そのディレクトリは監視されないため、以降は変更のたびに `/reload-skills` を実行してください。
 - `/skills` と入力すると読み込み済みの Skill を確認できます。
 - `~/.claude/skills` はローカルの Claude Code にのみ適用され、Cowork やクラウド session には含まれません。
 
 ### Claude（claude.ai Web 版、デスクトップ版）
 
-有料プラン（Pro、Max、Team、Enterprise）で利用できます。
+Free、Pro、Max、Team、Enterprise のいずれのプランでも Skills を利用できます（コード実行の有効化が必要）。plugin のアップロードは Pro 以上のプランに限られます。
 
-1. コード実行を有効にします：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise では Owner が **Organization settings > Plugins & skills** で Skills とコード実行を有効にする必要があります。
+1. コード実行を有効にします：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise では Owner が **Organization settings > Plugins & skills > Policy** で **Cloud code execution and file creation** と **Skills** を有効にします（Team は既定で有効、Enterprise は手動で有効化が必要）。
 2. 5 つの Skill をそれぞれ個別の ZIP にパッケージします。ZIP 内の最上位は Skill フォルダーそのもの（例：`palo-alto-architect/SKILL.md`）である必要があり、`SKILL.md` を ZIP のルートに直接置いてはいけません。
 
    ```bash
@@ -161,8 +162,8 @@ DEST=~/.claude/skills        # プロジェクト範囲では .claude/skills を
    }
    ```
 
-3. **Customize > Skills** を開き、**+** → **Create skill** → **Upload a skill** を選択して 5 つの ZIP を順にアップロードし、すべて有効にします。
-4. 会話でタスクを説明すると自動的に使用されます。入力欄で `/` を入力して Skill を選ぶこともできます。
+3. **Customize > Skills** を開き、**+** → **Create skill** → **Upload a skill** を選択して 5 つの ZIP を順にアップロードし、すべて有効にします。Enterprise では 2026-10-02 以降、アップロード内容に対するセキュリティスキャン（Pass/Warn/Fail）が既定で行われ、結果が Fail の場合はアップロードできません。
+4. 会話でタスクを説明すると自動的に使用されます。plugin としてインストールした場合は、入力欄で `/` を入力して選ぶこともできます。
 
 **description の文字数制限**：Claude ヘルプセンターでは description の上限を 200 文字としています（claude.com の開発者ドキュメントと Agent Skills 仕様では 1,024 文字）。本バンドルはより厳しい 200 文字に合わせて記述しており、5 つの description はいずれも 161–177 文字です。
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ EOF
 
 **ChatGPT デスクトップ版**：Codex とローカルの Skill を共有するため、`~/.agents/skills` にインストールするだけで使えます（次節参照）。ChatGPT で `@` を入力して Skill を選択します。
 
-**ChatGPT Web 版**：Business、Enterprise、Healthcare、Edu プラン限定で、ワークスペースの管理設定に従います。
+**ChatGPT Web 版**：Business、Enterprise、Healthcare、Edu プラン限定で、ワークスペースの管理設定に従います（Enterprise と Edu は既定で無効のため、管理者による有効化が必要）。個人の Skill はデスクトップ版と Web 版/モバイル版の間で同期されません。
 
 1. サイドバーで **Plugins** を選択します。
 2. **Plugin Directory** で **Skills** タブを開きます。
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # プロジェクト範囲ではリポジトリ内�
 - 呼び出し：`$senior-network-engineer`、または `/skills` を実行して選択します。
 - 旧パス `$CODEX_HOME/skills`（`CODEX_HOME` 未設定時は `~/.codex/skills`）は公式ドキュメントから削除されましたが、Codex は deprecated パスとして引き続き読み込みます。旧パスに本バンドルの別コピーが残っていると同名の Skill が 2 回表示されるため、旧インストールを削除してください。
 
-### Google Antigravity（2.0、IDE、CLI）
+### Google Antigravity（App、IDE、CLI）
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 と IDE（グローバル）
+DEST=~/.gemini/config/skills                # Antigravity App と IDE（グローバル）
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI（グローバル）
 DEST=<プロジェクトルート>/.agents/skills    # 3 つで共通のプロジェクト範囲
 ```
 
-- 3 つのインターフェースはグローバルパスが異なります。2.0/IDE と CLI を併用する場合は両方のグローバルパスにインストールするか、プロジェクト範囲の `.agents/skills` を使用してください。
+- 3 つのインターフェースはグローバルパスが異なります。App/IDE と CLI を併用する場合は両方のグローバルパスにインストールするか、プロジェクト範囲の `.agents/skills` を使用してください。
 - IDE は旧パス `~/.gemini/antigravity/skills` も引き続きサポートしています。
-- Gemini CLI からの移行：`~/.gemini/skills` は `~/.gemini/antigravity-cli/skills` に対応します。プロジェクト内の `.gemini/skills` は手動で名前を変更するか `.agents/skills` に移動してください。
-- CLI は plugin でもインストールできます：`plugin.json` と `skills/` を含むフォルダーを作成してから `agy plugin install <plugin フォルダー>` を実行します。TUI で `/skills` と入力すると読み込み済みの Skill を確認できます。
+- Gemini CLI からの移行：`~/.gemini/skills` は `~/.gemini/antigravity-cli/skills` に対応します。プロジェクト内の `.gemini/skills` は手動で名前を変更するか `.agents/skills` に移動してください。Gemini CLI の extension は `agy plugin import gemini` で変換できます。
+- CLI は plugin でもインストールできます：`plugin.json` と `skills/` を含むフォルダーを作成してから `agy plugin install <plugin フォルダー>` を実行します。TUI で `/plugin` と入力すると plugin を管理でき、Skill は `/<skill 名>` で呼び出します。
 
 ### Gemini CLI
 
-Gemini CLI は 2026-06-18 をもって個人ユーザー向けの提供を終了しました（Antigravity CLI に移行）。現在は Gemini Code Assist Standard/Enterprise ライセンスと有料の Gemini API key でのみ引き続き利用できます。
+Gemini CLI は 2026-06-18 をもって個人ユーザー向けの提供を終了しました（Antigravity CLI に移行）。現在は有料の Gemini API key と、契約期間中の Gemini Code Assist Standard/Enterprise でのみ引き続き利用できます。Code Assist Standard/Enterprise は 2026-10-09 に新規購入の受付を終了しており、Google は Antigravity への移行を推奨しています。
 
 ```bash
 DEST=~/.gemini/skills        # または ~/.agents/skills。プロジェクト範囲では .gemini/skills または .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # または ~/.agents/skills。プロジェクト�
 DEST=~/.cursor/skills        # または ~/.agents/skills。プロジェクト範囲では .cursor/skills または .agents/skills
 ```
 
-- Cursor は起動時に Skill を自動検出します。**Customize → Skills** で確認できます。
+- Cursor は起動時に Skill を自動検出します。**Customize → Skills** で確認できます。Cursor は `~/.claude/skills`、`~/.codex/skills` とプロジェクト内の `.claude/skills`、`.codex/skills` も読み込むため、重複インストールに注意してください。
 - 呼び出し：Agent chat で `/` を入力して Skill を選択します。
 - Cloud Agents に同期されるのは `~/.cursor/skills` のみです（**Settings → Agents** で **Sync Skills for Cloud Agents** を有効にする必要があります）。`~/.agents/skills` は Cloud Agents やリモート SSH には同期されません。
 
 ### GitHub Copilot（VS Code agent mode、Copilot CLI）
 
 ```bash
-DEST=~/.copilot/skills       # または ~/.agents/skills。プロジェクト範囲では .github/skills または .agents/skills
+DEST=~/.copilot/skills       # または ~/.agents/skills。プロジェクト範囲では .github/skills、.agents/skills または .claude/skills
 ```
 
-- 組織または企業経由で Copilot ライセンスを取得している場合、管理者がポリシーで関連機能を許可する必要があります。
-- VS Code：Chat で `/skills` と入力すると Skill の設定が開きます。Copilot CLI：`/skills list`、`/skills reload`。
+- 組織または企業経由で Copilot ライセンスを取得している場合、一部の機能は管理者のポリシーで制御されます。
+- VS Code：Chat view で **Local** を選択しているときは `/skills` と入力すると Skill の設定が開きます。Copilot などの他の harness を使用している場合は **Open Customizations** を使います。VS Code は `~/.claude/skills` も読み込みます。Copilot CLI：`/skills list`、`/skills reload`。
 - Copilot cloud agent と code review は GitHub 上で実行され、リポジトリ内（プロジェクト範囲）の Skill のみを読み込みます。
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # または ~/.agents/skills。プロジェクト�
 DEST=~/.hermes/skills/network   # 5 つの Skill を同じカテゴリーフォルダーに配置
 ```
 
-- 新しい Skill は新しい session で有効になります（または `/reset` を実行）。
+- 会話中に Skill を追加または削除すると、次のメッセージで通知されます。`/reload-skills` を実行すると `~/.hermes/skills/` を再スキャンし、`/<skill 名>` コマンドを更新できます。
 - プロジェクト内の `.hermes/skills`、`.agents/skills` は、そのリポジトリで `hermes skills trust` を実行するまで読み込まれません。
-- すでに `~/.agents/skills` にインストール済みの場合は、`~/.hermes/config.yaml` の `skills.external_dirs` にそのパスを追加すると共有できます。
+- すでに `~/.agents/skills` にインストール済みの場合は、`~/.hermes/config.yaml` の `skills.external_dirs` にそのパスを追加すると共有できます。Hermes は Skill を自ら更新するため、そのパスが書き込み可能で本リポジトリにリンクされていると正本が直接変更される可能性があります。コピーでのインストールまたは読み取り専用の権限を推奨します。
 - `hermes skills install` で GitHub から 1 つずつインストールする方法は推奨しません：`SKILL.md` が直接参照するファイルしかコピーされず、Skill 間の `../` 参照はダウンロードされないためです。
 
 ## 使い方
@@ -296,10 +297,11 @@ git pull --ff-only
 ## 時効性のある情報
 
 - バージョン、EoL/EoS、CVE、Recommended Release、PQC 対応、AI ツールの機能は、ベンダーまたは公式ドキュメントを基準とし、本文に確認日を記載しています。
-- 各 AI ツールの Skill パスとアップロード手順は頻繁に変わります。本ドキュメントは 2026-09-27 時点の公式ドキュメントに基づいています。インストール後に読み込まれない場合は、まずそのツールの最新ドキュメントを確認してください。
+- 各 AI ツールの Skill パスとアップロード手順は頻繁に変わります。本ドキュメントは 2026-10-21 時点の公式ドキュメントに基づいています。インストール後に読み込まれない場合は、まずそのツールの最新ドキュメントを確認してください。
 - 以下の情報は、公式ページの閲覧にベンダーのサポートポータルへのログインが必要なため、確認時点では第三者またはコミュニティの情報源しか見つかりませんでした。Skill 本文では「引用前に再確認」と注記しています：
   - FortiNAC 9.4 の EoS と FortiGate CNF の End of Order 日付（Fortinet Product Life Cycle、FortiCare アカウントが必要）
   - AirWave ソフトウェアの EoS と 2930F/2930M/5400R の販売終了状況（HPE Networking Support Portal）
+  - 3810M の販売終了日とサポート終了日（Aruba の 2022-11 の公式告知では 2023-06-30／2028-06-30、第三者の情報では 2025／2030 に改訂。HPE lifecycle portal での確認が必要）
 - 時効性のある内容を更新するときは、該当箇所の確認日と `bundle-manifest.json` の `version` も併せて更新してください。
 
 ## メンテナンスルール

@@ -6,7 +6,7 @@
 
 Skill 采用 [Agent Skills 开放格式](https://agentskills.io/specification)（文件夹内含 `SKILL.md` 与可选的 `references/`），可安装到 Claude、ChatGPT/Codex、Google Antigravity、Gemini CLI、Cursor、GitHub Copilot 等支持此格式的工具。
 
-时效性内容（版本、EoL、CVE、PQC、AI 工具能力与安装路径）的核查基准日为 **2026-09-27**。
+时效性内容（版本、EoL、CVE、PQC、AI 工具能力与安装路径）的核查基准日为 **2026-10-21**。
 
 > **语言说明：** Skill 正文以繁体中文撰写，并指示 AI 默认使用繁体中文与台湾企业 IT 术语回答。如需其他语言，请在请求中明确说明。
 
@@ -67,8 +67,9 @@ Skill 采用 [Agent Skills 开放格式](https://agentskills.io/specification)�
 
 1. **五个 Skill 一起安装到同一个文件夹。** 主 Skill 以相对路径 `../<subskill>/SKILL.md` 加载 subskill，只有五个文件夹并排时才能找到。
 2. **不要修改文件夹名称。** 多数工具要求文件夹名称与 `SKILL.md` 的 `name` 一致，不一致时可能直接跳过不加载。
-3. **以上传方式安装的平台（Claude 网页版/桌面版、ChatGPT 网页版）五个都要上传并启用。** 这类平台中每个 Skill 各自独立，Anthropic 帮助中心表示 Skill 无法显式引用其他 Skill，但 Claude 会自动组合使用多个 Skill。
+3. **以上传方式安装的平台（Claude 网页版/桌面版、ChatGPT 网页版）五个都要上传并启用。** 这类平台中每个 Skill 各自独立，主 Skill 无法通过 `../` 相对路径读取其他 Skill；五个都启用后，平台会根据各 Skill 的 description 选用对应的 subskill。
 4. **一次安装、多工具共用。** `~/.agents/skills` 是跨工具的共用位置，Codex/ChatGPT 桌面版、Cursor、GitHub Copilot、Gemini CLI 都会读取；Claude Code 与 Antigravity 则需要安装到各自的目录。
+5. **避免重复安装。** Cursor 与 GitHub Copilot（VS Code）也会读取 `~/.claude/skills`；同时安装到 `~/.claude/skills` 与 `~/.agents/skills` 时，这些工具可能显示两份同名 Skill。
 
 ## 通用安装命令
 
@@ -117,14 +118,14 @@ for d in "$PWD"/skills/*/; do ln -s "${d%/}" "$DEST/"; done
 | 平台 | 个人（全局）路径 | 项目路径 | 支持链接 | 手动调用 |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | 是 | `/senior-network-engineer` |
-| Claude 网页版/桌面版 | 上传 ZIP（见下方） | — | — | 输入 `/` 选择 |
+| Claude 网页版/桌面版 | 上传 ZIP（见下方） | — | — | 自动（plugin 可输入 `/`） |
 | ChatGPT 桌面版、Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | 是 | ChatGPT：`@`；Codex：`$senior-network-engineer` 或 `/skills` |
 | ChatGPT 网页版 | 上传（见下方） | — | — | 自动或 `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | 未记载 | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | 未记载 | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | 未记载 | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` 或 `~/.agents/skills` | `.gemini/skills` 或 `.agents/skills` | 是 | 自动（`/skills list` 查看） |
 | Cursor | `~/.cursor/skills` 或 `~/.agents/skills` | `.cursor/skills` 或 `.agents/skills` | 未记载 | 在 Agent chat 输入 `/` |
-| GitHub Copilot（VS Code、CLI） | `~/.copilot/skills` 或 `~/.agents/skills` | `.github/skills` 或 `.agents/skills` | 未记载 | `/senior-network-engineer` |
+| GitHub Copilot（VS Code、CLI） | `~/.copilot/skills` 或 `~/.agents/skills` | `.github/skills`、`.agents/skills` 或 `.claude/skills` | 未记载 | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<分类>` | `.hermes/skills` 或 `.agents/skills` | 未记载 | `/senior-network-engineer` |
 
 所有工具在描述匹配时也会自动加载 Skill。标示“未记载”的工具，官方文档没有说明是否支持链接，建议用复制方式安装。
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # 项目范围改用 .claude/skills
 ```
 
 - 使用通用命令复制或创建链接（官方文档明确支持链接）。
-- 修改会在当前 session 内自动生效；若 `~/.claude/skills` 在启动时尚不存在，执行 `/reload-skills`。
+- 修改会在当前 session 内自动生效；若 `~/.claude/skills` 是在 session 启动后才创建，该目录不会被监视，之后每次修改都要执行 `/reload-skills`。
 - 输入 `/skills` 可查看已加载的 Skill。
 - `~/.claude/skills` 只作用于本机的 Claude Code，不包含 Cowork 与云端 session。
 
 ### Claude（claude.ai 网页版、桌面版）
 
-适用于付费方案（Pro、Max、Team、Enterprise）。
+Free、Pro、Max、Team、Enterprise 方案都可使用 Skills（需开启代码执行）；plugin 上传仅限 Pro 及以上方案。
 
-1. 开启代码执行：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise 需由 Owner 在 **Organization settings > Plugins & skills** 开启 Skills 与代码执行。
+1. 开启代码执行：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise 由 Owner 在 **Organization settings > Plugins & skills > Policy** 开启 **Cloud code execution and file creation** 与 **Skills**（Team 默认开启，Enterprise 需手动开启）。
 2. 将五个 Skill 各自打包成 ZIP。ZIP 内的最上层必须是 Skill 文件夹本身（例如 `palo-alto-architect/SKILL.md`），不能把 `SKILL.md` 直接放在 ZIP 根目录。
 
    ```bash
@@ -161,8 +162,8 @@ DEST=~/.claude/skills        # 项目范围改用 .claude/skills
    }
    ```
 
-3. 前往 **Customize > Skills**，选择 **+** → **Create skill** → **Upload a skill**，依次上传五个 ZIP，并全部开启。
-4. 在对话中描述任务即可自动使用，或在输入框输入 `/` 选择 Skill。
+3. 前往 **Customize > Skills**，选择 **+** → **Create skill** → **Upload a skill**，依次上传五个 ZIP，并全部开启。Enterprise 自 2026-10-02 起默认对上传内容进行安全扫描（Pass/Warn/Fail），结果为 Fail 时无法上传。
+4. 在对话中描述任务即可自动使用；以 plugin 安装时，也可在输入框输入 `/` 选择。
 
 **description 长度限制**：Claude 帮助中心写明 description 上限为 200 字符（claude.com 开发者文档与 Agent Skills 规范为 1,024 字符）。本套件按较严格的 200 字符撰写，五个 description 均为 161–177 字符。
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ EOF
 
 **ChatGPT 桌面版**：与 Codex 共用本机 Skill，安装到 `~/.agents/skills` 即可（见下一节）。在 ChatGPT 中输入 `@` 选择 Skill。
 
-**ChatGPT 网页版**：仅限 Business、Enterprise、Healthcare、Edu 方案，并受工作区管理设置控制。
+**ChatGPT 网页版**：仅限 Business、Enterprise、Healthcare、Edu 方案，并受工作区管理设置控制（Enterprise 与 Edu 默认关闭，需管理员开启）。个人 Skill 不会在桌面版与网页版/移动版之间同步。
 
 1. 在侧边栏选择 **Plugins**。
 2. 在 **Plugin Directory** 选择 **Skills** 标签页。
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # 项目范围改用仓库内的 .agents/skills
 - 调用：`$senior-network-engineer`，或执行 `/skills` 选择。
 - 旧路径 `$CODEX_HOME/skills`（未设置 `CODEX_HOME` 时为 `~/.codex/skills`）已从官方文档移除，但 Codex 仍会以 deprecated 路径加载。若旧路径还有本套件的另一份文件，同名 Skill 会出现两次，请删除旧安装。
 
-### Google Antigravity（2.0、IDE、CLI）
+### Google Antigravity（App、IDE、CLI）
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 与 IDE（全局）
+DEST=~/.gemini/config/skills                # Antigravity App 与 IDE（全局）
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI（全局）
 DEST=<项目根目录>/.agents/skills            # 三者共用的项目范围
 ```
 
-- 三种界面的全局路径不同；同时使用 2.0/IDE 与 CLI 时，两个全局路径都要安装，或改用项目范围的 `.agents/skills`。
+- 三种界面的全局路径不同；同时使用 App/IDE 与 CLI 时，两个全局路径都要安装，或改用项目范围的 `.agents/skills`。
 - IDE 仍支持旧路径 `~/.gemini/antigravity/skills`。
-- 从 Gemini CLI 迁移：`~/.gemini/skills` 对应 `~/.gemini/antigravity-cli/skills`；项目内的 `.gemini/skills` 需手动改名或移到 `.agents/skills`。
-- CLI 也可用 plugin 安装：创建含 `plugin.json` 与 `skills/` 的文件夹后执行 `agy plugin install <plugin 文件夹>`；在 TUI 中输入 `/skills` 查看已加载的 Skill。
+- 从 Gemini CLI 迁移：`~/.gemini/skills` 对应 `~/.gemini/antigravity-cli/skills`；项目内的 `.gemini/skills` 需手动改名或移到 `.agents/skills`；Gemini CLI extension 可用 `agy plugin import gemini` 转换。
+- CLI 也可用 plugin 安装：创建含 `plugin.json` 与 `skills/` 的文件夹后执行 `agy plugin install <plugin 文件夹>`；在 TUI 中输入 `/plugin` 管理 plugin，Skill 以 `/<skill 名称>` 调用。
 
 ### Gemini CLI
 
-Gemini CLI 自 2026-06-18 起停止为个人用户提供服务（改用 Antigravity CLI），目前仅 Gemini Code Assist Standard/Enterprise 授权与付费 Gemini API key 可继续使用。
+Gemini CLI 自 2026-06-18 起停止为个人用户提供服务（改用 Antigravity CLI），目前仅付费 Gemini API key 与仍在合同期内的 Gemini Code Assist Standard/Enterprise 可继续使用；Code Assist Standard/Enterprise 已于 2026-10-09 停止新购，Google 建议改用 Antigravity。
 
 ```bash
 DEST=~/.gemini/skills        # 或 ~/.agents/skills；项目范围用 .gemini/skills 或 .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # 或 ~/.agents/skills；项目范围用 .gemini/sk
 DEST=~/.cursor/skills        # 或 ~/.agents/skills；项目范围用 .cursor/skills 或 .agents/skills
 ```
 
-- Cursor 启动时自动发现 Skill；在 **Customize → Skills** 查看。
+- Cursor 启动时自动发现 Skill；在 **Customize → Skills** 查看。Cursor 也会读取 `~/.claude/skills`、`~/.codex/skills` 与项目内的 `.claude/skills`、`.codex/skills`，注意避免重复安装。
 - 调用：在 Agent chat 输入 `/` 选择 Skill。
 - 只有 `~/.cursor/skills` 会同步到 Cloud Agents（需在 **Settings → Agents** 开启 **Sync Skills for Cloud Agents**）；`~/.agents/skills` 不会同步到 Cloud Agents 或远程 SSH。
 
 ### GitHub Copilot（VS Code agent mode、Copilot CLI）
 
 ```bash
-DEST=~/.copilot/skills       # 或 ~/.agents/skills；项目范围用 .github/skills 或 .agents/skills
+DEST=~/.copilot/skills       # 或 ~/.agents/skills；项目范围用 .github/skills、.agents/skills 或 .claude/skills
 ```
 
-- 通过组织或企业取得 Copilot 授权时，需管理员在策略中允许相关功能。
-- VS Code：在 Chat 输入 `/skills` 打开 Skill 设置；Copilot CLI：`/skills list`、`/skills reload`。
+- 通过组织或企业取得 Copilot 授权时，部分功能受管理员策略控制。
+- VS Code：Chat view 选择 **Local** 时可输入 `/skills` 打开 Skill 设置，使用 Copilot 等其他 harness 时改用 **Open Customizations**；VS Code 也会读取 `~/.claude/skills`。Copilot CLI：`/skills list`、`/skills reload`。
 - Copilot cloud agent 与 code review 在 GitHub 上执行，只会读取仓库内（项目范围）的 Skill。
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # 或 ~/.agents/skills；项目范围用 .github/sk
 DEST=~/.hermes/skills/network   # 五个 Skill 放在同一个分类文件夹下
 ```
 
-- 新 Skill 在新 session 生效（或执行 `/reset`）。
+- 对话中新增或移除 Skill 时，下一条消息会带入通知；执行 `/reload-skills` 可重新扫描 `~/.hermes/skills/` 并更新 `/<skill 名称>` 命令。
 - 项目内的 `.hermes/skills`、`.agents/skills` 需先在该仓库执行 `hermes skills trust` 才会加载。
-- 已安装在 `~/.agents/skills` 时，可在 `~/.hermes/config.yaml` 的 `skills.external_dirs` 加入该路径共用。
+- 已安装在 `~/.agents/skills` 时，可在 `~/.hermes/config.yaml` 的 `skills.external_dirs` 加入该路径共用。Hermes 会自行更新 Skill；若该路径可写入且链接到本仓库，可能直接改动正本，建议用复制方式安装或设置只读权限。
 - 不建议用 `hermes skills install` 逐一从 GitHub 安装：它只复制 `SKILL.md` 直接引用的文件，跨 Skill 的 `../` 引用不会一并下载。
 
 ## 使用方式
@@ -296,10 +297,11 @@ git pull --ff-only
 ## 时效性信息
 
 - 版本、EoL/EoS、CVE、Recommended Release、PQC 支持与 AI 工具能力都以原厂或官方文档为准，并在正文中标注核查日期。
-- 各 AI 工具的 Skill 路径与上传流程变动频繁，本文档依据 2026-09-27 的官方文档整理；若安装后未加载，请先查阅该工具的最新文档。
+- 各 AI 工具的 Skill 路径与上传流程变动频繁，本文档依据 2026-10-21 的官方文档整理；若安装后未加载，请先查阅该工具的最新文档。
 - 下列资料在核查时只能找到第三方或社区来源，官方页面需登录原厂支持门户，Skill 正文已标注“引用前重查”：
   - FortiNAC 9.4 EoS 与 FortiGate CNF End of Order 日期（Fortinet Product Life Cycle，需 FortiCare 账号）
   - AirWave 软件 EoS 与 2930F/2930M/5400R 停售状态（HPE Networking Support Portal）
+  - 3810M 停售与停止支持日期（Aruba 2022-11 官方公告为 2023-06-30／2028-06-30，第三方资料显示修订为 2025／2030，需以 HPE lifecycle portal 确认）
 - 更新时效性内容时，同步更新对应段落的核查日期与 `bundle-manifest.json` 的 `version`。
 
 ## 维护规则

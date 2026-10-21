@@ -6,7 +6,7 @@ Bundle skill pribadi untuk senior network engineer: satu skill utama lintas vend
 
 Skill-skill ini mengikuti [format terbuka Agent Skills](https://agentskills.io/specification) (setiap folder berisi `SKILL.md` dan `references/` opsional) dan dapat diinstal ke Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot, serta tool lain yang mendukung format tersebut.
 
-Konten yang sensitif terhadap waktu (versi, EoL, CVE, PQC, kapabilitas tool AI, dan path instalasi) telah diverifikasi per **2026-09-27**.
+Konten yang sensitif terhadap waktu (versi, EoL, CVE, PQC, kapabilitas tool AI, dan path instalasi) telah diverifikasi per **2026-10-21**.
 
 > **Catatan bahasa:** Konten skill ditulis dalam bahasa Mandarin Tradisional dan secara default menginstruksikan AI untuk menjawab dalam bahasa Mandarin Tradisional dengan terminologi TI perusahaan Taiwan. Jika Anda memerlukan jawaban dalam bahasa lain, nyatakan secara eksplisit dalam permintaan Anda.
 
@@ -67,8 +67,9 @@ Konten yang sensitif terhadap waktu (versi, EoL, CVE, PQC, kapabilitas tool AI, 
 
 1. **Instal kelima skill ke folder yang sama.** Skill utama memuat subskill melalui path relatif `../<subskill>/SKILL.md`, yang hanya dapat di-resolve jika kelima folder berada berdampingan.
 2. **Jangan mengganti nama folder.** Sebagian besar tool mewajibkan nama folder sama dengan `name` di `SKILL.md` dan dapat melewati skill secara diam-diam jika keduanya berbeda.
-3. **Pada platform berbasis unggahan (Claude web/desktop, ChatGPT web), unggah dan aktifkan kelimanya.** Di platform ini setiap skill berdiri sendiri. Anthropic Help Center menyatakan bahwa skill tidak dapat mereferensikan skill lain secara eksplisit, tetapi Claude secara otomatis menggabungkan beberapa skill bila sesuai.
+3. **Pada platform berbasis unggahan (Claude web/desktop, ChatGPT web), unggah dan aktifkan kelimanya.** Di platform ini setiap skill berdiri sendiri, dan skill utama tidak dapat membaca skill lain melalui path relatif `../`; setelah kelimanya diaktifkan, platform akan memilih subskill yang sesuai berdasarkan deskripsi (description) masing-masing skill.
 4. **Instal sekali, gunakan bersama di berbagai tool.** `~/.agents/skills` adalah lokasi lintas tool yang dibaca oleh Codex/ChatGPT desktop, Cursor, GitHub Copilot, dan Gemini CLI; Claude Code dan Antigravity memerlukan direktorinya sendiri.
+5. **Hindari instalasi ganda.** Cursor dan GitHub Copilot (VS Code) juga membaca `~/.claude/skills`; jika Anda menginstal ke `~/.claude/skills` sekaligus `~/.agents/skills`, tool tersebut dapat menampilkan dua skill dengan nama yang sama.
 
 ## Perintah instalasi umum
 
@@ -117,14 +118,14 @@ Pembuatan link akan gagal jika folder dengan nama yang sama sudah ada di tujuan;
 | Platform | Path pribadi (global) | Path proyek | Dukungan link | Pemanggilan manual |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | Ya | `/senior-network-engineer` |
-| Claude web/desktop | Unggah ZIP (lihat di bawah) | — | — | Ketik `/` lalu pilih |
+| Claude web/desktop | Unggah ZIP (lihat di bawah) | — | — | Otomatis (untuk plugin dapat mengetik `/`) |
 | ChatGPT desktop, Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | Ya | ChatGPT: `@`; Codex: `$senior-network-engineer` atau `/skills` |
 | ChatGPT web | Unggah (lihat di bawah) | — | — | Otomatis atau `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | Tidak didokumentasikan | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | Tidak didokumentasikan | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | Tidak didokumentasikan | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` atau `~/.agents/skills` | `.gemini/skills` atau `.agents/skills` | Ya | Otomatis (`/skills list` untuk melihat) |
 | Cursor | `~/.cursor/skills` atau `~/.agents/skills` | `.cursor/skills` atau `.agents/skills` | Tidak didokumentasikan | Ketik `/` di Agent chat |
-| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` atau `~/.agents/skills` | `.github/skills` atau `.agents/skills` | Tidak didokumentasikan | `/senior-network-engineer` |
+| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` atau `~/.agents/skills` | `.github/skills`, `.agents/skills`, atau `.claude/skills` | Tidak didokumentasikan | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<kategori>` | `.hermes/skills` atau `.agents/skills` | Tidak didokumentasikan | `/senior-network-engineer` |
 
 Setiap tool juga memuat skill secara otomatis jika deskripsinya cocok dengan tugas. Untuk tool yang ditandai "Tidak didokumentasikan", dokumentasi resmi tidak menyebutkan apakah link didukung; lakukan instalasi dengan cara menyalin.
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # Untuk cakupan proyek gunakan .claude/skills
 ```
 
 - Salin atau buat link menggunakan perintah umum (link didukung secara eksplisit dalam dokumentasi resmi).
-- Perubahan berlaku otomatis pada session saat ini; jika `~/.claude/skills` belum ada saat startup, jalankan `/reload-skills`.
+- Perubahan berlaku otomatis pada session saat ini; jika `~/.claude/skills` baru dibuat setelah session dimulai, direktori tersebut tidak dipantau dan setiap perubahan berikutnya memerlukan `/reload-skills`.
 - Ketik `/skills` untuk melihat skill yang telah dimuat.
 - `~/.claude/skills` hanya berlaku untuk Claude Code lokal, tidak untuk Cowork maupun session cloud.
 
 ### Claude (claude.ai web, desktop)
 
-Tersedia pada paket berbayar (Pro, Max, Team, Enterprise).
+Skills tersedia pada paket Free, Pro, Max, Team, dan Enterprise (memerlukan eksekusi kode yang aktif); unggahan plugin terbatas pada paket Pro atau lebih tinggi.
 
-1. Aktifkan eksekusi kode: **Settings > Capabilities > Code execution and file creation**. Pada Team/Enterprise, seorang Owner harus mengaktifkan Skills dan eksekusi kode di **Organization settings > Plugins & skills**.
+1. Aktifkan eksekusi kode: **Settings > Capabilities > Code execution and file creation**. Pada Team/Enterprise, Owner mengaktifkan **Cloud code execution and file creation** dan **Skills** di **Organization settings > Plugins & skills > Policy** (aktif secara default pada Team, harus diaktifkan secara manual pada Enterprise).
 2. Kemas masing-masing dari kelima skill sebagai ZIP tersendiri. Tingkat teratas di dalam ZIP harus berupa folder skill itu sendiri (misalnya `palo-alto-architect/SKILL.md`); jangan letakkan `SKILL.md` langsung di root ZIP.
 
    ```bash
@@ -161,8 +162,8 @@ Tersedia pada paket berbayar (Pro, Max, Team, Enterprise).
    }
    ```
 
-3. Buka **Customize > Skills**, pilih **+** → **Create skill** → **Upload a skill**, unggah kelima ZIP satu per satu, lalu aktifkan semuanya.
-4. Jelaskan tugas Anda dalam percakapan agar skill digunakan secara otomatis, atau ketik `/` di kotak input untuk memilih skill.
+3. Buka **Customize > Skills**, pilih **+** → **Create skill** → **Upload a skill**, unggah kelima ZIP satu per satu, lalu aktifkan semuanya. Sejak 2026-10-02, Enterprise secara default memindai keamanan konten unggahan (Pass/Warn/Fail); jika hasilnya Fail, unggahan tidak dapat dilakukan.
+4. Jelaskan tugas Anda dalam percakapan agar skill digunakan secara otomatis; jika diinstal sebagai plugin, Anda juga dapat mengetik `/` di kotak input untuk memilih.
 
 **Batas panjang deskripsi:** Claude Help Center menyatakan batas 200 karakter untuk deskripsi (dokumentasi developer claude.com dan spesifikasi Agent Skills mengizinkan 1.024 karakter). Bundle ini mengikuti batas 200 karakter yang lebih ketat; kelima deskripsi masing-masing sepanjang 161–177 karakter.
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ Kemudian unggah `dist/senior-network-engineer-bundle.zip` di **Customize > Plugi
 
 **ChatGPT desktop:** Berbagi skill lokal dengan Codex; cukup instal ke `~/.agents/skills` (lihat bagian berikutnya). Ketik `@` di ChatGPT untuk memilih skill.
 
-**ChatGPT web:** Terbatas pada paket Business, Enterprise, Healthcare, dan Edu, serta bergantung pada pengaturan admin workspace.
+**ChatGPT web:** Terbatas pada paket Business, Enterprise, Healthcare, dan Edu, serta bergantung pada pengaturan admin workspace (nonaktif secara default pada Enterprise dan Edu, harus diaktifkan oleh admin). Skill pribadi tidak disinkronkan antara versi desktop dan versi web/seluler.
 
 1. Pilih **Plugins** di sidebar.
 2. Di **Plugin Directory**, buka tab **Skills**.
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # Untuk cakupan proyek gunakan .agents/skills di da
 - Panggil dengan `$senior-network-engineer`, atau jalankan `/skills` untuk memilih.
 - Path lama `$CODEX_HOME/skills` (`~/.codex/skills` jika `CODEX_HOME` tidak diatur) telah dihapus dari dokumentasi resmi, tetapi Codex masih memuatnya sebagai path deprecated. Jika salinan lain dari bundle ini masih ada di sana, skill dengan nama yang sama akan muncul dua kali; hapus instalasi lama tersebut.
 
-### Google Antigravity (2.0, IDE, CLI)
+### Google Antigravity (App, IDE, CLI)
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 dan IDE (global)
+DEST=~/.gemini/config/skills                # Antigravity App dan IDE (global)
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI (global)
 DEST=<root-proyek>/.agents/skills           # Cakupan proyek yang digunakan bersama oleh ketiganya
 ```
 
-- Ketiga antarmuka menggunakan path global yang berbeda. Jika Anda menggunakan 2.0/IDE sekaligus CLI, instal ke kedua path global tersebut, atau gunakan `.agents/skills` dengan cakupan proyek sebagai gantinya.
+- Ketiga antarmuka menggunakan path global yang berbeda. Jika Anda menggunakan App/IDE sekaligus CLI, instal ke kedua path global tersebut, atau gunakan `.agents/skills` dengan cakupan proyek sebagai gantinya.
 - IDE masih mendukung path lama `~/.gemini/antigravity/skills`.
-- Migrasi dari Gemini CLI: `~/.gemini/skills` dipetakan ke `~/.gemini/antigravity-cli/skills`; `.gemini/skills` milik proyek harus diganti namanya atau dipindahkan ke `.agents/skills` secara manual.
-- CLI juga dapat melakukan instalasi melalui plugin: buat folder yang berisi `plugin.json` dan `skills/`, lalu jalankan `agy plugin install <folder-plugin>`; ketik `/skills` di TUI untuk melihat skill yang telah dimuat.
+- Migrasi dari Gemini CLI: `~/.gemini/skills` dipetakan ke `~/.gemini/antigravity-cli/skills`; `.gemini/skills` milik proyek harus diganti namanya atau dipindahkan ke `.agents/skills` secara manual; extension Gemini CLI dapat dikonversi dengan `agy plugin import gemini`.
+- CLI juga dapat melakukan instalasi melalui plugin: buat folder yang berisi `plugin.json` dan `skills/`, lalu jalankan `agy plugin install <folder-plugin>`; ketik `/plugin` di TUI untuk mengelola plugin, dan panggil skill dengan `/<nama-skill>`.
 
 ### Gemini CLI
 
-Gemini CLI berhenti melayani pengguna individu pada 2026-06-18 (digantikan oleh Antigravity CLI). Hanya lisensi Gemini Code Assist Standard/Enterprise dan API key Gemini berbayar yang masih dapat menggunakannya.
+Gemini CLI berhenti melayani pengguna individu pada 2026-06-18 (digantikan oleh Antigravity CLI). Saat ini hanya API key Gemini berbayar dan Gemini Code Assist Standard/Enterprise yang masih dalam masa kontrak yang dapat terus menggunakannya; Code Assist Standard/Enterprise berhenti dijual untuk pembelian baru sejak 2026-10-09, dan Google merekomendasikan beralih ke Antigravity.
 
 ```bash
 DEST=~/.gemini/skills        # Atau ~/.agents/skills; untuk cakupan proyek gunakan .gemini/skills atau .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # Atau ~/.agents/skills; untuk cakupan proyek gunak
 DEST=~/.cursor/skills        # Atau ~/.agents/skills; untuk cakupan proyek gunakan .cursor/skills atau .agents/skills
 ```
 
-- Cursor menemukan skill secara otomatis saat startup; lihat di **Customize → Skills**.
+- Cursor menemukan skill secara otomatis saat startup; lihat di **Customize → Skills**. Cursor juga membaca `~/.claude/skills`, `~/.codex/skills`, serta `.claude/skills` dan `.codex/skills` di dalam proyek; waspadai instalasi ganda.
 - Panggil dengan mengetik `/` di Agent chat lalu memilih skill.
 - Hanya `~/.cursor/skills` yang disinkronkan ke Cloud Agents (aktifkan **Sync Skills for Cloud Agents** di **Settings → Agents**); `~/.agents/skills` tidak disinkronkan ke Cloud Agents maupun remote SSH.
 
 ### GitHub Copilot (mode agent VS Code, Copilot CLI)
 
 ```bash
-DEST=~/.copilot/skills       # Atau ~/.agents/skills; untuk cakupan proyek gunakan .github/skills atau .agents/skills
+DEST=~/.copilot/skills       # Atau ~/.agents/skills; untuk cakupan proyek gunakan .github/skills, .agents/skills, atau .claude/skills
 ```
 
-- Jika lisensi Copilot Anda berasal dari organisasi atau enterprise, admin harus mengizinkan fitur terkait melalui policy.
-- VS Code: ketik `/skills` di Chat untuk membuka pengaturan skill. Copilot CLI: `/skills list`, `/skills reload`.
+- Jika lisensi Copilot Anda berasal dari organisasi atau enterprise, sebagian fitur dikendalikan oleh policy admin.
+- VS Code: saat **Local** dipilih di Chat view, ketik `/skills` untuk membuka pengaturan skill; saat menggunakan harness lain seperti Copilot, gunakan **Open Customizations**. VS Code juga membaca `~/.claude/skills`. Copilot CLI: `/skills list`, `/skills reload`.
 - Copilot cloud agent dan code review berjalan di GitHub dan hanya membaca skill di dalam repository (cakupan proyek).
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # Atau ~/.agents/skills; untuk cakupan proyek gunak
 DEST=~/.hermes/skills/network   # Letakkan kelima skill di bawah folder kategori yang sama
 ```
 
-- Skill baru berlaku pada session baru (atau jalankan `/reset`).
+- Jika skill ditambahkan atau dihapus selama percakapan, pesan berikutnya akan menyertakan pemberitahuan; jalankan `/reload-skills` untuk memindai ulang `~/.hermes/skills/` dan memperbarui perintah `/<nama-skill>`.
 - `.hermes/skills` dan `.agents/skills` milik proyek baru dimuat setelah Anda menjalankan `hermes skills trust` di repository tersebut.
-- Jika skill sudah terinstal di `~/.agents/skills`, tambahkan path tersebut ke `skills.external_dirs` di `~/.hermes/config.yaml` untuk menggunakannya bersama.
+- Jika skill sudah terinstal di `~/.agents/skills`, tambahkan path tersebut ke `skills.external_dirs` di `~/.hermes/config.yaml` untuk menggunakannya bersama. Hermes memperbarui skill secara mandiri; jika path tersebut dapat ditulisi dan terhubung (link) ke repository ini, Hermes dapat langsung mengubah salinan kanonis, sehingga disarankan menginstal dengan cara menyalin atau menggunakan izin baca-saja.
 - Instalasi satu per satu dari GitHub dengan `hermes skills install` tidak disarankan: perintah ini hanya menyalin file yang direferensikan langsung oleh `SKILL.md`, sehingga referensi `../` lintas skill tidak ikut diunduh.
 
 ## Penggunaan
@@ -296,10 +297,11 @@ git pull --ff-only
 ## Informasi yang sensitif terhadap waktu
 
 - Versi, EoL/EoS, CVE, Recommended Releases, dukungan PQC, dan kapabilitas tool AI didasarkan pada dokumentasi vendor atau dokumentasi resmi, dengan tanggal verifikasi dicantumkan dalam teks.
-- Path skill dan alur unggahan untuk tool AI sering berubah. Dokumen ini mencerminkan dokumentasi resmi per 2026-09-27; jika skill tidak termuat setelah instalasi, periksa terlebih dahulu dokumentasi terbaru tool tersebut.
+- Path skill dan alur unggahan untuk tool AI sering berubah. Dokumen ini mencerminkan dokumentasi resmi per 2026-10-21; jika skill tidak termuat setelah instalasi, periksa terlebih dahulu dokumentasi terbaru tool tersebut.
 - Pada saat verifikasi, item berikut hanya dapat ditemukan di sumber pihak ketiga atau komunitas karena halaman resminya memerlukan login ke portal dukungan vendor. Konten skill menandainya dengan "verifikasi ulang sebelum mengutip":
   - Tanggal EoS FortiNAC 9.4 dan End of Order FortiGate CNF (Fortinet Product Life Cycle, memerlukan akun FortiCare)
   - EoS perangkat lunak AirWave dan status end-of-sale 2930F/2930M/5400R (HPE Networking Support Portal)
+  - Tanggal end-of-sale dan akhir dukungan 3810M (pengumuman resmi Aruba 2022-11 menyebutkan 2023-06-30/2028-06-30, sedangkan sumber pihak ketiga menunjukkan revisi menjadi 2025/2030; perlu dikonfirmasi melalui HPE lifecycle portal)
 - Saat memperbarui konten yang sensitif terhadap waktu, perbarui juga tanggal verifikasi di bagian terkait dan `version` di `bundle-manifest.json`.
 
 ## Aturan pemeliharaan

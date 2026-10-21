@@ -6,7 +6,7 @@
 
 تتبع المهارات [صيغة Agent Skills المفتوحة](https://agentskills.io/specification) (يحتوي كل مجلد على `SKILL.md` ومجلد `references/` اختياري)، ويمكن تثبيتها في Claude وChatGPT/Codex وGoogle Antigravity وGemini CLI وCursor وGitHub Copilot وغيرها من الأدوات التي تدعم هذه الصيغة.
 
-تم التحقق من المحتوى الحساس للوقت (الإصدارات وEoL وCVE وPQC وقدرات أدوات الذكاء الاصطناعي ومسارات التثبيت) حتى تاريخ **2026-09-27**.
+تم التحقق من المحتوى الحساس للوقت (الإصدارات وEoL وCVE وPQC وقدرات أدوات الذكاء الاصطناعي ومسارات التثبيت) حتى تاريخ **2026-10-21**.
 
 > **ملاحظة حول اللغة:** محتوى المهارات مكتوب باللغة الصينية التقليدية، ويوجّه الذكاء الاصطناعي افتراضيًا إلى الإجابة بالصينية التقليدية وباستخدام مصطلحات تقنية المعلومات المعتمدة في مؤسسات تايوان. إذا كنت بحاجة إلى إجابات بلغة أخرى، فاذكر ذلك صراحةً في طلبك.
 
@@ -67,8 +67,9 @@
 
 1. **ثبّت المهارات الخمس جميعها في المجلد نفسه.** تحمّل المهارة الرئيسية الـ subskill عبر المسار النسبي `../<subskill>/SKILL.md`، ولا يُحلّ هذا المسار إلا عندما تكون المجلدات الخمسة متجاورة في المستوى نفسه.
 2. **لا تُعِد تسمية المجلدات.** تشترط معظم الأدوات أن يطابق اسم المجلد قيمة `name` في `SKILL.md`، وقد تتجاهل المهارة بصمت عند اختلافهما.
-3. **على المنصات القائمة على الرفع (Claude للويب/سطح المكتب، وChatGPT للويب)، ارفع المهارات الخمس جميعها وفعّلها.** كل مهارة مستقلة على هذه المنصات. يذكر مركز مساعدة Anthropic أن المهارات لا يمكنها الإشارة صراحةً إلى مهارات أخرى، لكن Claude يجمع بين عدة مهارات تلقائيًا عند الحاجة.
+3. **على المنصات القائمة على الرفع (Claude للويب/سطح المكتب، وChatGPT للويب)، ارفع المهارات الخمس جميعها وفعّلها.** كل مهارة مستقلة على هذه المنصات، ولا يمكن للمهارة الرئيسية قراءة المهارات الأخرى عبر المسار النسبي `../`؛ وبعد تفعيل المهارات الخمس جميعها، تختار المنصة الـ subskill المناسبة بناءً على وصف (description) كل مهارة.
 4. **ثبّت مرة واحدة وشارك بين الأدوات.** يُعدّ `~/.agents/skills` موقعًا مشتركًا بين الأدوات تقرؤه تطبيقات Codex/ChatGPT لسطح المكتب وCursor وGitHub Copilot وGemini CLI؛ أما Claude Code وAntigravity فيحتاجان إلى مجلداتهما الخاصة.
+5. **تجنّب التثبيت المكرر.** يقرأ Cursor وGitHub Copilot (VS Code) أيضًا `~/.claude/skills`؛ وعند التثبيت في `~/.claude/skills` و`~/.agents/skills` معًا، قد تعرض هذه الأدوات نسختين من المهارة نفسها بالاسم ذاته.
 
 ## أوامر التثبيت الشائعة
 
@@ -117,14 +118,14 @@ for d in "$PWD"/skills/*/; do ln -s "${d%/}" "$DEST/"; done
 | المنصة | المسار الشخصي (العام) | مسار المشروع | دعم الروابط | الاستدعاء اليدوي |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | نعم | `/senior-network-engineer` |
-| Claude للويب/سطح المكتب | رفع ملف ZIP (انظر أدناه) | — | — | اكتب `/` ثم اختر |
+| Claude للويب/سطح المكتب | رفع ملف ZIP (انظر أدناه) | — | — | تلقائي (يمكن كتابة `/` مع plugin) |
 | ChatGPT لسطح المكتب، Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | نعم | ChatGPT: `@`؛ Codex: `$senior-network-engineer` أو `/skills` |
 | ChatGPT للويب | الرفع (انظر أدناه) | — | — | تلقائي أو `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | غير موثق | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | غير موثق | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | غير موثق | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` أو `~/.agents/skills` | `.gemini/skills` أو `.agents/skills` | نعم | تلقائي (`/skills list` للعرض) |
 | Cursor | `~/.cursor/skills` أو `~/.agents/skills` | `.cursor/skills` أو `.agents/skills` | غير موثق | اكتب `/` في Agent chat |
-| GitHub Copilot (VS Code، CLI) | `~/.copilot/skills` أو `~/.agents/skills` | `.github/skills` أو `.agents/skills` | غير موثق | `/senior-network-engineer` |
+| GitHub Copilot (VS Code، CLI) | `~/.copilot/skills` أو `~/.agents/skills` | `.github/skills` أو `.agents/skills` أو `.claude/skills` | غير موثق | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<category>` | `.hermes/skills` أو `.agents/skills` | غير موثق | `/senior-network-engineer` |
 
 تحمّل كل أداة المهارة تلقائيًا أيضًا عندما يطابق وصفها المهمة المطلوبة. بالنسبة إلى الأدوات المعلَّمة بـ"غير موثق"، لا تذكر الوثائق الرسمية ما إذا كانت الروابط مدعومة؛ لذا ثبّت عن طريق النسخ.
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # لنطاق المشروع استخدم .claude/sk
 ```
 
 - انسخ أو أنشئ روابط باستخدام الأوامر الشائعة (الروابط مدعومة صراحةً في الوثائق الرسمية).
-- تسري التغييرات تلقائيًا في الـ session الحالية؛ وإذا لم يكن `~/.claude/skills` موجودًا عند بدء التشغيل، فنفّذ `/reload-skills`.
+- تسري التغييرات تلقائيًا في الـ session الحالية؛ وإذا أُنشئ `~/.claude/skills` بعد بدء الـ session، فلن يُراقَب هذا المجلد، ويجب تنفيذ `/reload-skills` بعد كل تعديل لاحق.
 - اكتب `/skills` لعرض المهارات المحمّلة.
 - ينطبق `~/.claude/skills` على Claude Code المحلي فقط، ولا ينطبق على Cowork أو الـ session السحابية.
 
 ### Claude (claude.ai للويب، سطح المكتب)
 
-متاح في الخطط المدفوعة (Pro وMax وTeam وEnterprise).
+تتوفر Skills في خطط Free وPro وMax وTeam وEnterprise جميعها (مع ضرورة تفعيل تنفيذ الشيفرة)؛ ويقتصر رفع plugin على خطة Pro أو أعلى.
 
-1. فعّل تنفيذ الشيفرة: **Settings > Capabilities > Code execution and file creation**. في خطتي Team/Enterprise، يجب على Owner تفعيل Skills وتنفيذ الشيفرة من **Organization settings > Plugins & skills**.
+1. فعّل تنفيذ الشيفرة: **Settings > Capabilities > Code execution and file creation**. في خطتي Team/Enterprise، يفعّل Owner كلًا من **Cloud code execution and file creation** و**Skills** من **Organization settings > Plugins & skills > Policy** (مفعّلان افتراضيًا في Team، ويجب تفعيلهما يدويًا في Enterprise).
 2. احزم كل مهارة من المهارات الخمس في ملف ZIP مستقل. يجب أن يكون المستوى الأعلى داخل ملف ZIP هو مجلد المهارة نفسه (مثل `palo-alto-architect/SKILL.md`)؛ لا تضع `SKILL.md` مباشرةً في جذر ملف ZIP.
 
    ```bash
@@ -161,8 +162,8 @@ DEST=~/.claude/skills        # لنطاق المشروع استخدم .claude/sk
    }
    ```
 
-3. انتقل إلى **Customize > Skills**، واختر **+** ← **Create skill** ← **Upload a skill**، ثم ارفع ملفات ZIP الخمسة واحدًا تلو الآخر وفعّلها جميعًا.
-4. صِف مهمتك في المحادثة لاستخدامها تلقائيًا، أو اكتب `/` في مربع الإدخال لاختيار مهارة.
+3. انتقل إلى **Customize > Skills**، واختر **+** ← **Create skill** ← **Upload a skill**، ثم ارفع ملفات ZIP الخمسة واحدًا تلو الآخر وفعّلها جميعًا. منذ 2026-10-02، تفحص خطة Enterprise المحتوى المرفوع أمنيًا بشكل افتراضي (Pass/Warn/Fail)، ولا يمكن الرفع إذا كانت النتيجة Fail.
+4. صِف مهمتك في المحادثة لاستخدامها تلقائيًا؛ وعند التثبيت على هيئة plugin، يمكنك أيضًا كتابة `/` في مربع الإدخال للاختيار.
 
 **حد طول الوصف:** يذكر مركز مساعدة Claude حدًا قدره 200 حرف للوصف (بينما تسمح وثائق المطورين على claude.com ومواصفة Agent Skills بـ 1,024 حرفًا). تلتزم هذه الحزمة بالحد الأكثر صرامة وهو 200 حرف؛ ويتراوح طول كل وصف من الأوصاف الخمسة بين 161 و177 حرفًا.
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ EOF
 
 **ChatGPT لسطح المكتب:** يتشارك المهارات المحلية مع Codex؛ ويكفي التثبيت في `~/.agents/skills` (انظر القسم التالي). اكتب `@` في ChatGPT لاختيار مهارة.
 
-**ChatGPT للويب:** يقتصر على خطط Business وEnterprise وHealthcare وEdu، ويخضع لإعدادات مسؤول مساحة العمل (workspace).
+**ChatGPT للويب:** يقتصر على خطط Business وEnterprise وHealthcare وEdu، ويخضع لإعدادات مسؤول مساحة العمل (workspace)؛ وهو معطّل افتراضيًا في Enterprise وEdu ويجب أن يفعّله المسؤول. لا تُزامَن المهارات الشخصية بين إصدار سطح المكتب وإصدار الويب/الجوال.
 
 1. اختر **Plugins** من الشريط الجانبي.
 2. في **Plugin Directory**، افتح علامة التبويب **Skills**.
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # لنطاق المشروع استخدم .agents/sk
 - استدعِ المهارة باستخدام `$senior-network-engineer`، أو نفّذ `/skills` لاختيار مهارة.
 - أُزيل المسار القديم `$CODEX_HOME/skills` (أي `~/.codex/skills` عندما لا يكون `CODEX_HOME` معيّنًا) من الوثائق الرسمية، لكن Codex لا يزال يحمّله بوصفه مسارًا مهملًا (deprecated). إذا بقيت نسخة أخرى من هذه الحزمة هناك، فستظهر المهارات ذات الأسماء المتطابقة مرتين؛ لذا احذف التثبيت القديم.
 
-### Google Antigravity (2.0، IDE، CLI)
+### Google Antigravity (App، IDE، CLI)
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 و IDE (عام)
+DEST=~/.gemini/config/skills                # Antigravity App و IDE (عام)
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI (عام)
 DEST=<project-root>/.agents/skills          # نطاق المشروع المشترك بين الواجهات الثلاث
 ```
 
-- تستخدم الواجهات الثلاث مسارات عامة مختلفة. إذا كنت تستخدم 2.0/IDE وCLI معًا، فثبّت في كلا المسارين العامين، أو استخدم بدلًا من ذلك `.agents/skills` على نطاق المشروع.
+- تستخدم الواجهات الثلاث مسارات عامة مختلفة. إذا كنت تستخدم App/IDE وCLI معًا، فثبّت في كلا المسارين العامين، أو استخدم بدلًا من ذلك `.agents/skills` على نطاق المشروع.
 - لا يزال IDE يدعم المسار القديم `~/.gemini/antigravity/skills`.
-- الترحيل من Gemini CLI: يقابل `~/.gemini/skills` المسار `~/.gemini/antigravity-cli/skills`؛ أما `.gemini/skills` الخاص بالمشروع فيجب إعادة تسميته أو نقله يدويًا إلى `.agents/skills`.
-- يمكن لـ CLI أيضًا التثبيت عبر plugin: أنشئ مجلدًا يحتوي على `plugin.json` و`skills/`، ثم نفّذ `agy plugin install <plugin-folder>`؛ واكتب `/skills` في TUI لعرض المهارات المحمّلة.
+- الترحيل من Gemini CLI: يقابل `~/.gemini/skills` المسار `~/.gemini/antigravity-cli/skills`؛ أما `.gemini/skills` الخاص بالمشروع فيجب إعادة تسميته أو نقله يدويًا إلى `.agents/skills`؛ ويمكن تحويل extensions الخاصة بـ Gemini CLI باستخدام `agy plugin import gemini`.
+- يمكن لـ CLI أيضًا التثبيت عبر plugin: أنشئ مجلدًا يحتوي على `plugin.json` و`skills/`، ثم نفّذ `agy plugin install <plugin-folder>`؛ واكتب `/plugin` في TUI لإدارة plugins، واستدعِ المهارة باستخدام `/<skill-name>`.
 
 ### Gemini CLI
 
-توقف Gemini CLI عن خدمة المستخدمين الأفراد في 2026-06-18 (وحلّ محله Antigravity CLI). ولا يمكن الاستمرار في استخدامه إلا بتراخيص Gemini Code Assist Standard/Enterprise ومفاتيح Gemini API المدفوعة.
+توقف Gemini CLI عن خدمة المستخدمين الأفراد في 2026-06-18 (وحلّ محله Antigravity CLI). ولا يمكن حاليًا الاستمرار في استخدامه إلا بمفاتيح Gemini API المدفوعة وتراخيص Gemini Code Assist Standard/Enterprise التي لا تزال ضمن مدة العقد؛ وقد توقف البيع الجديد لـ Code Assist Standard/Enterprise في 2026-10-09، وتوصي Google بالانتقال إلى Antigravity.
 
 ```bash
 DEST=~/.gemini/skills        # أو ~/.agents/skills؛ لنطاق المشروع استخدم .gemini/skills أو .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # أو ~/.agents/skills؛ لنطاق المشروع
 DEST=~/.cursor/skills        # أو ~/.agents/skills؛ لنطاق المشروع استخدم .cursor/skills أو .agents/skills
 ```
 
-- يكتشف Cursor المهارات تلقائيًا عند بدء التشغيل؛ ويمكنك عرضها من **Customize → Skills**.
+- يكتشف Cursor المهارات تلقائيًا عند بدء التشغيل؛ ويمكنك عرضها من **Customize → Skills**. ويقرأ Cursor أيضًا `~/.claude/skills` و`~/.codex/skills` و`.claude/skills` و`.codex/skills` داخل المشروع؛ لذا انتبه إلى التثبيت المكرر.
 - استدعِ المهارة بكتابة `/` في Agent chat واختيار مهارة.
 - لا يُزامَن مع Cloud Agents إلا `~/.cursor/skills` (فعّل **Sync Skills for Cloud Agents** من **Settings → Agents**)؛ أما `~/.agents/skills` فلا يُزامَن مع Cloud Agents ولا مع SSH البعيد.
 
 ### GitHub Copilot (VS Code agent mode، Copilot CLI)
 
 ```bash
-DEST=~/.copilot/skills       # أو ~/.agents/skills؛ لنطاق المشروع استخدم .github/skills أو .agents/skills
+DEST=~/.copilot/skills       # أو ~/.agents/skills؛ لنطاق المشروع استخدم .github/skills أو .agents/skills أو .claude/skills
 ```
 
-- إذا كان ترخيص Copilot لديك صادرًا من مؤسسة أو منشأة (enterprise)، فيجب على المسؤول السماح بالميزات ذات الصلة في السياسة (policy).
-- في VS Code: اكتب `/skills` في Chat لفتح إعدادات المهارات. في Copilot CLI: `/skills list` و`/skills reload`.
+- إذا كان ترخيص Copilot لديك صادرًا من مؤسسة أو منشأة (enterprise)، فإن بعض الميزات تخضع لسياسة (policy) المسؤول.
+- في VS Code: عند اختيار **Local** في Chat view، يمكنك كتابة `/skills` لفتح إعدادات المهارات؛ وعند استخدام harness آخر مثل Copilot، استخدم **Open Customizations** بدلًا من ذلك. ويقرأ VS Code أيضًا `~/.claude/skills`. في Copilot CLI: `/skills list` و`/skills reload`.
 - يعمل Copilot cloud agent وcode review على GitHub، ولا يقرآن إلا المهارات الموجودة داخل المستودع (نطاق المشروع).
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # أو ~/.agents/skills؛ لنطاق المشروع
 DEST=~/.hermes/skills/network   # ضع المهارات الخمس جميعها ضمن مجلد الفئة نفسه
 ```
 
-- تسري المهارات الجديدة في session جديدة (أو نفّذ `/reset`).
+- عند إضافة مهارات أو إزالتها أثناء المحادثة، تتضمن الرسالة التالية إشعارًا بذلك؛ ونفّذ `/reload-skills` لإعادة فحص `~/.hermes/skills/` وتحديث أوامر `/<skill-name>`.
 - لا يُحمَّل `.hermes/skills` و`.agents/skills` الخاصان بالمشروع إلا بعد تنفيذ `hermes skills trust` في ذلك المستودع.
-- إذا كانت المهارات مثبتة مسبقًا في `~/.agents/skills`، فأضف ذلك المسار إلى `skills.external_dirs` في `~/.hermes/config.yaml` لمشاركتها.
+- إذا كانت المهارات مثبتة مسبقًا في `~/.agents/skills`، فأضف ذلك المسار إلى `skills.external_dirs` في `~/.hermes/config.yaml` لمشاركتها. يحدّث Hermes المهارات بنفسه؛ فإذا كان ذلك المسار قابلًا للكتابة ومرتبطًا بهذا المستودع، فقد يعدّل النسخة المرجعية مباشرةً، لذا يُنصح بالتثبيت بالنسخ أو باستخدام أذونات للقراءة فقط.
 - لا يُنصح بالتثبيت واحدةً تلو الأخرى من GitHub باستخدام `hermes skills install`: إذ لا ينسخ إلا الملفات المشار إليها مباشرةً في `SKILL.md`، وبالتالي لا تُنزَّل المراجع `../` بين المهارات.
 
 ## الاستخدام
@@ -296,10 +297,11 @@ git pull --ff-only
 ## المعلومات المرتبطة بالوقت
 
 - تستند الإصدارات وEoL/EoS وCVE وRecommended Releases ودعم PQC وقدرات أدوات الذكاء الاصطناعي إلى وثائق المورد أو الوثائق الرسمية، مع ذكر تاريخ التحقق في النص.
-- تتغير مسارات المهارات وخطوات الرفع في أدوات الذكاء الاصطناعي كثيرًا. يعكس هذا المستند الوثائق الرسمية حتى تاريخ 2026-09-27؛ وإذا لم تُحمَّل مهارة بعد تثبيتها، فراجع أحدث وثائق الأداة أولًا.
+- تتغير مسارات المهارات وخطوات الرفع في أدوات الذكاء الاصطناعي كثيرًا. يعكس هذا المستند الوثائق الرسمية حتى تاريخ 2026-10-21؛ وإذا لم تُحمَّل مهارة بعد تثبيتها، فراجع أحدث وثائق الأداة أولًا.
 - في وقت التحقق، لم يكن من الممكن العثور على العناصر التالية إلا في مصادر خارجية أو مجتمعية، لأن الصفحات الرسمية تتطلب تسجيل الدخول إلى بوابة دعم المورد. ويصنّفها محتوى المهارات على أنها "يجب إعادة التحقق قبل الاستشهاد بها":
   - تاريخ EoS لـ FortiNAC 9.4 وتاريخ End of Order لـ FortiGate CNF (Fortinet Product Life Cycle، يتطلب حساب FortiCare)
   - تاريخ EoS لبرنامج AirWave وحالة إيقاف البيع (end-of-sale) لـ 2930F/2930M/5400R (HPE Networking Support Portal)
+  - تاريخا إيقاف البيع وإيقاف الدعم لـ 3810M (حدّدهما إعلان Aruba الرسمي في 2022-11 بـ 2023-06-30/2028-06-30، بينما تشير مصادر خارجية إلى تعديلهما إلى 2025/2030؛ ويجب التأكد منهما عبر HPE lifecycle portal)
 - عند تحديث المحتوى المرتبط بالوقت، حدّث أيضًا تاريخ التحقق في القسم المعني وقيمة `version` في `bundle-manifest.json`.
 
 ## قواعد الصيانة

@@ -6,7 +6,7 @@
 
 สกิลทั้งหมดเป็นไปตาม [Agent Skills open format](https://agentskills.io/specification) (แต่ละโฟลเดอร์มี `SKILL.md` และ `references/` ซึ่งมีหรือไม่มีก็ได้) และสามารถติดตั้งลงใน Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot และเครื่องมืออื่นที่รองรับรูปแบบนี้
 
-เนื้อหาที่ขึ้นกับเวลา (เวอร์ชัน, EoL, CVE, PQC, ความสามารถของเครื่องมือ AI และพาธการติดตั้ง) ได้รับการตรวจสอบ ณ วันที่ **2026-09-27**
+เนื้อหาที่ขึ้นกับเวลา (เวอร์ชัน, EoL, CVE, PQC, ความสามารถของเครื่องมือ AI และพาธการติดตั้ง) ได้รับการตรวจสอบ ณ วันที่ **2026-10-21**
 
 > **หมายเหตุด้านภาษา:** เนื้อหาของสกิลเขียนเป็นภาษาจีนตัวเต็ม และกำหนดให้ AI ตอบเป็นภาษาจีนตัวเต็มโดยใช้คำศัพท์ IT องค์กรแบบไต้หวันเป็นค่าเริ่มต้น หากต้องการคำตอบเป็นภาษาอื่น ให้ระบุภาษาอย่างชัดเจนในคำขอ
 
@@ -67,8 +67,9 @@
 
 1. **ติดตั้งสกิลทั้งห้าตัวไว้ในโฟลเดอร์เดียวกัน** สกิลหลักโหลด subskill ผ่านพาธสัมพัทธ์ `../<subskill>/SKILL.md` ซึ่งจะ resolve ได้ก็ต่อเมื่อโฟลเดอร์ทั้งห้าอยู่ระดับเดียวกันเท่านั้น
 2. **อย่าเปลี่ยนชื่อโฟลเดอร์** เครื่องมือส่วนใหญ่กำหนดให้ชื่อโฟลเดอร์ตรงกับ `name` ใน `SKILL.md` และอาจข้ามสกิลนั้นไปโดยไม่แจ้งเตือนหากไม่ตรงกัน
-3. **บนแพลตฟอร์มแบบอัปโหลด (Claude เว็บ/เดสก์ท็อป, ChatGPT เว็บ) ให้อัปโหลดและเปิดใช้งานครบทั้งห้าตัว** บนแพลตฟอร์มเหล่านี้แต่ละสกิลทำงานแยกกัน Anthropic Help Center ระบุว่าสกิลไม่สามารถอ้างอิงสกิลอื่นอย่างชัดแจ้งได้ แต่ Claude จะผสานการทำงานของหลายสกิลโดยอัตโนมัติเมื่อเหมาะสม
+3. **บนแพลตฟอร์มแบบอัปโหลด (Claude เว็บ/เดสก์ท็อป, ChatGPT เว็บ) ให้อัปโหลดและเปิดใช้งานครบทั้งห้าตัว** บนแพลตฟอร์มเหล่านี้แต่ละสกิลทำงานแยกกัน สกิลหลักไม่สามารถอ่านสกิลอื่นผ่านพาธสัมพัทธ์ `../` ได้ เมื่อเปิดใช้งานครบทั้งห้าตัวแล้ว แพลตฟอร์มจะเลือกใช้ subskill ที่เหมาะสมตาม description ของแต่ละสกิล
 4. **ติดตั้งครั้งเดียว ใช้ร่วมกันได้หลายเครื่องมือ** `~/.agents/skills` เป็นตำแหน่งกลางที่ Codex/ChatGPT เดสก์ท็อป, Cursor, GitHub Copilot และ Gemini CLI อ่านได้ ส่วน Claude Code และ Antigravity ต้องใช้ไดเรกทอรีของตัวเอง
+5. **หลีกเลี่ยงการติดตั้งซ้ำซ้อน** Cursor และ GitHub Copilot (VS Code) อ่าน `~/.claude/skills` ด้วย หากติดตั้งไว้ทั้งใน `~/.claude/skills` และ `~/.agents/skills` เครื่องมือเหล่านี้อาจแสดงสกิลชื่อเดียวกันซ้ำสองชุด
 
 ## คำสั่งติดตั้งทั่วไป
 
@@ -117,14 +118,14 @@ for d in "$PWD"/skills/*/; do ln -s "${d%/}" "$DEST/"; done
 | แพลตฟอร์ม | พาธส่วนตัว (global) | พาธระดับโปรเจกต์ | รองรับลิงก์ | การเรียกใช้ด้วยตนเอง |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | รองรับ | `/senior-network-engineer` |
-| Claude เว็บ/เดสก์ท็อป | อัปโหลด ZIP (ดูด้านล่าง) | — | — | พิมพ์ `/` แล้วเลือก |
+| Claude เว็บ/เดสก์ท็อป | อัปโหลด ZIP (ดูด้านล่าง) | — | — | อัตโนมัติ (หากเป็น plugin พิมพ์ `/` ได้) |
 | ChatGPT เดสก์ท็อป, Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | รองรับ | ChatGPT: `@`; Codex: `$senior-network-engineer` หรือ `/skills` |
 | ChatGPT เว็บ | อัปโหลด (ดูด้านล่าง) | — | — | อัตโนมัติ หรือ `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | ไม่ได้ระบุในเอกสาร | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | ไม่ได้ระบุในเอกสาร | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | ไม่ได้ระบุในเอกสาร | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` หรือ `~/.agents/skills` | `.gemini/skills` หรือ `.agents/skills` | รองรับ | อัตโนมัติ (ดูรายการด้วย `/skills list`) |
 | Cursor | `~/.cursor/skills` หรือ `~/.agents/skills` | `.cursor/skills` หรือ `.agents/skills` | ไม่ได้ระบุในเอกสาร | พิมพ์ `/` ใน Agent chat |
-| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` หรือ `~/.agents/skills` | `.github/skills` หรือ `.agents/skills` | ไม่ได้ระบุในเอกสาร | `/senior-network-engineer` |
+| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` หรือ `~/.agents/skills` | `.github/skills`, `.agents/skills` หรือ `.claude/skills` | ไม่ได้ระบุในเอกสาร | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<หมวดหมู่>` | `.hermes/skills` หรือ `.agents/skills` | ไม่ได้ระบุในเอกสาร | `/senior-network-engineer` |
 
 ทุกเครื่องมือจะโหลดสกิลโดยอัตโนมัติเช่นกันเมื่อคำอธิบาย (description) ของสกิลตรงกับงาน สำหรับเครื่องมือที่ระบุว่า "ไม่ได้ระบุในเอกสาร" เอกสารทางการไม่ได้บอกว่ารองรับลิงก์หรือไม่ ให้ติดตั้งด้วยการคัดลอก
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # สำหรับขอบเขตโปรเ�
 ```
 
 - คัดลอกหรือสร้างลิงก์ด้วยคำสั่งทั่วไป (เอกสารทางการระบุชัดเจนว่ารองรับลิงก์)
-- การเปลี่ยนแปลงมีผลอัตโนมัติใน session ปัจจุบัน หากตอนเริ่มต้นยังไม่มี `~/.claude/skills` ให้รัน `/reload-skills`
+- การเปลี่ยนแปลงมีผลอัตโนมัติใน session ปัจจุบัน หาก `~/.claude/skills` ถูกสร้างขึ้นหลังจาก session เริ่มทำงานแล้ว ไดเรกทอรีนั้นจะไม่ถูกเฝ้าติดตาม และต้องรัน `/reload-skills` ทุกครั้งที่มีการแก้ไขหลังจากนั้น
 - พิมพ์ `/skills` เพื่อดูสกิลที่โหลดแล้ว
 - `~/.claude/skills` ใช้ได้กับ Claude Code บนเครื่องเท่านั้น ไม่มีผลกับ Cowork หรือ cloud session
 
 ### Claude (claude.ai เว็บ, เดสก์ท็อป)
 
-ใช้ได้กับแพ็กเกจแบบชำระเงิน (Pro, Max, Team, Enterprise)
+แพ็กเกจ Free, Pro, Max, Team และ Enterprise ใช้ Skills ได้ทั้งหมด (ต้องเปิดใช้งาน code execution) ส่วนการอัปโหลด plugin ใช้ได้เฉพาะแพ็กเกจ Pro ขึ้นไป
 
-1. เปิดใช้งาน code execution: **Settings > Capabilities > Code execution and file creation** สำหรับ Team/Enterprise ต้องให้ Owner เปิดใช้งาน Skills และ code execution ใน **Organization settings > Plugins & skills**
+1. เปิดใช้งาน code execution: **Settings > Capabilities > Code execution and file creation** สำหรับ Team/Enterprise ให้ Owner เปิด **Cloud code execution and file creation** และ **Skills** ใน **Organization settings > Plugins & skills > Policy** (Team เปิดไว้เป็นค่าเริ่มต้น ส่วน Enterprise ต้องเปิดเอง)
 2. แพ็กสกิลทั้งห้าตัวแยกเป็น ZIP ตัวละไฟล์ ระดับบนสุดภายใน ZIP ต้องเป็นโฟลเดอร์ของสกิลนั้นเอง (เช่น `palo-alto-architect/SKILL.md`) อย่าวาง `SKILL.md` ไว้ที่ root ของ ZIP โดยตรง
 
    ```bash
@@ -161,8 +162,8 @@ DEST=~/.claude/skills        # สำหรับขอบเขตโปรเ�
    }
    ```
 
-3. ไปที่ **Customize > Skills** เลือก **+** → **Create skill** → **Upload a skill** อัปโหลด ZIP ทั้งห้าไฟล์ทีละไฟล์ แล้วเปิดใช้งานทั้งหมด
-4. อธิบายงานของคุณในบทสนทนาเพื่อให้เรียกใช้อัตโนมัติ หรือพิมพ์ `/` ในช่องป้อนข้อความเพื่อเลือกสกิล
+3. ไปที่ **Customize > Skills** เลือก **+** → **Create skill** → **Upload a skill** อัปโหลด ZIP ทั้งห้าไฟล์ทีละไฟล์ แล้วเปิดใช้งานทั้งหมด ตั้งแต่วันที่ 2026-10-02 Enterprise จะสแกนความปลอดภัยของเนื้อหาที่อัปโหลดเป็นค่าเริ่มต้น (Pass/Warn/Fail) หากผลเป็น Fail จะอัปโหลดไม่ได้
+4. อธิบายงานของคุณในบทสนทนาเพื่อให้เรียกใช้อัตโนมัติ หากติดตั้งในรูปแบบ plugin ก็สามารถพิมพ์ `/` ในช่องป้อนข้อความเพื่อเลือกได้เช่นกัน
 
 **ข้อจำกัดความยาวของ description:** Claude Help Center ระบุว่า description จำกัดไว้ที่ 200 อักขระ (เอกสารนักพัฒนาของ claude.com และข้อกำหนด Agent Skills อนุญาตถึง 1,024 อักขระ) bundle นี้ยึดตามข้อจำกัด 200 อักขระซึ่งเข้มงวดกว่า โดย description ของทั้งห้าสกิลมีความยาว 161–177 อักขระ
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ EOF
 
 **ChatGPT เดสก์ท็อป:** ใช้สกิลบนเครื่องร่วมกับ Codex เพียงติดตั้งลงใน `~/.agents/skills` ก็เพียงพอ (ดูหัวข้อถัดไป) พิมพ์ `@` ใน ChatGPT เพื่อเลือกสกิล
 
-**ChatGPT เว็บ:** ใช้ได้เฉพาะแพ็กเกจ Business, Enterprise, Healthcare และ Edu และขึ้นอยู่กับการตั้งค่าของผู้ดูแล workspace
+**ChatGPT เว็บ:** ใช้ได้เฉพาะแพ็กเกจ Business, Enterprise, Healthcare และ Edu และขึ้นอยู่กับการตั้งค่าของผู้ดูแล workspace (Enterprise และ Edu ปิดไว้เป็นค่าเริ่มต้น ผู้ดูแลต้องเปิดใช้งาน) สกิลส่วนตัวจะไม่ซิงก์ระหว่างเวอร์ชันเดสก์ท็อปกับเวอร์ชันเว็บ/มือถือ
 
 1. เลือก **Plugins** ในแถบด้านข้าง
 2. ใน **Plugin Directory** เปิดแท็บ **Skills**
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # สำหรับขอบเขตโปรเ�
 - เรียกใช้ด้วย `$senior-network-engineer` หรือรัน `/skills` เพื่อเลือก
 - พาธเดิม `$CODEX_HOME/skills` (`~/.codex/skills` เมื่อไม่ได้ตั้งค่า `CODEX_HOME`) ถูกนำออกจากเอกสารทางการแล้ว แต่ Codex ยังคงโหลดพาธนี้ในฐานะพาธที่เลิกใช้ (deprecated) หากยังมีสำเนาของ bundle นี้หลงเหลืออยู่ที่นั่น สกิลชื่อเดียวกันจะแสดงซ้ำสองครั้ง ให้ลบการติดตั้งเก่าออก
 
-### Google Antigravity (2.0, IDE, CLI)
+### Google Antigravity (App, IDE, CLI)
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 และ IDE (global)
+DEST=~/.gemini/config/skills                # Antigravity App และ IDE (global)
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI (global)
 DEST=<root-ของโปรเจกต์>/.agents/skills       # ขอบเขตโปรเจกต์ที่ใช้ร่วมกันทั้งสามแบบ
 ```
 
-- ทั้งสามอินเทอร์เฟซใช้พาธ global ต่างกัน หากใช้ทั้ง 2.0/IDE และ CLI ให้ติดตั้งลงในพาธ global ทั้งสองแห่ง หรือใช้ `.agents/skills` ระดับโปรเจกต์แทน
+- ทั้งสามอินเทอร์เฟซใช้พาธ global ต่างกัน หากใช้ทั้ง App/IDE และ CLI ให้ติดตั้งลงในพาธ global ทั้งสองแห่ง หรือใช้ `.agents/skills` ระดับโปรเจกต์แทน
 - IDE ยังคงรองรับพาธเดิม `~/.gemini/antigravity/skills`
-- การย้ายจาก Gemini CLI: `~/.gemini/skills` เทียบเท่ากับ `~/.gemini/antigravity-cli/skills` ส่วน `.gemini/skills` ของโปรเจกต์ต้องเปลี่ยนชื่อหรือย้ายไปเป็น `.agents/skills` ด้วยตนเอง
-- CLI ยังติดตั้งผ่าน plugin ได้ด้วย: สร้างโฟลเดอร์ที่มี `plugin.json` และ `skills/` แล้วรัน `agy plugin install <โฟลเดอร์-plugin>` จากนั้นพิมพ์ `/skills` ใน TUI เพื่อดูสกิลที่โหลดแล้ว
+- การย้ายจาก Gemini CLI: `~/.gemini/skills` เทียบเท่ากับ `~/.gemini/antigravity-cli/skills` ส่วน `.gemini/skills` ของโปรเจกต์ต้องเปลี่ยนชื่อหรือย้ายไปเป็น `.agents/skills` ด้วยตนเอง ส่วน Gemini CLI extension สามารถแปลงได้ด้วย `agy plugin import gemini`
+- CLI ยังติดตั้งผ่าน plugin ได้ด้วย: สร้างโฟลเดอร์ที่มี `plugin.json` และ `skills/` แล้วรัน `agy plugin install <โฟลเดอร์-plugin>` จากนั้นพิมพ์ `/plugin` ใน TUI เพื่อจัดการ plugin และเรียกใช้สกิลด้วย `/<ชื่อสกิล>`
 
 ### Gemini CLI
 
-Gemini CLI ยุติการให้บริการสำหรับผู้ใช้รายบุคคลตั้งแต่วันที่ 2026-06-18 (แทนที่ด้วย Antigravity CLI) มีเพียงไลเซนส์ Gemini Code Assist Standard/Enterprise และ Gemini API key แบบชำระเงินเท่านั้นที่ยังใช้งานต่อได้
+Gemini CLI ยุติการให้บริการสำหรับผู้ใช้รายบุคคลตั้งแต่วันที่ 2026-06-18 (แทนที่ด้วย Antigravity CLI) ปัจจุบันมีเพียง Gemini API key แบบชำระเงิน และ Gemini Code Assist Standard/Enterprise ที่ยังอยู่ในระยะเวลาสัญญาเท่านั้นที่ยังใช้งานต่อได้ ทั้งนี้ Code Assist Standard/Enterprise หยุดจำหน่ายสำหรับการซื้อใหม่แล้วตั้งแต่วันที่ 2026-10-09 และ Google แนะนำให้เปลี่ยนไปใช้ Antigravity
 
 ```bash
 DEST=~/.gemini/skills        # หรือ ~/.agents/skills; สำหรับขอบเขตโปรเจกต์ให้ใช้ .gemini/skills หรือ .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # หรือ ~/.agents/skills; สำหรับ
 DEST=~/.cursor/skills        # หรือ ~/.agents/skills; สำหรับขอบเขตโปรเจกต์ให้ใช้ .cursor/skills หรือ .agents/skills
 ```
 
-- Cursor ค้นพบสกิลโดยอัตโนมัติเมื่อเริ่มทำงาน ดูรายการได้ที่ **Customize → Skills**
+- Cursor ค้นพบสกิลโดยอัตโนมัติเมื่อเริ่มทำงาน ดูรายการได้ที่ **Customize → Skills** นอกจากนี้ Cursor ยังอ่าน `~/.claude/skills`, `~/.codex/skills` และ `.claude/skills`, `.codex/skills` ภายในโปรเจกต์ด้วย จึงควรระวังการติดตั้งซ้ำซ้อน
 - เรียกใช้โดยพิมพ์ `/` ใน Agent chat แล้วเลือกสกิล
 - เฉพาะ `~/.cursor/skills` เท่านั้นที่ซิงก์ไปยัง Cloud Agents (เปิด **Sync Skills for Cloud Agents** ใน **Settings → Agents**) ส่วน `~/.agents/skills` จะไม่ซิงก์ไปยัง Cloud Agents หรือ remote SSH
 
 ### GitHub Copilot (VS Code agent mode, Copilot CLI)
 
 ```bash
-DEST=~/.copilot/skills       # หรือ ~/.agents/skills; สำหรับขอบเขตโปรเจกต์ให้ใช้ .github/skills หรือ .agents/skills
+DEST=~/.copilot/skills       # หรือ ~/.agents/skills; สำหรับขอบเขตโปรเจกต์ให้ใช้ .github/skills, .agents/skills หรือ .claude/skills
 ```
 
-- หากไลเซนส์ Copilot ของคุณมาจากองค์กรหรือ enterprise ผู้ดูแลระบบต้องอนุญาตฟีเจอร์ที่เกี่ยวข้องใน policy
-- VS Code: พิมพ์ `/skills` ใน Chat เพื่อเปิดการตั้งค่าสกิล Copilot CLI: `/skills list`, `/skills reload`
+- หากไลเซนส์ Copilot ของคุณมาจากองค์กรหรือ enterprise ฟีเจอร์บางส่วนจะถูกควบคุมโดย policy ของผู้ดูแลระบบ
+- VS Code: เมื่อเลือก **Local** ใน Chat view สามารถพิมพ์ `/skills` เพื่อเปิดการตั้งค่าสกิลได้ แต่เมื่อใช้ harness อื่นอย่าง Copilot ให้ใช้ **Open Customizations** แทน และ VS Code ยังอ่าน `~/.claude/skills` ด้วย Copilot CLI: `/skills list`, `/skills reload`
 - Copilot cloud agent และ code review ทำงานบน GitHub และอ่านเฉพาะสกิลที่อยู่ภายใน repository (ขอบเขตโปรเจกต์) เท่านั้น
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # หรือ ~/.agents/skills; สำหรับ
 DEST=~/.hermes/skills/network   # วางสกิลทั้งห้าตัวไว้ใต้โฟลเดอร์หมวดหมู่เดียวกัน
 ```
 
-- สกิลใหม่จะมีผลใน session ใหม่ (หรือรัน `/reset`)
+- เมื่อเพิ่มหรือลบสกิลระหว่างบทสนทนา ข้อความถัดไปจะมีการแจ้งเตือนแนบมาด้วย รัน `/reload-skills` เพื่อสแกน `~/.hermes/skills/` ใหม่และอัปเดตคำสั่ง `/<ชื่อสกิล>`
 - `.hermes/skills` และ `.agents/skills` ของโปรเจกต์จะโหลดก็ต่อเมื่อคุณรัน `hermes skills trust` ใน repository นั้นแล้วเท่านั้น
-- หากติดตั้งสกิลไว้ใน `~/.agents/skills` แล้ว ให้เพิ่มพาธนั้นลงใน `skills.external_dirs` ใน `~/.hermes/config.yaml` เพื่อใช้ร่วมกัน
+- หากติดตั้งสกิลไว้ใน `~/.agents/skills` แล้ว ให้เพิ่มพาธนั้นลงใน `skills.external_dirs` ใน `~/.hermes/config.yaml` เพื่อใช้ร่วมกัน Hermes จะอัปเดตสกิลด้วยตัวเอง หากพาธนั้นเขียนได้และลิงก์มายัง repository นี้ อาจแก้ไขฉบับหลักโดยตรง จึงแนะนำให้ติดตั้งด้วยการคัดลอกหรือตั้งสิทธิ์แบบอ่านอย่างเดียว
 - ไม่แนะนำให้ติดตั้งทีละตัวจาก GitHub ด้วย `hermes skills install` เพราะจะคัดลอกเฉพาะไฟล์ที่ `SKILL.md` อ้างอิงถึงโดยตรง ทำให้ไฟล์ที่อ้างอิงข้ามสกิลผ่าน `../` ไม่ถูกดาวน์โหลด
 
 ## การใช้งาน
@@ -296,10 +297,11 @@ git pull --ff-only
 ## ข้อมูลที่ขึ้นกับเวลา
 
 - เวอร์ชัน, EoL/EoS, CVE, Recommended Releases, การรองรับ PQC และความสามารถของเครื่องมือ AI อ้างอิงจากเอกสารของผู้ผลิตหรือเอกสารทางการ โดยระบุวันที่ตรวจสอบไว้ในเนื้อหา
-- พาธของสกิลและขั้นตอนการอัปโหลดของเครื่องมือ AI เปลี่ยนแปลงบ่อย เอกสารนี้สะท้อนเอกสารทางการ ณ วันที่ 2026-09-27 หากสกิลไม่โหลดหลังติดตั้ง ให้ตรวจสอบเอกสารล่าสุดของเครื่องมือนั้นก่อน
+- พาธของสกิลและขั้นตอนการอัปโหลดของเครื่องมือ AI เปลี่ยนแปลงบ่อย เอกสารนี้สะท้อนเอกสารทางการ ณ วันที่ 2026-10-21 หากสกิลไม่โหลดหลังติดตั้ง ให้ตรวจสอบเอกสารล่าสุดของเครื่องมือนั้นก่อน
 - ณ เวลาที่ตรวจสอบ รายการต่อไปนี้พบได้เฉพาะในแหล่งข้อมูลของบุคคลที่สามหรือชุมชน เนื่องจากหน้าเอกสารทางการต้องเข้าสู่ระบบ support portal ของผู้ผลิต เนื้อหาในสกิลจึงระบุไว้ว่า "ตรวจสอบซ้ำก่อนอ้างอิง":
   - วันที่ EoS ของ FortiNAC 9.4 และ End of Order ของ FortiGate CNF (Fortinet Product Life Cycle ต้องใช้บัญชี FortiCare)
   - EoS ของซอฟต์แวร์ AirWave และสถานะการยุติการขายของ 2930F/2930M/5400R (HPE Networking Support Portal)
+  - วันที่ยุติการขายและยุติการสนับสนุนของ 3810M (ประกาศทางการของ Aruba เมื่อ 2022-11 ระบุเป็น 2023-06-30/2028-06-30 แต่ข้อมูลจากบุคคลที่สามระบุว่าแก้ไขเป็น 2025/2030 ต้องยืนยันกับ HPE lifecycle portal)
 - เมื่ออัปเดตเนื้อหาที่ขึ้นกับเวลา ให้อัปเดตวันที่ตรวจสอบในหัวข้อที่เกี่ยวข้องและ `version` ใน `bundle-manifest.json` ด้วย
 
 ## กฎการดูแลรักษา

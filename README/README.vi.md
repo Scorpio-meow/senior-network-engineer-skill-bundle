@@ -6,7 +6,7 @@ Bộ skill cá nhân dành cho kỹ sư mạng cấp cao: một skill chính đa
 
 Các skill tuân theo [định dạng mở Agent Skills](https://agentskills.io/specification) (mỗi thư mục chứa `SKILL.md` và thư mục `references/` tùy chọn) và có thể cài vào Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot cùng các công cụ khác hỗ trợ định dạng này.
 
-Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng và đường dẫn cài đặt của công cụ AI) được xác minh tính đến ngày **2026-09-27**.
+Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng và đường dẫn cài đặt của công cụ AI) được xác minh tính đến ngày **2026-10-21**.
 
 > **Lưu ý về ngôn ngữ:** Nội dung skill được viết bằng tiếng Trung phồn thể và mặc định yêu cầu AI trả lời bằng tiếng Trung phồn thể với thuật ngữ IT doanh nghiệp Đài Loan. Nếu cần câu trả lời bằng ngôn ngữ khác, hãy nêu rõ ngôn ngữ đó trong yêu cầu của bạn.
 
@@ -67,8 +67,9 @@ Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng v�
 
 1. **Cài cả năm skill vào cùng một thư mục.** Skill chính tải các subskill qua đường dẫn tương đối `../<subskill>/SKILL.md`, đường dẫn này chỉ phân giải được khi năm thư mục nằm cạnh nhau.
 2. **Không đổi tên thư mục.** Phần lớn công cụ yêu cầu tên thư mục khớp với `name` trong `SKILL.md` và có thể âm thầm bỏ qua skill khi hai giá trị này khác nhau.
-3. **Trên các nền tảng dạng tải lên (Claude web/desktop, ChatGPT web), hãy tải lên và bật cả năm skill.** Trên các nền tảng này, mỗi skill hoạt động độc lập. Anthropic Help Center cho biết skill không thể tham chiếu tường minh đến skill khác, nhưng Claude sẽ tự động kết hợp nhiều skill khi phù hợp.
+3. **Trên các nền tảng dạng tải lên (Claude web/desktop, ChatGPT web), hãy tải lên và bật cả năm skill.** Trên các nền tảng này, mỗi skill hoạt động độc lập và skill chính không thể đọc các skill khác qua đường dẫn tương đối `../`; khi cả năm skill được bật, nền tảng sẽ chọn subskill tương ứng dựa trên phần mô tả (description) của từng skill.
 4. **Cài một lần, dùng chung cho nhiều công cụ.** `~/.agents/skills` là vị trí dùng chung giữa các công cụ, được Codex/ChatGPT desktop, Cursor, GitHub Copilot và Gemini CLI đọc; Claude Code và Antigravity cần thư mục riêng.
+5. **Tránh cài đặt trùng lặp.** Cursor và GitHub Copilot (VS Code) cũng đọc `~/.claude/skills`; nếu cài đồng thời vào cả `~/.claude/skills` và `~/.agents/skills`, các công cụ này có thể hiển thị hai skill trùng tên.
 
 ## Lệnh cài đặt chung
 
@@ -117,14 +118,14 @@ Việc tạo liên kết sẽ thất bại nếu tại đích đã tồn tại t
 | Nền tảng | Đường dẫn cá nhân (global) | Đường dẫn dự án | Hỗ trợ liên kết | Gọi thủ công |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | Có | `/senior-network-engineer` |
-| Claude web/desktop | Tải lên ZIP (xem bên dưới) | — | — | Gõ `/` rồi chọn |
+| Claude web/desktop | Tải lên ZIP (xem bên dưới) | — | — | Tự động (với plugin có thể gõ `/`) |
 | ChatGPT desktop, Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | Có | ChatGPT: `@`; Codex: `$senior-network-engineer` hoặc `/skills` |
 | ChatGPT web | Tải lên (xem bên dưới) | — | — | Tự động hoặc `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | Không nêu trong tài liệu | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | Không nêu trong tài liệu | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | Không nêu trong tài liệu | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` hoặc `~/.agents/skills` | `.gemini/skills` hoặc `.agents/skills` | Có | Tự động (xem bằng `/skills list`) |
 | Cursor | `~/.cursor/skills` hoặc `~/.agents/skills` | `.cursor/skills` hoặc `.agents/skills` | Không nêu trong tài liệu | Gõ `/` trong Agent chat |
-| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` hoặc `~/.agents/skills` | `.github/skills` hoặc `.agents/skills` | Không nêu trong tài liệu | `/senior-network-engineer` |
+| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` hoặc `~/.agents/skills` | `.github/skills`, `.agents/skills` hoặc `.claude/skills` | Không nêu trong tài liệu | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<danh-mục>` | `.hermes/skills` hoặc `.agents/skills` | Không nêu trong tài liệu | `/senior-network-engineer` |
 
 Mọi công cụ cũng tự động tải skill khi phần mô tả của skill khớp với tác vụ. Với các công cụ được đánh dấu "Không nêu trong tài liệu", tài liệu chính thức không cho biết có hỗ trợ liên kết hay không; hãy cài đặt bằng cách sao chép.
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # Với phạm vi dự án, dùng .claude/skills
 ```
 
 - Sao chép hoặc tạo liên kết bằng các lệnh chung (tài liệu chính thức nêu rõ có hỗ trợ liên kết).
-- Thay đổi tự động có hiệu lực trong session hiện tại; nếu `~/.claude/skills` chưa tồn tại lúc khởi động, hãy chạy `/reload-skills`.
+- Thay đổi tự động có hiệu lực trong session hiện tại; nếu `~/.claude/skills` được tạo sau khi session đã khởi động, thư mục này sẽ không được theo dõi và sau đó mỗi lần thay đổi đều phải chạy `/reload-skills`.
 - Gõ `/skills` để xem các skill đã được tải.
 - `~/.claude/skills` chỉ áp dụng cho Claude Code cục bộ, không áp dụng cho Cowork hay các session trên cloud.
 
 ### Claude (claude.ai web, desktop)
 
-Khả dụng trên các gói trả phí (Pro, Max, Team, Enterprise).
+Skills khả dụng trên tất cả các gói Free, Pro, Max, Team và Enterprise (cần bật thực thi mã); tải lên plugin chỉ dành cho gói Pro trở lên.
 
-1. Bật thực thi mã: **Settings > Capabilities > Code execution and file creation**. Với Team/Enterprise, Owner phải bật Skills và thực thi mã trong **Organization settings > Plugins & skills**.
+1. Bật thực thi mã: **Settings > Capabilities > Code execution and file creation**. Với Team/Enterprise, Owner bật **Cloud code execution and file creation** và **Skills** trong **Organization settings > Plugins & skills > Policy** (Team bật sẵn theo mặc định, Enterprise phải bật thủ công).
 2. Đóng gói từng skill trong năm skill thành một tệp ZIP riêng. Cấp trên cùng bên trong ZIP phải là chính thư mục skill (ví dụ `palo-alto-architect/SKILL.md`); không đặt `SKILL.md` trực tiếp tại gốc của ZIP.
 
    ```bash
@@ -161,8 +162,8 @@ Khả dụng trên các gói trả phí (Pro, Max, Team, Enterprise).
    }
    ```
 
-3. Vào **Customize > Skills**, chọn **+** → **Create skill** → **Upload a skill**, lần lượt tải lên năm tệp ZIP và bật tất cả.
-4. Mô tả tác vụ trong cuộc hội thoại để skill được dùng tự động, hoặc gõ `/` trong ô nhập liệu để chọn skill.
+3. Vào **Customize > Skills**, chọn **+** → **Create skill** → **Upload a skill**, lần lượt tải lên năm tệp ZIP và bật tất cả. Từ ngày 2026-10-02, Enterprise mặc định quét bảo mật nội dung tải lên (Pass/Warn/Fail); nếu kết quả là Fail thì không thể tải lên.
+4. Mô tả tác vụ trong cuộc hội thoại để skill được dùng tự động; khi cài dưới dạng plugin, bạn cũng có thể gõ `/` trong ô nhập liệu để chọn.
 
 **Giới hạn độ dài mô tả:** Claude Help Center nêu giới hạn 200 ký tự cho phần mô tả (tài liệu dành cho nhà phát triển trên claude.com và đặc tả Agent Skills cho phép 1.024 ký tự). Bundle này tuân theo giới hạn 200 ký tự chặt chẽ hơn; mỗi mô tả trong năm skill dài 161–177 ký tự.
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ Sau đó tải `dist/senior-network-engineer-bundle.zip` lên tại **Customize 
 
 **ChatGPT desktop:** Dùng chung skill cục bộ với Codex; chỉ cần cài vào `~/.agents/skills` (xem phần tiếp theo). Gõ `@` trong ChatGPT để chọn skill.
 
-**ChatGPT web:** Chỉ dành cho các gói Business, Enterprise, Healthcare và Edu, đồng thời phụ thuộc vào thiết lập của quản trị viên workspace.
+**ChatGPT web:** Chỉ dành cho các gói Business, Enterprise, Healthcare và Edu, đồng thời phụ thuộc vào thiết lập của quản trị viên workspace (Enterprise và Edu tắt theo mặc định, quản trị viên phải bật). Skill cá nhân không được đồng bộ giữa bản desktop và bản web/di động.
 
 1. Chọn **Plugins** ở thanh bên.
 2. Trong **Plugin Directory**, mở tab **Skills**.
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # Với phạm vi dự án, dùng .agents/skills b�
 - Gọi bằng `$senior-network-engineer`, hoặc chạy `/skills` để chọn.
 - Đường dẫn cũ `$CODEX_HOME/skills` (`~/.codex/skills` khi chưa đặt `CODEX_HOME`) đã bị gỡ khỏi tài liệu chính thức, nhưng Codex vẫn tải nó như một đường dẫn deprecated. Nếu vẫn còn một bản của bundle này ở đó, các skill trùng tên sẽ xuất hiện hai lần; hãy gỡ bản cài đặt cũ.
 
-### Google Antigravity (2.0, IDE, CLI)
+### Google Antigravity (App, IDE, CLI)
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 và IDE (global)
+DEST=~/.gemini/config/skills                # Antigravity App và IDE (global)
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI (global)
 DEST=<thư-mục-gốc-dự-án>/.agents/skills     # Phạm vi dự án dùng chung cho cả ba
 ```
 
-- Ba giao diện dùng các đường dẫn global khác nhau. Nếu bạn dùng cả 2.0/IDE lẫn CLI, hãy cài vào cả hai đường dẫn global, hoặc dùng `.agents/skills` ở phạm vi dự án.
+- Ba giao diện dùng các đường dẫn global khác nhau. Nếu bạn dùng cả App/IDE lẫn CLI, hãy cài vào cả hai đường dẫn global, hoặc dùng `.agents/skills` ở phạm vi dự án.
 - IDE vẫn hỗ trợ đường dẫn cũ `~/.gemini/antigravity/skills`.
-- Chuyển từ Gemini CLI: `~/.gemini/skills` tương ứng với `~/.gemini/antigravity-cli/skills`; thư mục `.gemini/skills` của dự án phải được đổi tên hoặc di chuyển thủ công sang `.agents/skills`.
-- CLI cũng có thể cài qua plugin: tạo một thư mục chứa `plugin.json` và `skills/`, sau đó chạy `agy plugin install <thư-mục-plugin>`; gõ `/skills` trong TUI để xem các skill đã được tải.
+- Chuyển từ Gemini CLI: `~/.gemini/skills` tương ứng với `~/.gemini/antigravity-cli/skills`; thư mục `.gemini/skills` của dự án phải được đổi tên hoặc di chuyển thủ công sang `.agents/skills`; extension của Gemini CLI có thể được chuyển đổi bằng `agy plugin import gemini`.
+- CLI cũng có thể cài qua plugin: tạo một thư mục chứa `plugin.json` và `skills/`, sau đó chạy `agy plugin install <thư-mục-plugin>`; gõ `/plugin` trong TUI để quản lý plugin, và gọi skill bằng `/<tên-skill>`.
 
 ### Gemini CLI
 
-Gemini CLI đã ngừng phục vụ người dùng cá nhân từ ngày 2026-06-18 (được thay thế bằng Antigravity CLI). Chỉ giấy phép Gemini Code Assist Standard/Enterprise và Gemini API key trả phí mới có thể tiếp tục sử dụng.
+Gemini CLI đã ngừng phục vụ người dùng cá nhân từ ngày 2026-06-18 (được thay thế bằng Antigravity CLI). Hiện chỉ Gemini API key trả phí và Gemini Code Assist Standard/Enterprise còn trong thời hạn hợp đồng mới có thể tiếp tục sử dụng; Code Assist Standard/Enterprise đã ngừng bán mới từ ngày 2026-10-09 và Google khuyến nghị chuyển sang Antigravity.
 
 ```bash
 DEST=~/.gemini/skills        # Hoặc ~/.agents/skills; với phạm vi dự án, dùng .gemini/skills hoặc .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # Hoặc ~/.agents/skills; với phạm vi dự án
 DEST=~/.cursor/skills        # Hoặc ~/.agents/skills; với phạm vi dự án, dùng .cursor/skills hoặc .agents/skills
 ```
 
-- Cursor tự động phát hiện skill khi khởi động; xem chúng tại **Customize → Skills**.
+- Cursor tự động phát hiện skill khi khởi động; xem chúng tại **Customize → Skills**. Cursor cũng đọc `~/.claude/skills`, `~/.codex/skills` cùng `.claude/skills`, `.codex/skills` trong dự án; hãy lưu ý tránh cài đặt trùng lặp.
 - Gọi bằng cách gõ `/` trong Agent chat rồi chọn skill.
 - Chỉ `~/.cursor/skills` được đồng bộ lên Cloud Agents (bật **Sync Skills for Cloud Agents** trong **Settings → Agents**); `~/.agents/skills` không được đồng bộ lên Cloud Agents hay remote SSH.
 
 ### GitHub Copilot (VS Code agent mode, Copilot CLI)
 
 ```bash
-DEST=~/.copilot/skills       # Hoặc ~/.agents/skills; với phạm vi dự án, dùng .github/skills hoặc .agents/skills
+DEST=~/.copilot/skills       # Hoặc ~/.agents/skills; với phạm vi dự án, dùng .github/skills, .agents/skills hoặc .claude/skills
 ```
 
-- Nếu giấy phép Copilot của bạn do tổ chức hoặc doanh nghiệp cấp, quản trị viên phải cho phép các tính năng liên quan trong policy.
-- VS Code: gõ `/skills` trong Chat để mở phần thiết lập skill. Copilot CLI: `/skills list`, `/skills reload`.
+- Nếu giấy phép Copilot của bạn do tổ chức hoặc doanh nghiệp cấp, một số tính năng chịu sự kiểm soát của policy do quản trị viên đặt ra.
+- VS Code: khi chọn **Local** trong Chat view, bạn có thể gõ `/skills` để mở phần thiết lập skill; khi dùng harness khác như Copilot, hãy dùng **Open Customizations**. VS Code cũng đọc `~/.claude/skills`. Copilot CLI: `/skills list`, `/skills reload`.
 - Copilot cloud agent và code review chạy trên GitHub và chỉ đọc skill nằm trong repository (phạm vi dự án).
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # Hoặc ~/.agents/skills; với phạm vi dự án
 DEST=~/.hermes/skills/network   # Đặt cả năm skill trong cùng một thư mục category
 ```
 
-- Skill mới có hiệu lực trong session mới (hoặc chạy `/reset`).
+- Khi thêm hoặc gỡ skill trong lúc hội thoại, tin nhắn tiếp theo sẽ kèm theo thông báo; chạy `/reload-skills` để quét lại `~/.hermes/skills/` và cập nhật các lệnh `/<tên-skill>`.
 - `.hermes/skills` và `.agents/skills` của dự án chỉ được tải sau khi bạn chạy `hermes skills trust` trong repository đó.
-- Nếu các skill đã được cài trong `~/.agents/skills`, hãy thêm đường dẫn đó vào `skills.external_dirs` trong `~/.hermes/config.yaml` để dùng chung.
+- Nếu các skill đã được cài trong `~/.agents/skills`, hãy thêm đường dẫn đó vào `skills.external_dirs` trong `~/.hermes/config.yaml` để dùng chung. Hermes tự cập nhật skill; nếu đường dẫn đó có quyền ghi và được liên kết đến repository này, Hermes có thể sửa trực tiếp bản chuẩn, vì vậy nên cài bằng cách sao chép hoặc đặt quyền chỉ đọc.
 - Không khuyến nghị cài từng skill từ GitHub bằng `hermes skills install`: lệnh này chỉ sao chép các tệp được `SKILL.md` tham chiếu trực tiếp, nên các tham chiếu `../` giữa các skill sẽ không được tải về.
 
 ## Cách sử dụng
@@ -296,10 +297,11 @@ git pull --ff-only
 ## Thông tin có tính thời điểm
 
 - Phiên bản, EoL/EoS, CVE, Recommended Releases, khả năng hỗ trợ PQC và khả năng của công cụ AI đều dựa trên tài liệu của hãng hoặc tài liệu chính thức, với ngày xác minh được ghi trong nội dung.
-- Đường dẫn skill và quy trình tải lên của các công cụ AI thay đổi thường xuyên. Tài liệu này phản ánh tài liệu chính thức tính đến ngày 2026-09-27; nếu skill không được tải sau khi cài đặt, hãy kiểm tra tài liệu mới nhất của công cụ trước.
+- Đường dẫn skill và quy trình tải lên của các công cụ AI thay đổi thường xuyên. Tài liệu này phản ánh tài liệu chính thức tính đến ngày 2026-10-21; nếu skill không được tải sau khi cài đặt, hãy kiểm tra tài liệu mới nhất của công cụ trước.
 - Tại thời điểm xác minh, các mục sau chỉ tìm thấy ở nguồn bên thứ ba hoặc cộng đồng vì trang chính thức yêu cầu đăng nhập cổng hỗ trợ của hãng. Nội dung skill đánh dấu chúng là "cần xác minh lại trước khi trích dẫn":
   - Ngày EoS của FortiNAC 9.4 và ngày End of Order của FortiGate CNF (Fortinet Product Life Cycle, yêu cầu tài khoản FortiCare)
   - EoS phần mềm AirWave và tình trạng ngừng bán của 2930F/2930M/5400R (HPE Networking Support Portal)
+  - Ngày ngừng bán và ngừng hỗ trợ của 3810M (thông báo chính thức của Aruba vào 2022-11 ghi 2023-06-30/2028-06-30; nguồn bên thứ ba cho thấy đã được điều chỉnh thành 2025/2030; cần xác nhận qua HPE lifecycle portal)
 - Khi cập nhật nội dung có tính thời điểm, hãy đồng thời cập nhật ngày xác minh trong phần liên quan và `version` trong `bundle-manifest.json`.
 
 ## Quy tắc bảo trì

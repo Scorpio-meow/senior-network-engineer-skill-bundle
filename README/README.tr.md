@@ -6,7 +6,7 @@ Kıdemli ağ mühendisleri için kişisel bir skill paketi: üreticiler arası t
 
 Skill'ler [Agent Skills açık formatını](https://agentskills.io/specification) izler (her klasör `SKILL.md` ve isteğe bağlı bir `references/` içerir) ve Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot ile bu formatı destekleyen diğer araçlara kurulabilir.
 
-Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve kurulum yolları) **2026-09-27** itibarıyla doğrulanmıştır.
+Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve kurulum yolları) **2026-10-21** itibarıyla doğrulanmıştır.
 
 > **Dil notu:** Skill içeriği Geleneksel Çince yazılmıştır ve AI'a varsayılan olarak Tayvan kurumsal BT terminolojisiyle Geleneksel Çince yanıt vermesini söyler. Yanıtları başka bir dilde istiyorsanız bunu isteğinizde açıkça belirtin.
 
@@ -67,8 +67,9 @@ Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve
 
 1. **Beş skill'in tamamını aynı klasöre kurun.** Ana skill, subskill'leri `../<subskill>/SKILL.md` göreli yolu üzerinden yükler; bu yol yalnızca beş klasör yan yana durduğunda çözümlenir.
 2. **Klasörleri yeniden adlandırmayın.** Çoğu araç, klasör adının `SKILL.md` içindeki `name` ile eşleşmesini gerektirir; ikisi farklı olduğunda skill'i sessizce atlayabilir.
-3. **Yükleme tabanlı platformlarda (Claude web/masaüstü, ChatGPT web) beşini de yükleyip etkinleştirin.** Bu platformlarda her skill bağımsızdır. Anthropic Help Center, skill'lerin diğer skill'lere açıkça başvuramayacağını belirtir; ancak Claude uygun olduğunda birden fazla skill'i otomatik olarak birlikte kullanır.
+3. **Yükleme tabanlı platformlarda (Claude web/masaüstü, ChatGPT web) beşini de yükleyip etkinleştirin.** Bu platformlarda her skill bağımsızdır ve ana skill diğer skill'leri `../` göreli yoluyla okuyamaz; beşi de etkinleştirildiğinde platform, her skill'in açıklamasına (description) göre ilgili subskill'i seçer.
 4. **Bir kez kurun, araçlar arasında paylaşın.** `~/.agents/skills`; Codex/ChatGPT masaüstü, Cursor, GitHub Copilot ve Gemini CLI tarafından okunan, araçlar arası ortak bir konumdur; Claude Code ve Antigravity ise kendi dizinlerine ihtiyaç duyar.
+5. **Mükerrer kurulumdan kaçının.** Cursor ve GitHub Copilot (VS Code) `~/.claude/skills` konumunu da okur; hem `~/.claude/skills` hem de `~/.agents/skills` konumuna kurulum yapıldığında bu araçlar aynı adlı skill'i iki kez gösterebilir.
 
 ## Ortak kurulum komutları
 
@@ -117,14 +118,14 @@ Hedefte aynı ada sahip bir klasör zaten varsa link oluşturma başarısız olu
 | Platform | Kişisel (global) yol | Proje yolu | Link desteği | Manuel çağırma |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | Evet | `/senior-network-engineer` |
-| Claude web/masaüstü | ZIP yükleme (aşağıya bakın) | — | — | `/` yazıp seçin |
+| Claude web/masaüstü | ZIP yükleme (aşağıya bakın) | — | — | Otomatik (plugin ile `/` yazılabilir) |
 | ChatGPT masaüstü, Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | Evet | ChatGPT: `@`; Codex: `$senior-network-engineer` veya `/skills` |
 | ChatGPT web | Yükleme (aşağıya bakın) | — | — | Otomatik veya `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | Belgelenmemiş | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | Belgelenmemiş | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | Belgelenmemiş | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` veya `~/.agents/skills` | `.gemini/skills` veya `.agents/skills` | Evet | Otomatik (görüntülemek için `/skills list`) |
 | Cursor | `~/.cursor/skills` veya `~/.agents/skills` | `.cursor/skills` veya `.agents/skills` | Belgelenmemiş | Agent chat'te `/` yazın |
-| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` veya `~/.agents/skills` | `.github/skills` veya `.agents/skills` | Belgelenmemiş | `/senior-network-engineer` |
+| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` veya `~/.agents/skills` | `.github/skills`, `.agents/skills` veya `.claude/skills` | Belgelenmemiş | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<kategori>` | `.hermes/skills` veya `.agents/skills` | Belgelenmemiş | `/senior-network-engineer` |
 
 Her araç, bir skill'in açıklaması (description) göreve uyduğunda o skill'i ayrıca otomatik olarak yükler. "Belgelenmemiş" olarak işaretlenen araçlarda resmi dokümanlar link desteği olup olmadığını belirtmez; kopyalayarak kurun.
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # Proje kapsamı için .claude/skills kullanın
 ```
 
 - Ortak komutlarla kopyalayın veya link oluşturun (link'ler resmi dokümanlarda açıkça desteklenir).
-- Değişiklikler mevcut session'da otomatik olarak geçerli olur; başlangıçta `~/.claude/skills` mevcut değilse `/reload-skills` çalıştırın.
+- Değişiklikler mevcut session'da otomatik olarak geçerli olur; `~/.claude/skills` session başladıktan sonra oluşturulduysa bu dizin izlenmez ve sonraki her değişiklikte `/reload-skills` çalıştırmanız gerekir.
 - Yüklenen skill'leri görüntülemek için `/skills` yazın.
 - `~/.claude/skills` yalnızca yerel Claude Code için geçerlidir; Cowork veya bulut session'larına uygulanmaz.
 
 ### Claude (claude.ai web, masaüstü)
 
-Ücretli planlarda (Pro, Max, Team, Enterprise) kullanılabilir.
+Skills; Free, Pro, Max, Team ve Enterprise planlarının tamamında kullanılabilir (kod çalıştırmanın açık olması gerekir); plugin yükleme Pro ve üstü planlarla sınırlıdır.
 
-1. Kod çalıştırmayı etkinleştirin: **Settings > Capabilities > Code execution and file creation**. Team/Enterprise'da bir Owner'ın **Organization settings > Plugins & skills** altında Skills ve kod çalıştırmayı etkinleştirmesi gerekir.
+1. Kod çalıştırmayı etkinleştirin: **Settings > Capabilities > Code execution and file creation**. Team/Enterprise'da Owner, **Organization settings > Plugins & skills > Policy** altında **Cloud code execution and file creation** ve **Skills** seçeneklerini etkinleştirir (Team'de varsayılan olarak açıktır, Enterprise'da elle açılması gerekir).
 2. Beş skill'in her birini ayrı bir ZIP olarak paketleyin. ZIP içindeki en üst düzey, skill klasörünün kendisi olmalıdır (örneğin `palo-alto-architect/SKILL.md`); `SKILL.md` dosyasını doğrudan ZIP kök dizinine koymayın.
 
    ```bash
@@ -161,8 +162,8 @@ DEST=~/.claude/skills        # Proje kapsamı için .claude/skills kullanın
    }
    ```
 
-3. **Customize > Skills** bölümüne gidin, **+** → **Create skill** → **Upload a skill** seçin, beş ZIP'i tek tek yükleyin ve hepsini etkinleştirin.
-4. Skill'leri otomatik olarak kullanmak için bir sohbette görevinizi açıklayın veya bir skill seçmek için giriş kutusuna `/` yazın.
+3. **Customize > Skills** bölümüne gidin, **+** → **Create skill** → **Upload a skill** seçin, beş ZIP'i tek tek yükleyin ve hepsini etkinleştirin. Enterprise, 2026-10-02 tarihinden itibaren yüklenen içerikte varsayılan olarak güvenlik taraması yapar (Pass/Warn/Fail); sonuç Fail olursa yükleme yapılamaz.
+4. Skill'leri otomatik olarak kullanmak için bir sohbette görevinizi açıklayın; plugin olarak kurduysanız seçmek için giriş kutusuna `/` da yazabilirsiniz.
 
 **Açıklama uzunluğu sınırı:** Claude Help Center, açıklamalar için 200 karakterlik bir sınır belirtir (claude.com geliştirici dokümanları ve Agent Skills spesifikasyonu 1.024 karaktere izin verir). Bu paket daha katı olan 200 karakter sınırına uyar; beş açıklamanın her biri 161–177 karakterdir.
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ Ardından `dist/senior-network-engineer-bundle.zip` dosyasını **Customize > Pl
 
 **ChatGPT masaüstü:** Yerel skill'leri Codex ile paylaşır; `~/.agents/skills` konumuna kurmak yeterlidir (bir sonraki bölüme bakın). Bir skill seçmek için ChatGPT'de `@` yazın.
 
-**ChatGPT web:** Business, Enterprise, Healthcare ve Edu planlarıyla sınırlıdır ve workspace yönetici ayarlarına tabidir.
+**ChatGPT web:** Business, Enterprise, Healthcare ve Edu planlarıyla sınırlıdır ve workspace yönetici ayarlarına tabidir (Enterprise ve Edu'da varsayılan olarak kapalıdır, yöneticinin açması gerekir). Kişisel skill'ler masaüstü sürümü ile web/mobil sürüm arasında senkronize edilmez.
 
 1. Kenar çubuğunda **Plugins** öğesini seçin.
 2. **Plugin Directory** içinde **Skills** sekmesini açın.
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # Proje kapsamı için depo içindeki .agents/skill
 - `$senior-network-engineer` ile çağırın veya birini seçmek için `/skills` çalıştırın.
 - Eski yol `$CODEX_HOME/skills` (`CODEX_HOME` ayarlanmamışsa `~/.codex/skills`) resmi dokümanlardan kaldırılmıştır, ancak Codex bu yolu kullanımdan kaldırılmış (deprecated) bir yol olarak hâlâ yükler. Bu paketin başka bir kopyası orada kalmışsa aynı adlı skill'ler iki kez görünür; eski kurulumu kaldırın.
 
-### Google Antigravity (2.0, IDE, CLI)
+### Google Antigravity (App, IDE, CLI)
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 ve IDE (global)
+DEST=~/.gemini/config/skills                # Antigravity App ve IDE (global)
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI (global)
 DEST=<proje-kökü>/.agents/skills            # Üçünün ortak kullandığı proje kapsamı
 ```
 
-- Üç arayüz farklı global yollar kullanır. Hem 2.0/IDE'yi hem de CLI'ı kullanıyorsanız her iki global yola da kurun veya bunun yerine proje kapsamlı `.agents/skills` konumunu kullanın.
+- Üç arayüz farklı global yollar kullanır. Hem App/IDE'yi hem de CLI'ı kullanıyorsanız her iki global yola da kurun veya bunun yerine proje kapsamlı `.agents/skills` konumunu kullanın.
 - IDE, eski `~/.gemini/antigravity/skills` yolunu hâlâ destekler.
-- Gemini CLI'dan geçiş: `~/.gemini/skills`, `~/.gemini/antigravity-cli/skills` yoluna karşılık gelir; bir projenin `.gemini/skills` klasörü elle yeniden adlandırılmalı veya `.agents/skills` konumuna taşınmalıdır.
-- CLI, plugin üzerinden de kurulum yapabilir: `plugin.json` ve `skills/` içeren bir klasör oluşturun, ardından `agy plugin install <plugin-klasörü>` çalıştırın; yüklenen skill'leri görüntülemek için TUI'de `/skills` yazın.
+- Gemini CLI'dan geçiş: `~/.gemini/skills`, `~/.gemini/antigravity-cli/skills` yoluna karşılık gelir; bir projenin `.gemini/skills` klasörü elle yeniden adlandırılmalı veya `.agents/skills` konumuna taşınmalıdır; Gemini CLI extension'ları `agy plugin import gemini` ile dönüştürülebilir.
+- CLI, plugin üzerinden de kurulum yapabilir: `plugin.json` ve `skills/` içeren bir klasör oluşturun, ardından `agy plugin install <plugin-klasörü>` çalıştırın; plugin'leri yönetmek için TUI'de `/plugin` yazın, skill'leri ise `/<skill-adı>` ile çağırın.
 
 ### Gemini CLI
 
-Gemini CLI, 2026-06-18 tarihinde bireysel kullanıcılara hizmet vermeyi durdurdu (yerini Antigravity CLI aldı). Yalnızca Gemini Code Assist Standard/Enterprise lisansları ve ücretli Gemini API anahtarları kullanmaya devam edebilir.
+Gemini CLI, 2026-06-18 tarihinde bireysel kullanıcılara hizmet vermeyi durdurdu (yerini Antigravity CLI aldı). Şu anda yalnızca ücretli Gemini API anahtarları ve sözleşme süresi devam eden Gemini Code Assist Standard/Enterprise kullanmaya devam edebilir; Code Assist Standard/Enterprise 2026-10-09 tarihinde yeni satışa kapatıldı ve Google, Antigravity'ye geçilmesini önerir.
 
 ```bash
 DEST=~/.gemini/skills        # Veya ~/.agents/skills; proje kapsamı için .gemini/skills veya .agents/skills kullanın
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # Veya ~/.agents/skills; proje kapsamı için .gemi
 DEST=~/.cursor/skills        # Veya ~/.agents/skills; proje kapsamı için .cursor/skills veya .agents/skills kullanın
 ```
 
-- Cursor, skill'leri başlangıçta otomatik olarak keşfeder; bunları **Customize → Skills** içinde görüntüleyin.
+- Cursor, skill'leri başlangıçta otomatik olarak keşfeder; bunları **Customize → Skills** içinde görüntüleyin. Cursor ayrıca `~/.claude/skills`, `~/.codex/skills` ile proje içindeki `.claude/skills` ve `.codex/skills` konumlarını da okur; mükerrer kuruluma dikkat edin.
 - Agent chat'te `/` yazıp bir skill seçerek çağırın.
 - Yalnızca `~/.cursor/skills` Cloud Agents ile senkronize edilir (**Settings → Agents** içinde **Sync Skills for Cloud Agents** seçeneğini etkinleştirin); `~/.agents/skills` Cloud Agents'a veya uzak SSH ortamına senkronize edilmez.
 
 ### GitHub Copilot (VS Code agent mode, Copilot CLI)
 
 ```bash
-DEST=~/.copilot/skills       # Veya ~/.agents/skills; proje kapsamı için .github/skills veya .agents/skills kullanın
+DEST=~/.copilot/skills       # Veya ~/.agents/skills; proje kapsamı için .github/skills, .agents/skills veya .claude/skills kullanın
 ```
 
-- Copilot lisansınız bir organization veya enterprise üzerinden geliyorsa, bir yöneticinin ilgili özelliklere politikada izin vermesi gerekir.
-- VS Code: skill ayarlarını açmak için Chat'te `/skills` yazın. Copilot CLI: `/skills list`, `/skills reload`.
+- Copilot lisansınız bir organization veya enterprise üzerinden geliyorsa, bazı özellikler yönetici politikasıyla denetlenir.
+- VS Code: Chat view'da **Local** seçiliyken skill ayarlarını açmak için `/skills` yazabilirsiniz; Copilot gibi başka bir harness kullanırken bunun yerine **Open Customizations** kullanın. VS Code `~/.claude/skills` konumunu da okur. Copilot CLI: `/skills list`, `/skills reload`.
 - Copilot cloud agent ve code review GitHub üzerinde çalışır ve yalnızca depo içindeki skill'leri (proje kapsamı) okur.
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # Veya ~/.agents/skills; proje kapsamı için .gith
 DEST=~/.hermes/skills/network   # Beş skill'in tamamını aynı kategori klasörüne koyun
 ```
 
-- Yeni skill'ler yeni bir session'da geçerli olur (veya `/reset` çalıştırın).
+- Sohbet sırasında skill eklendiğinde veya kaldırıldığında bir sonraki mesaja bir bildirim eklenir; `~/.hermes/skills/` konumunu yeniden taramak ve `/<skill-adı>` komutlarını güncellemek için `/reload-skills` çalıştırın.
 - Bir projenin `.hermes/skills` ve `.agents/skills` klasörleri, yalnızca o depoda `hermes skills trust` çalıştırdıktan sonra yüklenir.
-- Skill'ler zaten `~/.agents/skills` konumuna kuruluysa, bunları paylaşmak için bu yolu `~/.hermes/config.yaml` içindeki `skills.external_dirs` ayarına ekleyin.
+- Skill'ler zaten `~/.agents/skills` konumuna kuruluysa, bunları paylaşmak için bu yolu `~/.hermes/config.yaml` içindeki `skills.external_dirs` ayarına ekleyin. Hermes skill'leri kendisi günceller; bu yol yazılabilir durumdaysa ve bu depoya link ile bağlıysa kanonik kopyayı doğrudan değiştirebilir, bu nedenle kopyalayarak kurmanız veya salt okunur izin kullanmanız önerilir.
 - GitHub'dan `hermes skills install` ile tek tek kurulum önerilmez: yalnızca `SKILL.md` tarafından doğrudan başvurulan dosyaları kopyalar, bu nedenle skill'ler arası `../` başvuruları indirilmez.
 
 ## Kullanım
@@ -296,10 +297,11 @@ git pull --ff-only
 ## Zamana duyarlı bilgiler
 
 - Sürümler, EoL/EoS, CVE'ler, Recommended Releases, PQC desteği ve AI aracı yetenekleri üretici veya resmi dokümanlara dayanır; doğrulama tarihi metinde belirtilmiştir.
-- AI araçlarının skill yolları ve yükleme akışları sık değişir. Bu belge 2026-09-27 itibarıyla resmi dokümanları yansıtır; kurulumdan sonra bir skill yüklenmezse önce aracın en güncel dokümanlarını kontrol edin.
+- AI araçlarının skill yolları ve yükleme akışları sık değişir. Bu belge 2026-10-21 itibarıyla resmi dokümanları yansıtır; kurulumdan sonra bir skill yüklenmezse önce aracın en güncel dokümanlarını kontrol edin.
 - Doğrulama sırasında aşağıdaki öğeler, resmi sayfalar üretici destek portalına giriş gerektirdiği için yalnızca üçüncü taraf veya topluluk kaynaklarında bulunabildi. Skill içeriği bunları "alıntılamadan önce yeniden doğrulayın" olarak işaretler:
   - FortiNAC 9.4 EoS ve FortiGate CNF End of Order tarihleri (Fortinet Product Life Cycle, FortiCare hesabı gerektirir)
   - AirWave yazılımının EoS tarihi ve 2930F/2930M/5400R modellerinin satış sonu (end-of-sale) durumu (HPE Networking Support Portal)
+  - 3810M satış sonu ve destek sonu tarihleri (Aruba'nın 2022-11 tarihli resmi duyurusunda 2023-06-30/2028-06-30; üçüncü taraf kaynaklar 2025/2030 olarak revize edildiğini gösteriyor; HPE lifecycle portal üzerinden doğrulanmalıdır)
 - Zamana duyarlı içeriği güncellerken ilgili bölümdeki doğrulama tarihini ve `bundle-manifest.json` içindeki `version` değerini de güncelleyin.
 
 ## Bakım kuralları

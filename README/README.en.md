@@ -6,7 +6,7 @@ A personal skill bundle for senior network engineers: one cross-vendor primary s
 
 The skills follow the [Agent Skills open format](https://agentskills.io/specification) (each folder contains `SKILL.md` and an optional `references/`) and can be installed into Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot and other tools that support the format.
 
-Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and install paths) was verified as of **2026-09-27**.
+Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and install paths) was verified as of **2026-10-21**.
 
 > **Language note:** The skill content is written in Traditional Chinese and instructs the AI to answer in Traditional Chinese with Taiwan enterprise IT terminology by default. If you need answers in another language, state it explicitly in your request.
 
@@ -67,8 +67,9 @@ Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and insta
 
 1. **Install all five skills into the same folder.** The primary skill loads subskills through the relative path `../<subskill>/SKILL.md`, which only resolves when the five folders sit side by side.
 2. **Do not rename the folders.** Most tools require the folder name to match the `name` in `SKILL.md` and may silently skip a skill when they differ.
-3. **On upload-based platforms (Claude web/desktop, ChatGPT web), upload and enable all five.** Each skill is independent on these platforms. The Anthropic Help Center states that skills cannot explicitly reference other skills, but Claude automatically combines multiple skills when appropriate.
+3. **On upload-based platforms (Claude web/desktop, ChatGPT web), upload and enable all five.** Each skill is independent on these platforms, and the primary skill cannot read other skills through `../` relative paths; once all five are enabled, the platform picks the matching subskill based on each skill's description.
 4. **Install once, share across tools.** `~/.agents/skills` is a cross-tool location read by Codex/ChatGPT desktop, Cursor, GitHub Copilot and Gemini CLI; Claude Code and Antigravity need their own directories.
+5. **Avoid duplicate installs.** Cursor and GitHub Copilot (VS Code) also read `~/.claude/skills`; if you install to both `~/.claude/skills` and `~/.agents/skills`, these tools may show two skills with the same name.
 
 ## Common install commands
 
@@ -117,14 +118,14 @@ Creating links fails if a folder with the same name already exists at the destin
 | Platform | Personal (global) path | Project path | Links supported | Manual invocation |
 |---|---|---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` | Yes | `/senior-network-engineer` |
-| Claude web/desktop | Upload ZIP (see below) | — | — | Type `/` and pick |
+| Claude web/desktop | Upload ZIP (see below) | — | — | Automatic (type `/` for plugins) |
 | ChatGPT desktop, Codex CLI/IDE | `~/.agents/skills` | `.agents/skills` | Yes | ChatGPT: `@`; Codex: `$senior-network-engineer` or `/skills` |
 | ChatGPT web | Upload (see below) | — | — | Automatic or `@` |
-| Antigravity 2.0 / IDE | `~/.gemini/config/skills` | `.agents/skills` | Not documented | `/senior-network-engineer` |
+| Antigravity App / IDE | `~/.gemini/config/skills` | `.agents/skills` | Not documented | `/senior-network-engineer` |
 | Antigravity CLI | `~/.gemini/antigravity-cli/skills` | `.agents/skills` | Not documented | `/senior-network-engineer` |
 | Gemini CLI | `~/.gemini/skills` or `~/.agents/skills` | `.gemini/skills` or `.agents/skills` | Yes | Automatic (`/skills list` to view) |
 | Cursor | `~/.cursor/skills` or `~/.agents/skills` | `.cursor/skills` or `.agents/skills` | Not documented | Type `/` in Agent chat |
-| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` or `~/.agents/skills` | `.github/skills` or `.agents/skills` | Not documented | `/senior-network-engineer` |
+| GitHub Copilot (VS Code, CLI) | `~/.copilot/skills` or `~/.agents/skills` | `.github/skills`, `.agents/skills` or `.claude/skills` | Not documented | `/senior-network-engineer` |
 | Hermes Agent | `~/.hermes/skills/<category>` | `.hermes/skills` or `.agents/skills` | Not documented | `/senior-network-engineer` |
 
 Every tool also loads a skill automatically when its description matches the task. For tools marked "Not documented", the official docs do not say whether links are supported; install by copying.
@@ -136,15 +137,15 @@ DEST=~/.claude/skills        # For project scope use .claude/skills
 ```
 
 - Copy or link using the common commands (links are explicitly supported in the official docs).
-- Changes take effect automatically in the current session; if `~/.claude/skills` did not exist at startup, run `/reload-skills`.
+- Changes take effect automatically in the current session; if `~/.claude/skills` was created after the session started, that directory is not watched and you must run `/reload-skills` after every change.
 - Type `/skills` to view loaded skills.
 - `~/.claude/skills` applies only to local Claude Code, not to Cowork or cloud sessions.
 
 ### Claude (claude.ai web, desktop)
 
-Available on paid plans (Pro, Max, Team, Enterprise).
+Skills are available on Free, Pro, Max, Team and Enterprise plans (code execution must be enabled); plugin uploads require Pro or higher.
 
-1. Enable code execution: **Settings > Capabilities > Code execution and file creation**. On Team/Enterprise, an Owner must enable Skills and code execution in **Organization settings > Plugins & skills**.
+1. Enable code execution: **Settings > Capabilities > Code execution and file creation**. On Team/Enterprise, an Owner enables **Cloud code execution and file creation** and **Skills** in **Organization settings > Plugins & skills > Policy** (on by default for Team; must be enabled manually for Enterprise).
 2. Package each of the five skills as its own ZIP. The top level inside the ZIP must be the skill folder itself (for example `palo-alto-architect/SKILL.md`); do not put `SKILL.md` directly at the ZIP root.
 
    ```bash
@@ -161,8 +162,8 @@ Available on paid plans (Pro, Max, Team, Enterprise).
    }
    ```
 
-3. Go to **Customize > Skills**, choose **+** → **Create skill** → **Upload a skill**, upload the five ZIPs one by one, and enable all of them.
-4. Describe your task in a conversation to use them automatically, or type `/` in the input box to pick a skill.
+3. Go to **Customize > Skills**, choose **+** → **Create skill** → **Upload a skill**, upload the five ZIPs one by one, and enable all of them. Since 2026-10-02, Enterprise runs a security scan on uploads by default (Pass/Warn/Fail); uploads with a Fail result are rejected.
+4. Describe your task in a conversation to use them automatically; when installed as a plugin, you can also type `/` in the input box to pick a skill.
 
 **Description length limit:** The Claude Help Center states a 200-character limit for descriptions (the claude.com developer docs and the Agent Skills specification allow 1,024 characters). This bundle follows the stricter 200-character limit; the five descriptions are 161–177 characters each.
 
@@ -175,7 +176,7 @@ cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
   "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "version": "2026.10.21"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -187,7 +188,7 @@ Then upload `dist/senior-network-engineer-bundle.zip` in **Customize > Plugins**
 
 **ChatGPT desktop:** Shares local skills with Codex; installing to `~/.agents/skills` is enough (see the next section). Type `@` in ChatGPT to pick a skill.
 
-**ChatGPT web:** Limited to Business, Enterprise, Healthcare and Edu plans, and subject to workspace admin settings.
+**ChatGPT web:** Limited to Business, Enterprise, Healthcare and Edu plans, and subject to workspace admin settings (off by default on Enterprise and Edu; an admin must enable it). Personal skills do not sync between desktop and web/mobile.
 
 1. Choose **Plugins** in the sidebar.
 2. In **Plugin Directory**, open the **Skills** tab.
@@ -206,22 +207,22 @@ DEST=~/.agents/skills        # For project scope use .agents/skills inside the r
 - Invoke with `$senior-network-engineer`, or run `/skills` to pick one.
 - The old path `$CODEX_HOME/skills` (`~/.codex/skills` when `CODEX_HOME` is unset) has been removed from the official docs, but Codex still loads it as a deprecated path. If another copy of this bundle remains there, skills with the same name appear twice; remove the old installation.
 
-### Google Antigravity (2.0, IDE, CLI)
+### Google Antigravity (App, IDE, CLI)
 
 ```bash
-DEST=~/.gemini/config/skills                # Antigravity 2.0 and IDE (global)
+DEST=~/.gemini/config/skills                # Antigravity App and IDE (global)
 DEST=~/.gemini/antigravity-cli/skills       # Antigravity CLI (global)
 DEST=<project-root>/.agents/skills          # Project scope shared by all three
 ```
 
-- The three interfaces use different global paths. If you use both 2.0/IDE and the CLI, install to both global paths, or use the project-scoped `.agents/skills` instead.
+- The three interfaces use different global paths. If you use both App/IDE and the CLI, install to both global paths, or use the project-scoped `.agents/skills` instead.
 - The IDE still supports the old path `~/.gemini/antigravity/skills`.
-- Migrating from Gemini CLI: `~/.gemini/skills` maps to `~/.gemini/antigravity-cli/skills`; a project's `.gemini/skills` must be renamed or moved to `.agents/skills` manually.
-- The CLI can also install via plugin: create a folder containing `plugin.json` and `skills/`, then run `agy plugin install <plugin-folder>`; type `/skills` in the TUI to view loaded skills.
+- Migrating from Gemini CLI: `~/.gemini/skills` maps to `~/.gemini/antigravity-cli/skills`; a project's `.gemini/skills` must be renamed or moved to `.agents/skills` manually; Gemini CLI extensions can be converted with `agy plugin import gemini`.
+- The CLI can also install via plugin: create a folder containing `plugin.json` and `skills/`, then run `agy plugin install <plugin-folder>`; type `/plugin` in the TUI to manage plugins, and invoke skills with `/<skill-name>`.
 
 ### Gemini CLI
 
-Gemini CLI stopped serving individual users on 2026-06-18 (replaced by Antigravity CLI). Only Gemini Code Assist Standard/Enterprise licenses and paid Gemini API keys can continue to use it.
+Gemini CLI stopped serving individual users on 2026-06-18 (replaced by Antigravity CLI). Only paid Gemini API keys and Gemini Code Assist Standard/Enterprise licenses still under contract can continue to use it; Code Assist Standard/Enterprise stopped accepting new purchases on 2026-10-09, and Google recommends moving to Antigravity.
 
 ```bash
 DEST=~/.gemini/skills        # Or ~/.agents/skills; for project scope use .gemini/skills or .agents/skills
@@ -237,18 +238,18 @@ DEST=~/.gemini/skills        # Or ~/.agents/skills; for project scope use .gemin
 DEST=~/.cursor/skills        # Or ~/.agents/skills; for project scope use .cursor/skills or .agents/skills
 ```
 
-- Cursor discovers skills automatically at startup; view them in **Customize → Skills**.
+- Cursor discovers skills automatically at startup; view them in **Customize → Skills**. Cursor also reads `~/.claude/skills`, `~/.codex/skills` and a project's `.claude/skills` and `.codex/skills`; watch out for duplicate installs.
 - Invoke by typing `/` in Agent chat and picking a skill.
 - Only `~/.cursor/skills` syncs to Cloud Agents (enable **Sync Skills for Cloud Agents** in **Settings → Agents**); `~/.agents/skills` does not sync to Cloud Agents or remote SSH.
 
 ### GitHub Copilot (VS Code agent mode, Copilot CLI)
 
 ```bash
-DEST=~/.copilot/skills       # Or ~/.agents/skills; for project scope use .github/skills or .agents/skills
+DEST=~/.copilot/skills       # Or ~/.agents/skills; for project scope use .github/skills, .agents/skills or .claude/skills
 ```
 
-- If your Copilot license comes from an organization or enterprise, an admin must allow the relevant features in policy.
-- VS Code: type `/skills` in Chat to open skill settings. Copilot CLI: `/skills list`, `/skills reload`.
+- If your Copilot license comes from an organization or enterprise, some features are controlled by admin policy.
+- VS Code: with **Local** selected in the Chat view, type `/skills` to open skill settings; when using Copilot or another harness, use **Open Customizations** instead. VS Code also reads `~/.claude/skills`. Copilot CLI: `/skills list`, `/skills reload`.
 - Copilot cloud agent and code review run on GitHub and only read skills inside the repository (project scope).
 
 ### Hermes Agent
@@ -257,9 +258,9 @@ DEST=~/.copilot/skills       # Or ~/.agents/skills; for project scope use .githu
 DEST=~/.hermes/skills/network   # Put all five skills under the same category folder
 ```
 
-- New skills take effect in a new session (or run `/reset`).
+- When skills are added or removed during a conversation, a notice is included with the next message; run `/reload-skills` to rescan `~/.hermes/skills/` and refresh the `/<skill-name>` commands.
 - A project's `.hermes/skills` and `.agents/skills` load only after you run `hermes skills trust` in that repository.
-- If the skills are already installed in `~/.agents/skills`, add that path to `skills.external_dirs` in `~/.hermes/config.yaml` to share them.
+- If the skills are already installed in `~/.agents/skills`, add that path to `skills.external_dirs` in `~/.hermes/config.yaml` to share them. Hermes updates skills on its own; if that path is writable and linked to this repository, it may modify the canonical copy directly, so install by copying or use read-only permissions.
 - Installing one by one from GitHub with `hermes skills install` is not recommended: it only copies files directly referenced by `SKILL.md`, so cross-skill `../` references are not downloaded.
 
 ## Usage
@@ -296,10 +297,11 @@ git pull --ff-only
 ## Time-sensitive information
 
 - Versions, EoL/EoS, CVEs, Recommended Releases, PQC support and AI tool capabilities are based on vendor or official documentation, with the verification date noted in the text.
-- Skill paths and upload flows for AI tools change frequently. This document reflects official documentation as of 2026-09-27; if a skill does not load after installation, check the tool's latest documentation first.
+- Skill paths and upload flows for AI tools change frequently. This document reflects official documentation as of 2026-10-21; if a skill does not load after installation, check the tool's latest documentation first.
 - At verification time, the following items could only be found in third-party or community sources because the official pages require a vendor support portal login. The skill content marks them "re-verify before citing":
   - FortiNAC 9.4 EoS and FortiGate CNF End of Order dates (Fortinet Product Life Cycle, requires a FortiCare account)
   - AirWave software EoS and the end-of-sale status of 2930F/2930M/5400R (HPE Networking Support Portal)
+  - 3810M end-of-sale and end-of-support dates (Aruba's official 2022-11 announcement gives 2023-06-30 / 2028-06-30; third-party sources show them revised to 2025 / 2030; confirm in the HPE lifecycle portal)
 - When updating time-sensitive content, also update the verification date in the relevant section and the `version` in `bundle-manifest.json`.
 
 ## Maintenance rules
