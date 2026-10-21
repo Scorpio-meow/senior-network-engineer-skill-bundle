@@ -23,7 +23,7 @@ When version-specific FortiOS, FortiManager, FortiAnalyzer, or product lifecycle
 
 涉及 CVE、fixed release、Mature/Feature release、Upgrade Path、EoL、FortiGuard signature 或 PQC 支援矩陣時，先查 Fortinet PSIRT 與官方文件並標示查核日期。明確區分 temporary mitigation、正式修補與風險接受，不要把 IPS signature 或關閉對外服務直接寫成已完成修補。
 
-版本基準（2026-09-27 查核，引用前重查）：FortiOS 8.0 已 GA（8.0.0 於 2026-04-21、8.0.1 於 2026-09-15）；7.6 為 Mature train，官方 Recommended Release 以 Fortinet Community「Recommended Release for FortiOS」為準（查核時頁面為 2026-06 版本，多數機型為 7.6.6；7.6.7 已發布，引用前重查）；7.0 已於 2025-09-30 End of Support，7.2 於 2026-09-30 End of Support；依官方公告 CSB-260330-1，7.4 與 7.6 支援期各延長一年（7.4 EoS 2028-11-11、7.6 EoS 2030-01-25）。生產環境不要只因新功能直接跳 8.0，先核對 Upgrade Path、Known Issues 與 SSL VPN 移除影響。
+版本基準（2026-10-21 查核，引用前重查）：FortiOS 8.0 已 GA（8.0.0 於 2026-04-21、8.0.1 於 2026-09-15，查核時尚無 8.0.2）；7.6 為 Mature train，官方 Recommended Release 以 Fortinet Community「Recommended Release for FortiOS」為準（查核時仍為 2026-06 版本，多數機型為 7.6.6，部分低階機型為 7.4.11）。7.6.6 受 FG-IR-26-174（Agentless ZTNA portal 憑證驗證，High）與 FG-IR-26-181（GUI DoS）影響，於 7.6.7 修正；使用相關功能時評估 7.6.7。7.0 已於 2025-09-30、7.2 已於 2026-09-30 End of Support；依官方公告 CSB-260330-1，7.4 與 7.6 支援期各延長一年（7.4 EoES 2027-05-11、EoS 2028-11-11；7.6 EoES 2028-07-25、EoS 2030-01-25）。FortiOS 7.4.5 起所有機型（含 VM）預設啟用自動韌體升級，升級後設定檔看不出差異；需要變更管控的環境要逐台確認並依政策停用。生產環境不要只因新功能直接跳 8.0，先核對 Upgrade Path、Known Issues 與 SSL VPN 移除影響。
 
 ## Answer Patterns
 
@@ -106,7 +106,7 @@ Use these default heuristics unless the user's environment says otherwise:
 - More than 5 FortiGate devices: recommend FortiManager for policy consistency and change control.
 - Mostly Fortinet logging and reporting: FortiAnalyzer first. Multi-vendor SOC correlation: FortiSIEM becomes relevant.
 - FortiGate instability complaints: first check exact FortiOS build, release train maturity, HA design, SD-WAN SLA probes, conserve mode, session count, CPU, NP offload, and logs.
-- SSL VPN is no longer a keep-as-is option. FortiOS 7.6.0 removed SSL VPN tunnel and web mode on 2 GB RAM models; FortiOS 7.6.3+ removed tunnel mode on all models (replaced by IPsec VPN) and renamed web mode to Agentless VPN; Agentless VPN is unavailable on 2 GB RAM and entry-level models (the 7.6.x and 8.0 release notes list 40F/50G/60F/61F/70G/90G/91G and FGR-60F 2 GB; G-series entry-level models have had no SSL VPN since 7.4.8). Tunnel-mode config and policies are not converted during upgrade, so migrate to IPsec dial-up (IKEv2 + FortiClient/EMS) before upgrading, following the official SSL VPN to IPsec VPN migration guide. Where UDP 500/4500 is blocked, check the version-specific option: FortiOS 7.6.5+ allows IKE over UDP on port 443 (`config system settings` / `set ike-port 443`); FortiOS 8.0 moves IKE over TCP to a per-VDOM setting (`set ike-tcp-service enable`, disabled by default; dial-up tries UDP first) and removes the TCP transport option from dial-up phase1. Then introduce ZTNA or FortiSASE in phases for app-specific access, contractors, and unmanaged devices; avoid a big-bang cutover.
+- SSL VPN is no longer a keep-as-is option. FortiOS 7.6.0 removed SSL VPN tunnel and web mode on 2 GB RAM models; FortiOS 7.6.3+ removed tunnel mode on all models (replaced by IPsec VPN) and renamed web mode to Agentless VPN; Agentless VPN is unavailable on 2 GB RAM and entry-level models (the 7.6.x and 8.0 release notes list 40F/50G/60F/61F/70G/90G/91G and FGR-60F 2 GB; G-series entry-level models have had no SSL VPN since 7.4.8). Tunnel-mode config and policies are not converted during upgrade, so migrate to IPsec dial-up (IKEv2 + FortiClient/EMS) before upgrading, following the official SSL VPN to IPsec VPN migration guide. Where UDP 500/4500 is blocked, check the version-specific option: FortiOS 7.6.5+ allows IKE over UDP on port 443 (`config system settings` / `set ike-port 443`); FortiOS 8.0 moves IKE over TCP to a per-VDOM setting (`config system settings` / `set ike-tcp-service enable`, disabled by default; dial-up tries UDP first) and removes the TCP transport option from dial-up phase1 (see `references/field-playbooks.md` for upgrade side effects). Then introduce ZTNA or FortiSASE in phases for app-specific access, contractors, and unmanaged devices; avoid a big-bang cutover.
 - Fortinet vs Palo Alto: do not disparage competitors. Compare by TCO, Security Fabric integration, SD-WAN maturity, Taiwan SI support density, and App-ID/application-control depth.
 - Budget pressure: identify the feature that reduces the highest operational or security risk first; defer nice-to-have modules.
 
@@ -126,11 +126,14 @@ diagnose debug flow filter addr <ip-address>
 diagnose debug flow show function-name enable
 diagnose debug enable
 diagnose debug flow trace start 100
+diagnose debug flow trace stop
 diagnose debug disable
 diagnose sniffer packet any 'host <ip-address>' 4 0 a
 ```
 
 Explain what each command proves. Do not dump commands without interpretation.
+
+Debug flow only sees packets handled by the CPU. Sessions offloaded to NP6/NP7 are invisible after setup; test with ICMP, temporarily disable offload in the matching policy, or use the NP7 sniffer, and state the performance impact first.
 
 ## FortiGate Configuration And Packet-Flow Discipline
 
@@ -154,14 +157,15 @@ Explain what each command proves. Do not dump commands without interpretation.
 - 不只看 CVSS。同步確認是否 active exploitation、攻擊是否需驗證、受影響 component 是否啟用、是否對 Internet 暴露、是否有 IPS signature/workaround、資料敏感度與設備在網路中的 blast radius。
 - 分開盤點 FortiOS/FortiProxy、FortiManager、FortiAnalyzer、FortiClient/EMS、FortiWeb、FortiMail、FortiNAC/FortiNAC-F、FortiAuthenticator、FortiSIEM/SOAR/EDR/FortiEndpoint、FortiAP/FortiSwitch 與 cloud service；相同 CVE 不代表所有產品都受影響。
 - 只有 PSIRT 明確列出 signature、minimum FortiGuard package、設定前提或 workaround 時，才能宣稱可緩解。IPS 擋到攻擊封包不等於管理面或本機服務已完成修補。
+- 查核時（2026-10-21）需優先確認的已遭利用弱點（快照，引用前重查 PSIRT 與 CISA KEV）：CVE-2025-61624／FG-IR-26-122（FortiOS/FortiProxy CLI path traversal，需管理員權限，2026-10-16 列入 KEV，修正於 7.6.5+、7.4.10+，7.2 以下沒有修補，只能升級 train）、CVE-2025-25249／FG-IR-25-084（FortiOS cw_acd heap overflow，2026-09-09 列入 KEV）、CVE-2026-104286／FG-IR-26-175（FortiMail，2026-10-01 列入 KEV，修正於 8.0.2、7.6.7、7.4.9）。另注意 FortiNAC 9.4 於 2026-11-13 End of Support。
 
 ### Remediation Workflow
 
 1. 建立 model/VM type、serial、VDOM/HA role、FortiOS build、FortiGuard package、FMG/FAZ ADOM、plugin/FortiClient 版本、管理方式、EoL/EoS 與對外服務盤點。
 2. 對照 advisory 的 affected solution matrix、fixed release、workaround、acknowledgment、updated date 與已知 exploitation；未確認項目標示待驗證。
 3. 先降低暴露面：限制 management/local-in、關閉未使用介面服務、套用 MFA/Trusted Hosts、來源 ACL 或原廠 workaround；每個暫時措施要有 owner 與到期日。
-4. 使用 Upgrade Path Tool 依 exact model、current build、target build 取得 tested hops；逐跳檢查 Release Notes、special notice、FortiManager/FortiAnalyzer/FortiClient 相容性、磁碟空間與設定轉換風險。
-5. 升級前保存 encrypted configuration、FortiManager revision/database backup、FortiAnalyzer 設定、license/support 狀態、HA checksum、routing/VPN/SD-WAN/session/CPU/memory 基準與現場救援路徑。
+4. 使用 Upgrade Path Tool 依 exact model、current build、target build 取得 tested hops；逐跳檢查 Release Notes、special notice、FortiManager/FortiAnalyzer/FortiClient 相容性、磁碟空間、設定轉換風險與預設值變更（例：7.6.1 起 IPsec 不再自動 clamp TCP MSS，改依賴 PMTUD；8.0.0 起多數機型 IPsec tunnel 預設 MTU 由 1420 改為 1402）。
+5. 升級前保存 encrypted configuration（8.0.1 起備份到網路目標改用 `execute export config`，`execute backup config` 只剩本機與管理站目標）、FortiManager revision/database backup、FortiAnalyzer 設定、license/support 狀態、HA checksum、routing/VPN/SD-WAN/session/CPU/memory 基準與現場救援路徑。
 6. 依官方 HA upgrade 程序執行；不要假設 uninterruptible-upgrade 一定無中斷。定義停止條件、manual failover、downgrade image/config compatibility 與 console/OOB 回復方式。
 7. 升級後驗證 HA、route/BGP/OSPF、policy/NAT、IPsec/remote access、SD-WAN SLA、UTM、FSSO/LDAP/RADIUS、FortiManager install、FortiAnalyzer logging 與核心應用。
 8. 更新弱點台帳：CVE/FG-IR、資產、版本、暴露面、利用狀態、處置、證據、負責人、期限、回滾與殘餘風險。
@@ -170,7 +174,7 @@ Explain what each command proves. Do not dump commands without interpretation.
 
 - 說明 Shor's algorithm 對 RSA/ECC/DH/ECDH、Grover's algorithm 對對稱式密碼安全強度，以及 Harvest Now, Decrypt Later。不要把 QKD、PQC、PPK 與傳統加大 key size 混成同一件事。
 - 使用 NIST 正式名稱：FIPS 203 ML-KEM、FIPS 204 ML-DSA、FIPS 205 SLH-DSA。KEM 解決 key establishment；digital signature 解決 authentication/integrity。
-- 以 2026-09-27 官方基準：FortiOS 7.6.1 起支援 RFC 9242/RFC 9370 IKEv2 hybrid additional key exchange（ML-KEM-512/768/1024，以及 BIKE、HQC、FrodoKEM，最多 7 輪額外 key exchange）；7.6.3 支援 QKD + PQC + classical DH 組合；7.6.5 加入 Agentless VPN PQC、HTTPS 管理介面 PQC（X25519MLKEM768、ML-DSA-65 server certificate）與 flow mode SSL deep inspection hybrid PQC；8.0.0 加入 proxy mode TLS 1.3 hybrid PQC 深度檢測，以及 site-to-site IKEv2 以 ML-DSA/SLH-DSA 簽章認證（RFC 7427）；8.0.1 再加入 proxy mode 深度檢測的 PQC 與 classical TLS key exchange 轉換，以及 flow mode 深度檢測的 ML-DSA-44/65/87 驗證。查核時未見 SSH 管理面 PQC 的官方文件。正式答覆仍要按 exact FortiOS build、model、inspection mode 與授權查最新支援矩陣。
+- 以 2026-10-21 官方基準：FortiOS 7.6.1 起支援 RFC 9242/RFC 9370 IKEv2 hybrid additional key exchange（ML-KEM-512/768/1024，以及 BIKE、HQC、FrodoKEM，最多 7 輪額外 key exchange）；7.6.3 支援 QKD + PQC + classical DH 組合；7.6.5 加入 Agentless VPN PQC、HTTPS 管理介面 PQC（X25519MLKEM768、ML-DSA-65 server certificate）與 flow mode SSL deep inspection hybrid PQC；8.0.0 加入 proxy mode TLS 1.3 hybrid PQC 深度檢測、site-to-site IKEv2 以 ML-DSA/SLH-DSA 簽章認證（RFC 7427 框架加 draft-ietf-ipsecme-ikev2-pqc-auth 的演算法識別），以及 SSH 管理面 key exchange `mlkem768x25519-sha256`（`config system ssh-config` 的 `ssh-kex-algo`，預設清單已包含；host key 仍為傳統演算法，7.6.x 未提供）；8.0.1 再加入 proxy mode 深度檢測的 PQC 與 classical TLS key exchange 轉換，以及 flow mode 深度檢測的 ML-DSA-44/65/87 驗證。PQC group 在 FIPS-CC mode 不可用；8.0.1 known issue 提到 TLS 1.3 搭配 PQC 時 LDAPS 可能失敗。正式答覆仍要按 exact FortiOS build、model、inspection mode 與授權查最新支援矩陣。
 - 優先使用 NIST 標準化 ML-KEM；若文件列出 BIKE、HQC、FRODO 等選項，要清楚標註標準成熟度與互通風險：HQC 於 2025-03 被 NIST 選為備援 KEM，但查核時正式標準尚未發布；BIKE 與 FrodoKEM 不是 NIST 標準。不可統稱全部為 FIPS 203。
 - PPK/RFC 8784 要確認 entropy、out-of-band 交換、ID、rotation、遺失處理與雙端 mandatory/optional 行為；QKD 還要評估外部 key source、介面、可用性與失效模式。
 - PQC PoC 必測 IKE SA/Child SA rekey、HA failover、ADVPN/SD-WAN、MTU/fragmentation、CPU、handshake latency、session scale、異質廠牌互通、log/alert 與 classical fallback。支援 PQC 不代表整條服務已 Quantum Safe。
@@ -178,7 +182,7 @@ Explain what each command proves. Do not dump commands without interpretation.
 
 ## Training And Documentation Delivery
 
-- 認證規劃：Fortinet 自 2026-07-15 起由 FCF/FCA/FCP/FCSS/FCX 改回 NSE 1–8，分 Secure Networking、Security Operations、Cloud Security、SASE 四個 track，另新增 OT Security 與 MSSP Security 產業認證；有效的 FCP/FCSS/FCX 與 2024-07-15 後通過的合格考試會自動對應新級距；回答時使用新名稱並請使用者到 Fortinet Training Institute 確認個人對應結果。
+- 認證規劃：Fortinet 自 2026-07-15 起由 FCF/FCA/FCP/FCSS/FCX 改回 NSE 1–8，分 Secure Networking、Security Operations、Cloud Security、SASE 四個 track，另新增 OT Security Architect 與 MSSP Security Administrator 產業認證，認證效期 2 年；有效的 FCP/FCSS/FCX 與 2024-07-15 後通過的合格考試會自動對應新級距；回答時使用新名稱並請使用者到 Fortinet Training Institute 確認個人對應結果。
 - 依對象拆分主管/稽核、NOC L1、FortiGate/FortiManager 管理者 L2、架構與排障 L3、SOC、Help Desk。每門課定義版本、先備知識、學習目標、lab topology、成功條件與回復方式。
 - 基礎 Lab 涵蓋 interface/zone、route、policy、NAT、Security Profile、log；進階 Lab 涵蓋 HA、SD-WAN、IPsec dial-up/SSL VPN 遷移、SSL inspection、FortiManager、CVE upgrade、debug flow/sniffer 與 PQC PoC。
 - 教材交付至少包含課綱、講師手冊、學員手冊、Lab Guide、設定檔、預期 CLI/log、故障注入、清理步驟、前後測、答案、FAQ 與適用版本聲明。

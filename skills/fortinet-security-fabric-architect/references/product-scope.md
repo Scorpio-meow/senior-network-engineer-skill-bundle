@@ -32,7 +32,7 @@ For access networks, include SSID/VLAN design, guest isolation, Rogue AP/WIDS, F
 
 ## FortiEDR, FortiEndpoint, and FortiXDR
 
-Position FortiEDR as behavior detection, prevention, automated isolation, and endpoint telemetry. FortiEDR is also packaged in FortiEndpoint, the unified agent that combines FortiClient, FortiEDR, and FortiDLP under one license; there is no in-place upgrade from FortiEDR to FortiEndpoint, so check the current ordering guide before quoting SKUs. Position FortiXDR as cross-Fabric correlation and incident scoring. Mention Defender honestly as a baseline control, then explain what Fabric integration adds.
+Position FortiEDR as behavior detection, prevention, automated isolation, and endpoint telemetry. FortiEDR is also packaged in FortiEndpoint, the unified agent that combines FortiClient, FortiEDR, and FortiDLP under one license; FortiEndpoint is a cloud-delivered offering for new customers, with no in-place upgrade from FortiEDR or FortiDLP, so check the current ordering guide before quoting SKUs. Position FortiXDR as cross-Fabric correlation and incident scoring. Mention Defender honestly as a baseline control, then explain what Fabric integration adds.
 
 ## FortiWeb, FortiMail, and FortiSandbox
 
@@ -44,7 +44,7 @@ FortiSandbox: Appliance, VM, FortiSandbox PaaS (standalone cloud), the FortiSand
 
 ## Identity and Endpoint Access
 
-FortiNAC-F (recommended for new deployments; legacy CentOS-based FortiNAC 9.4 reaches end of support on 2026-11-13): profiling, 802.1X, MAC-based authentication, BYOD/IoT isolation, guest portal, and FortiGate ZTNA Tag integration.
+FortiNAC-F (recommended for new deployments; legacy CentOS-based FortiNAC 9.4 reaches end of support on 2026-11-13, so treat any remaining 9.4 deployment as an urgent migration): profiling, 802.1X, MAC-based authentication, BYOD/IoT isolation, guest portal, and FortiGate ZTNA Tag integration.
 
 FortiAuthenticator/FortiToken: RADIUS, LDAP, SAML, MFA, self-service portal, IPsec dial-up VPN, Agentless VPN, FortiSASE, and ZTNA integration.
 
@@ -54,6 +54,6 @@ FortiClient EMS: VPN profile deployment, Fabric Agent, endpoint compliance, ZTNA
 
 SD-WAN design must ask for branch count, transport types, hub locations, SaaS usage, link quality, SLA probes, routing design, and failover requirements before recommending Hub-and-Spoke, Full Mesh, or Partial Mesh.
 
-Cloud and hybrid topics include FortiGate-VM on AWS/Azure/GCP/OCI, FortiSASE (FortiSASE Sovereign licensing for FortiGate 91G/901G added in FortiOS 7.6.5; FortiSASE Outpost announced 2026-07-28), FortiCASB-SSPM, Lacework FortiCNAPP (FortiCNP is EOL), Terraform provider for FortiOS/FortiManager, Ansible Fortinet collections, FortiGate REST API, FortiManager/FortiAnalyzer JSON-RPC API, and CI/CD governance.
+Cloud and hybrid topics include FortiGate-VM on AWS/Azure/GCP/OCI, FortiSASE (FortiSASE Sovereign licensing for FortiGate 91G/901G added in FortiOS 7.6.5; FortiSASE Outpost announced 2026-07-28 with the FortiGate 1200G as an on-site SASE PoP), FortiCASB-SSPM, FortiCNAPP (formerly Lacework FortiCNAPP; FortiCNP is EOL and replaced by FortiCNAPP), Terraform provider for FortiOS/FortiManager, Ansible Fortinet collections, FortiGate REST API, FortiManager/FortiAnalyzer JSON-RPC API, and CI/CD governance.
 
-FortiGate CNF is marked End of Order (BYOL SKU End of Order 2026-06-22, support until 2027-06-22); verify lifecycle status before proposing it. For the FortiGate REST API, send API tokens in the `Authorization: Bearer` header; passing the key as a URL query parameter is disabled by default on newer builds (`rest-api-key-url-query`).
+FortiGate CNF is marked End of Order (BYOL SKU End of Order 2026-06-22, support until 2027-06-22); verify lifecycle status before proposing it. For the FortiGate REST API, send API tokens in the `Authorization: Bearer` header; passing the key as a URL query parameter is disabled by default from FortiOS 7.4.5/7.6.1 (`config system global` / `set rest-api-key-url-query disable`).

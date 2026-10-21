@@ -2,7 +2,7 @@
 
 本 reference 將 CEH 與 CISSP 知識框架轉成資深網路工程師可執行的工作方法。它不是證照題庫，也不授權任何未經同意的攻擊行為。
 
-官方基準查核日：2026-09-27。基準版本：CEH v13 與 CEH Exam Blueprint v5.0、ISC2 CISSP Exam Outline（2024-04-15 生效）、NIST SP 800-61r3。正式答覆仍應重新確認 EC-Council、ISC2、CISA/NIST 與產品原廠文件。
+官方基準查核日：2026-10-21。基準版本：CEH v13 與 CEH Exam Blueprint v5.0（EC-Council 約 12–18 個月改版一次）、ISC2 CISSP Exam Outline（2024-04-15 生效；新版 outline 自 2027-04-15 生效，Domain 1 改稱 Security Governance and Risk Management，並納入 PQC 與量子運算、SASE、Zero Trust、AI 倫理與對抗式 AI、供應鏈風險等主題）、NIST SP 800-61r3。正式答覆仍應重新確認 EC-Council、ISC2、CISA/NIST 與產品原廠文件。
 
 ## 使用邊界
 
@@ -67,10 +67,11 @@ EC-Council 目前為 CEH v13，Exam Blueprint v5.0 共 9 個領域；以下依�
 - 理解對稱/非對稱加密、hash、digital signature、PKI、憑證生命週期、TLS/IPsec/SSH 與常見密碼學攻擊，例如弱演算法、協定降級、金鑰外洩與憑證誤用。
 - 對應控制：停用弱 cipher/protocol、建立憑證與金鑰 inventory、HSM/金鑰保護、憑證到期監控、crypto agility 與 PQC migration。
 - 以實際 handshake、cipher suite、憑證鏈與設備設定驗證，不以掃描報告的單一等級取代分析。
+- 公開 TLS 憑證效期依 CA/Browser Forum SC-081v3 逐步縮短：2026-03-15 起最長 200 天、2027-03-15 起 100 天、2029-03-15 起 47 天。使用公開 CA 的管理介面、VPN portal 與 Web 服務要規劃 ACME 等自動化更新。
 
 ## CISSP 八大領域的工程落地
 
-### 1. Security and Risk Management
+### 1. Security and Risk Management（2027 版改稱 Security Governance and Risk Management）
 
 - 建立 risk owner、asset owner、policy、exception、第三方風險、法遵、security awareness 與 ethics。
 - 將風險寫成 `Asset + Threat + Vulnerability + Likelihood + Impact + Existing Control + Treatment + Residual Risk`。
@@ -85,7 +86,9 @@ EC-Council 目前為 CEH v13，Exam Blueprint v5.0 共 9 個領域；以下依�
 
 - 使用 threat modeling、trust boundary、secure defaults、fail secure、Defense in Depth、HA/DR 與 crypto agility。
 - 將管理面、控制面、資料面、AI/MCP tool plane 與 OOB 分區；每一條跨區流量都有身分、policy、log 與 owner。
-- PQC 依 cryptographic inventory、HNDL、資料壽命、hybrid migration 與原廠 support matrix 推進，不以產品行銷字眼取代互通測試。FIPS 203/204/205 已正式發布；FIPS 206（FN-DSA）與 HQC 標準在查核時尚未正式發布；NIST IR 8547 仍為草案，規劃 112-bit 強度的量子脆弱演算法（如 RSA-2048）2030 年後 deprecated、所有 RSA/ECC 2035 年後 disallowed。
+- PQC 依 cryptographic inventory、HNDL、資料壽命、hybrid migration 與原廠 support matrix 推進，不以產品行銷字眼取代互通測試。FIPS 203/204/205 已正式發布，SP 800-227（KEM 建議）已於 2025-09 定稿；FIPS 206（FN-DSA）與 HQC 標準在查核時尚未正式發布；NIST IR 8547 仍為草案，範圍涵蓋所有量子脆弱的公鑰演算法（RSA、ECDSA、EdDSA、DH/ECDH，包含 IKE 常用的 DH group 14/19/20/31），規劃 112-bit 強度者 2030 年後 deprecated、全部 2035 年後 disallowed。
+- 協定標準：TLS 1.3 hybrid key exchange（X25519MLKEM768 等）已發布為 RFC 10024，SSH hybrid ML-KEM（mlkem768x25519-sha256 等）為 RFC 10042，X.509 的 ML-DSA algorithm identifier 為 RFC 9881；IKEv2 的 ML-KEM 與 ML-DSA/SLH-DSA 認證在查核時仍是 RFC Editor queue 中的 draft，設備多以 RFC 9242/9370 additional key exchange 實作。
+- 客戶涉及美國國家安全系統或國防供應鏈時，另對照 NSA CNSA 2.0：VPN、router 等傳統網路設備 2026 年起支援並優先使用、2030 年起只用 CNSA 2.0 演算法（ML-KEM-1024、ML-DSA-87、AES-256、SHA-384/512，韌體簽章用 LMS/XMSS）；X25519MLKEM768 不符合 CNSA 2.0。
 
 ### 4. Communication and Network Security
 
@@ -106,7 +109,7 @@ EC-Council 目前為 CEH v13，Exam Blueprint v5.0 共 9 個領域；以下依�
 ### 7. Security Operations
 
 - 涵蓋 change/patch/vulnerability management、logging/SIEM/SOAR、incident response、BCP/DR、backup/restore、physical security 與 lessons learned。
-- 事件應變以 NIST SP 800-61r3（2025-04，已取代 r2）為基準：以 CSF 2.0 的 Govern、Identify、Protect、Detect、Respond、Recover 組織事件應變的準備、偵測、處置與復原。若團隊沿用 Preparation、Detection/Analysis、Containment、Eradication、Recovery、Post-Incident 作為現場操作步驟，要註明這是實務模型而非現行 NIST 版本。服務恢復與 Root Cause 分開追蹤。
+- 事件應變以 NIST SP 800-61r3（2025-04，已取代 r2）為基準：以 CSF 2.0 組織事件應變，Govern、Identify、Protect 屬準備與整體風險管理，Detect、Respond、Recover 屬事件處置，Identify 的 Improvement（ID.IM）承接 lessons learned；r3 也允許組織採用適合自身的模型。若團隊沿用 r2 的四階段（Preparation；Detection & Analysis；Containment, Eradication & Recovery；Post-Incident Activity）或 SANS 六階段作為現場操作步驟，要註明這是實務模型而非現行 NIST 版本。服務恢復與 Root Cause 分開追蹤。
 
 ### 8. Software Development Security
 
@@ -117,12 +120,13 @@ EC-Council 目前為 CEH v13，Exam Blueprint v5.0 共 9 個領域；以下依�
 ## CVE 與弱點治理整合
 
 1. 建立可信資產 inventory：model、serial、OS/build、role、HA、feature、management exposure、EoL/EoS 與 owner。
-2. 以原廠 advisory/PSIRT 為 primary source，補充 CISA KEV、NVD 與主管機關資訊；記錄查核日期與 advisory revision。
-3. 判斷 vulnerable configuration、feature enablement、攻擊 prerequisite、active exploitation、暴露面、business impact 與 failure domain，不只看 CVSS。
-4. 清楚區分 workaround、mitigation、virtual patch、hotfix/SMU、fixed release、正式升級與風險接受。
-5. 檢查 upgrade path、相容性、HA/cluster/stack、license、容量、known issue、備份、OOB、停止條件與 rollback。
-6. 採 lab/canary/staged rollout；變更前後保存版本、route、session、policy、HA、counter、log 與關鍵應用證據。
-7. 更新弱點台帳：CVE/advisory、資產、證據、priority、owner、due date、處置、驗證、exception expiry 與 residual risk。
+2. 以原廠 advisory/PSIRT 為 primary source，補充 CISA KEV、NVD 與主管機關資訊；記錄查核日期與 advisory revision。留意原廠的 advance notice 與合併式 hardening release，一份 advisory 可能涵蓋多個 CVE。
+3. 判斷 vulnerable configuration、feature enablement、攻擊 prerequisite、active exploitation、暴露面、business impact 與 failure domain，不只看 CVSS。優先序可參考 CISA BOD 26-04（2026-06-10，取代 BOD 22-01 與 BOD 19-02）的四個因子：資產是否對外暴露、是否列入 KEV、能否自動化利用、利用後取得部分或完全控制；最高風險類別要求 3 天內處置並做 forensic triage。
+4. 對外管理介面與 EoS 邊界設備另參考 CISA BOD 23-02（管理介面不得直接暴露於網際網路）與 BOD 26-02（2026-02-05，EoS 邊界設備限期盤點與汰除）。這些是美國聯邦機關指令，企業引用時作為業界基準，不是法遵義務。
+5. 清楚區分 workaround、mitigation、virtual patch、hotfix/SMU、fixed release、正式升級與風險接受。
+6. 檢查 upgrade path、相容性、HA/cluster/stack、license、容量、known issue、備份、OOB、停止條件與 rollback。
+7. 採 lab/canary/staged rollout；變更前後保存版本、route、session、policy、HA、counter、log 與關鍵應用證據。
+8. 更新弱點台帳：CVE/advisory、資產、證據、priority、owner、due date、處置、驗證、exception expiry 與 residual risk。
 
 ## 安全事件最低證據集
 
@@ -131,6 +135,7 @@ EC-Council 目前為 CEH v13，Exam Blueprint v5.0 共 9 個領域；以下依�
 - routing/FIB、ARP/ND、MAC、session、policy hit、AAA、HA、interface/queue counter。
 - PCAP、log、alert、config diff、最近變更、受影響/未受影響樣本。
 - 證據來源、蒐集人、時間、hash/保存位置、資料敏感度與 chain of custody（如適用）。
+- 邊界設備疑似遭植入時，依原廠或 CISA 指引先保存 core dump 與記憶體證據；一般 reboot 可能清除證據，也不保證移除 implant。
 
 ## 教育訓練建議
 

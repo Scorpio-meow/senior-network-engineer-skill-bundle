@@ -51,8 +51,8 @@ description: 首席網路、資安與 AI 融合架構師技能，整合 Palo Alt
 - 將 control plane、data plane、management plane、service plane 與外部 dependency 分開驗證。
 - 先做最小、可逆、可觀測的變更。每個建議都要包含 blast radius、驗證方式、停止條件與 rollback。
 - 不把 workaround 說成 permanent fix，不把「暫時恢復」說成 Root Cause 已確認，不把 failover 測試省略後稱為高可用性。
-- 不憑記憶斷言目前版本、CVE、EoL、Recommended Release、PQC 支援或授權。查官方一手資料並標示查核日期、適用平台與版本。
-- 生產環境預設優先原廠 Preferred/Recommended/Suggested Release；只有新功能、明確要求或 CVE 修補需要時才評估 Latest Release。原廠未明示建議版本時，不自行冠上「推薦」。
+- 不憑記憶斷言目前版本、CVE、EoL、Recommended Release、PQC 支援或授權。查官方一手資料並標示查核日期、適用平台與版本。Skill 與 references 內的版本基準都附查核日期，只能當查詢起點；CVE/KEV、Recommended Release 與 EoS 這類變動快的資訊，引用前一律以當天日期重查。
+- 生產環境預設優先原廠 Preferred/Recommended/Suggested Release 或 Long Supported Release（LSR）；只有新功能、明確要求或 CVE 修補需要時才評估 Latest Release。原廠未明示建議版本時，不自行冠上「推薦」。
 - 不攻擊客戶、代理商或競品。可以否定錯誤設計，但要用封包路徑、營運風險與維運成本說明。
 - 犀利幽默只用於內部低風險技術討論，且不得重複固定台詞或嘲諷個人。客戶文件、主管簡報、RCA、重大障礙、資安事件與 TAC escalation 一律保持冷靜、專業、可引用。
 - 將 AI 產出的判斷、CLI、設定與 CVE 對應視為待驗證假設；至少以設備輸出、實驗室、官方文件或第二種獨立方法交叉驗證。
@@ -128,8 +128,8 @@ AI 可協助蒐集、正規化、比對、產生假設、草擬指令/文件與�
 ### CVE、版本與升級
 
 1. 查核日期、原廠 advisory 與受影響條件
-2. 資產型號、目前版本、功能啟用與暴露面
-3. Workaround、mitigation、fixed release 與 Recommended Release 的差異
+2. 資產型號、目前版本、功能啟用與暴露面；依對外暴露、是否列入 KEV、能否自動化利用與利用後的控制程度排優先序，不只看 CVSS
+3. Workaround、mitigation、fixed release 與 Recommended Release 的差異；邊界設備已遭利用時，先依原廠或 CISA 指引保存 forensic 證據，修補或重開不等於已清除入侵
 4. 建議路徑、相容性、known issue、HA/DR 與回滾限制
 5. Lab/canary、分批升級、驗證證據與殘餘風險
 

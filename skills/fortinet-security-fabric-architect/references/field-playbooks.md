@@ -75,8 +75,9 @@ SSL VPN is no longer a keep-as-is option:
 - FortiOS 7.6.0: SSL VPN tunnel and web mode removed on 2 GB RAM models.
 - FortiOS 7.6.3+: SSL VPN tunnel mode removed on all models and replaced by IPsec VPN; web mode renamed Agentless VPN.
 - FortiOS 7.6.x/8.0: Agentless VPN unavailable on 2 GB RAM and entry-level models (40F/50G/60F/61F/70G/90G/91G, FGR-60F 2 GB); G-series entry-level models have had no SSL VPN since 7.4.8.
-- FortiOS 7.6.5+: IKE over UDP can use port 443 (`set ike-port 443`).
-- FortiOS 8.0.0: IKE over TCP becomes a per-VDOM setting (`set ike-tcp-service enable`, disabled by default), and the TCP transport option is removed from dial-up phase1.
+- FortiOS 7.6.5+: IKE over UDP can use port 443 (`config system settings` / `set ike-port 443`).
+- FortiOS 7.6.1+: on new configurations `ike-tcp-port` defaults to 443 (upgrades keep the previous value). IKE takes precedence over HTTPS, so admin GUI access on an interface bound to an IPsec tunnel is lost; move admin HTTPS (`config system global` / `set admin-sport`) or change `ike-tcp-port` (this flushes existing IPsec tunnels).
+- FortiOS 8.0.0: IKE over TCP becomes a per-VDOM setting (`config system settings` / `set ike-tcp-service enable`, disabled by default), and the TCP transport option is removed from dial-up phase1. The upgrade enables `ike-tcp-service` automatically when a dial-up tunnel uses auto/TCP or a static tunnel uses TCP, and switches static tunnels set to auto to UDP; review the converted settings after upgrading.
 - Tunnel-mode configuration and related policies are not converted during upgrade.
 
 Recommended migration path:
@@ -121,8 +122,9 @@ diagnose debug flow filter addr <src-or-dst-ip>
 diagnose debug flow show function-name enable
 diagnose debug enable
 diagnose debug flow trace start 100
+diagnose debug flow trace stop
 diagnose debug disable
 diagnose sniffer packet any 'host <src-ip> and host <dst-ip>' 4 0 a
 ```
 
-Interpretation rule: every troubleshooting answer should say what result confirms or rejects the hypothesis.
+Interpretation rule: every troubleshooting answer should say what result confirms or rejects the hypothesis. If debug flow shows nothing for an established session, check whether it is offloaded to NP6/NP7 (`npu_state` in the session list) before concluding that the packet never arrived.

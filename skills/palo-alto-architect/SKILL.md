@@ -91,7 +91,7 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 
 ### NGFW / PAN-OS / Panorama
 
-涵蓋 PA-Series 平台選型（型號與生命週期以查核當下官方硬體頁及 End-of-Sale/End-of-Life 公告為準；2026-09-27 查核：官方硬體頁主力為 PA-500/1500/3500/5500/7500 與 PA-50R（PA-1400/3400 與 PA-5410/5420/5430 查核時未見停售公告），PA-800/3200/5200/7000 已停售，PA-5450 公告 2026-11-22 停售、PA-400（非 rugged/非 cellular）公告 2027-03-22 停售，引用前重新確認）、App-ID、User-ID、Content-ID、Device-ID、Security Policy、NAT、QoS、SD-WAN、Zone Protection、DoS Protection、GlobalProtect、SSL/TLS Decryption、HA、Panorama Device Group、Template Stack 與集中管理。
+涵蓋 PA-Series 平台選型（型號與生命週期以查核當下官方硬體頁及 End-of-Sale/End-of-Life 公告為準；2026-10-21 查核：官方硬體頁主力為 PA-500/1500/3500/5500/7500 與 PA-50R（PA-1400/3400 與 PA-5410/5420/5430/5440/5445 查核時未見停售公告），PA-800/3200/5200/7000 已停售，PA-5450 公告 2026-11-22 停售、PA-400（非 rugged/非 cellular）公告 2027-03-22 停售，引用前重新確認。新平台有最低 PAN-OS 要求，例如 PA-1500/3500/50R 只支援 12.2，PA-410 則不支援 12.2；選型與升級前查 Compatibility Matrix）、App-ID、User-ID、Content-ID、Device-ID、Security Policy、NAT、QoS、SD-WAN、Zone Protection、DoS Protection、GlobalProtect、SSL/TLS Decryption、HA、Panorama Device Group、Template Stack 與集中管理。
 
 重點判斷：
 - 容量規劃要看真實 throughput、session、new session per second、解密比例、Advanced Threat Prevention/Advanced URL Filtering 等 inspection 啟用狀態，不只看 datasheet 最大值。
@@ -102,8 +102,8 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 
 #### NGFW 設定與技術細節
 
-- 先建立封包處理脈絡：ingress parsing/zone、session lookup、Zone Protection/TCP state、forwarding setup（PBF/route）、NAT Policy、User-ID、DoS Policy、Security Policy、session allocation、App-ID、Content Inspection 與 egress。Destination NAT 會對 translated address 再做 route lookup；不要只看 Policy 顯示 Allow 就判斷流量必定通過。
-- 設計介面與路由時，確認 Layer 3/Layer 2/Virtual Wire/TAP 模式、VR、static route、OSPF/BGP、ECMP、PBF、path monitoring、MTU/MSS、ARP/ND 與非對稱路由。跨 VR、雙 ISP、隧道與動態路由情境必須畫出正反向封包路徑。
+- 先建立封包處理脈絡：ingress parsing、tunnel decapsulation/IP defrag、session lookup、Zone Protection/TCP state、forwarding setup（route/PBF、MAC table、vwire peer）、NAT Policy lookup、User-ID、DoS Policy、Security Policy、session allocation，之後在 fast path 套用 NAT、進行 App-ID（Decryption Policy 在此階段判斷）與 Content Inspection，最後 egress。第一次 Security Policy lookup 以 application any 比對，App-ID 辨識後會重新比對。Destination NAT 會對 translated address 再做 route lookup；不要只看 Policy 顯示 Allow 就判斷流量必定通過。
+- 設計介面與路由時，確認 Layer 3/Layer 2/Virtual Wire/TAP 模式、VR（Advanced Routing Engine 稱 Logical Router）、static route、OSPF/BGP、ECMP、PBF、path monitoring、MTU/MSS、ARP/ND 與非對稱路由。跨 VR、雙 ISP、隧道與動態路由情境必須畫出正反向封包路徑。
 - 設計 NAT 時，明確列出 original/translated source 與 destination、U-turn NAT、no-NAT、Dynamic IP and Port、Static IP、bi-directional 適用性。NAT Rule 依 pre-NAT 條件比對；Security Policy 使用 original IP address 與 post-NAT zone，這是最常寫反的地方。用 `test nat-policy-match`、`test security-policy-match` 與 session 實際欄位驗證，不用猜的。
 - 設計 Security Policy 時，使用明確 source/destination zone、User-ID、App-ID、service、URL Category、tag 與 rule description；檢查 shadow rule、unused rule、policy hit count、最後命中時間、temporary rule 到期日與規則擁有者。
 - 對允許規則套用合適的 Security Profile Group：Antivirus、Anti-Spyware（含 DNS Policies，對應 Advanced DNS Security 訂閱）、Vulnerability Protection、URL Filtering、File Blocking、WildFire Analysis 與 Data Filtering；使用 Prisma AIRS 時，依 PAN-OS 版本另評估 AI Security profile。訂閱名稱以現行 SKU 為準：舊版 Threat Prevention 與 DNS Security 已於 2025-06-16 停售，由 Advanced Threat Prevention 與 Advanced DNS Security 取代；WildFire 已於 2024-03-01 停售，由 Advanced WildFire 取代（既有合約支援至到期）。例外必須限制 CVE/signature、來源、目的、應用程式與期限，不要整包關閉檢查。
@@ -113,7 +113,7 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 - Panorama 要釐清 Device Group、Template/Template Stack、Shared、Pre Rule/Post Rule、變數、local override 與推送範圍。先做 validate/preview，再 commit to Panorama、push to devices，並保存 commit job 與 push result。
 - Strata Cloud Manager 已可管理 NGFW（cloud-managed 或與 Panorama 併用）與 Prisma Access。新案依規模、法遵、離線需求與維運模式決定採 Panorama、Strata Cloud Manager 或兩者並存，並避免兩個平台同時修改同一物件。
 - Log at Session End、Log Forwarding Profile、SNMP/syslog、Strata Logging Service（容量型「with sized storage」SKU 於 2025-05-08 停售，改為一年保留期的 Strata Logging Service 授權；Strata Cloud Manager Pro 內含，Essentials 需另購 add-on）或 SIEM 串接要在設計階段完成；沒有可搜尋的 Traffic/Threat/Decryption/System/Config Log，就沒有可維運性。
-- 排障依序確認 route、ARP/ND、policy/NAT match、session、counter、log 與 packet capture。常用證據包含 `show routing route`、`show arp all`、`test security-policy-match`、`test nat-policy-match`、`show session all filter ...`、`show counter global filter delta yes severity drop` 與 dataplane packet capture。執行 debug 或 capture 前先限制 filter，完成後立即關閉並清除，避免影響 dataplane。
+- 排障依序確認 route、ARP/ND、policy/NAT match、session、counter、log 與 packet capture。常用證據包含 `show routing route`（啟用 Advanced Routing Engine 時改用 `show advanced-routing route` 與 `show advanced-routing fib`）、`show arp all`、`test security-policy-match`、`test nat-policy-match`、`show session all filter ...`、`show counter global filter delta yes severity drop` 與 dataplane packet capture（`debug dataplane packet-diag set filter match ...`、`set filter on`、`set capture stage <stage> file <name>`、`set capture on|off`，結束後 `debug dataplane packet-diag clear all`；已 offload 的 session 依官方 packet capture 文件處理）。執行 debug 或 capture 前先限制 filter，完成後立即關閉並清除，避免影響 dataplane。
 - HA 維護與升級要檢查 peer state、running/synchronized、session owner、link/path monitoring、HA1/HA2、內容版本與 plugin 相容性。升級前後都要做 failover、關鍵流量、動態路由、VPN、GlobalProtect 與 log forwarding 驗證。
 
 ### Prisma Access / SASE
@@ -127,7 +127,7 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 
 ### Cortex
 
-涵蓋 Cortex XDR、XSOAR、Cortex AgentiX、XSIAM 與 Strata Logging Service（原 Cortex Data Lake）。Cortex AgentiX 於 2025-10 發表，官方定位為 XSOAR 的下一代，發表時先提供於 Cortex Cloud 與 XSIAM，2026 年起已有獨立 AgentiX 平台，官方定位為 XSOAR 客戶的自然演進；查核時未見 XSOAR 停售公告，新案要同時評估 AgentiX。AutoFocus 已於 2025-09-30 EoL，不再列為可提案產品；威脅情資需求改評估 XSOAR/AgentiX Threat Intelligence Management。原廠當年列為替代的 AIOps for NGFW Premium 已於 2025-05-08 停售並併入 Strata Cloud Manager Pro。
+涵蓋 Cortex XDR、XSOAR、Cortex AgentiX、XSIAM 與 Strata Logging Service（原 Cortex Data Lake）。Cortex AgentiX 於 2025-10 發表，定位為 XSOAR 的下一代，先提供於 Cortex Cloud 與 XSIAM，2026 年起推出獨立平台，官方稱其為 XSOAR 客戶的自然演進；查核時未見 XSOAR 產品停售公告（XSOAR 6.12/6.13 on-prem 已於 2026-06-30 EoL，6.14 尚未公告 EoL），新案要同時評估 AgentiX。AutoFocus 已於 2025-09-30 EoL，不再列為可提案產品；威脅情資需求改評估 XSOAR/AgentiX Threat Intelligence Management。原廠當年列為替代的 AIOps for NGFW Premium 已於 2025-05-08 停售並併入 Strata Cloud Manager Pro。
 
 重點判斷：
 - XDR 討論要連到 causality chain、BIOC、事件分級與端點部署覆蓋率。
@@ -138,8 +138,8 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 
 涵蓋 Cortex Cloud（2025-02 發表，由下一代 Prisma Cloud 與 Cortex CDR 整合而成；官網仍保留 Prisma Cloud 產品頁，既有客戶可升級，含 Cloud Posture Security、Cloud Runtime Security 與 Application Security，對應 CSPM、CWPP、CIEM、Code Security）、Kubernetes、Serverless、Cloud NGFW for AWS/Azure、VM-Series、Prisma AIRS 與 DevSecOps Pipeline。
 
-- Google Cloud 沒有 Palo Alto 自有的 Cloud NGFW；改評估 VM-Series 或 Google Cloud NGFW Enterprise（Google 服務，整合 Palo Alto 威脅技術）。
-- CN-Series 公告 2026-11-01 停售，由 Prisma AIRS（AI Runtime Firewall）接替；容器與 AI workload 防護要依查核當下官方文件確認。
+- Google Cloud 沒有 Palo Alto 自有的 Cloud NGFW；改評估 VM-Series 或 Google Cloud NGFW Enterprise（Google 服務，整合 Palo Alto 威脅技術；Advanced WildFire 於 2026-08 以 preview 整合進該服務）。
+- CN-Series 公告 2026-11-01 停售（End-of-Support 2029-11-01），由 Prisma AIRS（AI Runtime Firewall）接替；容器與 AI workload 防護要依查核當下官方文件確認。
 
 重點判斷：
 - 多雲安全要先處理 account/subscription/project inventory、身份權限、公開暴露面與合規框架。
@@ -148,7 +148,7 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 
 ### Identity Security 與 Observability
 
-Palo Alto Networks 已於 2026-02-11 完成收購 CyberArk（CyberArk Identity Security Platform 仍可獨立採購），2026-01-29 完成收購 Chronosphere（observability）。涉及 PAM、workload/machine identity、AI Agent 身分或觀測平台時，把 identity 與 observability 納入架構評估；整合深度、授權與產品路線以查核當下官方文件為準，不以收購新聞推定已原生整合。
+Palo Alto Networks 已於 2026-02-11 完成收購 CyberArk（CyberArk Identity Security Platform 仍可獨立採購），2026-01-29 完成收購 Chronosphere（observability，2026-10 以其為基礎推出 Cortex XCOR），2026-09 宣布收購 Console（強化 Cortex 的 agentic 能力）。涉及 PAM、workload/machine identity、AI Agent 身分或觀測平台時，把 identity 與 observability 納入架構評估；整合深度、授權與產品路線以查核當下官方文件為準，不以收購新聞推定已原生整合。
 
 ### API 與自動化
 
@@ -169,7 +169,8 @@ Palo Alto Networks 已於 2026-02-11 完成收購 CyberArk（CyberArk Identity S
 - 不自行推定某個 Threat ID 能阻擋特定 CVE。只有原廠 advisory 明確列出 signature、Content Version、policy 前提或 workaround 時，才能宣稱具備緩解效果。
 - 不只看 CVSS。同步評估是否列入 KEV、是否有公開 PoC/在野利用、攻擊面是否對外、是否需驗證、所需權限、資料敏感度、HA/DR 影響與可接受停機時間。
 - 分開確認 PAN-OS、Panorama、GlobalProtect App、Prisma Access Agent、Prisma Browser、Cloud NGFW、plugin、Cortex/Cortex Cloud、CyberArk 與第三方元件版本；同一 CVE 不一定影響所有平台或部署模式。
-- PAN-OS 生命週期以官方 End-of-Life Summary 為準。2026-09-27 查核：10.1、11.0 已完全 EoL；10.2 已 EoL、延伸支援至 2027-03-31；11.1 與 11.2 EoL 分別為 2027-05-03 與 2027-05-02（Extended Support+ 至 2027-08-31）；12.1 EoL 為 2028-08-28（Extended Support+ 至 2029-08-28）；最新主版本 12.2（Ceres，2026-07-30 發布）EoL 為 2029-07-30（Extended Support+ 至 2030-07-30）。生產環境仍以 Preferred Release 為預設。
+- PAN-OS 生命週期以官方 End-of-Life Summary 為準。自 12.1 起每個版本提供 36 個月標準支援加 12 個月 Extended Support（僅 P1 與 CVSS 7.0 以上弱點修補）。2026-10-21 查核：10.1、11.0 已完全 EoL；10.2 已於 2025-08-27 EoL、延伸支援至 2027-03-31；11.1 與 11.2 EoL 分別為 2027-05-03 與 2027-05-02（Extended Support+ 至 2027-08-31）；12.1 EoL 為 2028-08-28（Extended Support+ 至 2029-08-28）；最新主版本 12.2（Ceres，2026-07-30 發布）EoL 為 2029-07-30（Extended Support+ 至 2030-07-30）。生產環境仍以 Preferred Release 為預設。
+- 查核時（2026-10-21）需優先確認的已遭利用弱點（快照，引用前重查 advisory 與 CISA KEV）：CVE-2026-0322（PAN-OS 管理介面已驗證 RCE，2026-10-14 列入 KEV，無 workaround，修正版如 12.2.4、12.1.10-h2、11.2.16、11.1.16-h3、10.2.18-h12，各 train 另有 hotfix）；CVE-2026-0257（啟用 authentication override cookie 時的 GlobalProtect 驗證繞過，2026-05-29 列入 KEV，已見勒索軟體利用）；CVE-2026-0300（User-ID Authentication Portal buffer overflow，2026-05-06 列入 KEV）。
 
 ### 標準處理流程
 
@@ -200,7 +201,7 @@ Palo Alto Networks 已於 2026-02-11 完成收購 CyberArk（CyberArk Identity S
 
 - 依查核當下的官方支援矩陣確認功能、PAN-OS、平台與授權。基準概念包括：PQC/hybrid TLS 流量偵測與控管、Decryption Log 可視性、量子抗性 IKEv2，以及 PQC dataplane decryption/inspection 與 crypto agility。
 - PAN-OS 11.1 起支援以 RFC 8784 Post-quantum Preshared Key 強化 IKEv2；PAN-OS 11.2 起支援 RFC 9242/RFC 9370 hybrid key exchange。正式導入前確認對端互通性、PSK 安全交換與輪替、HA 同步、效能、重新協商及 failover 行為。
-- PAN-OS 12.1（Orion）起支援 TLS 1.3 PQC KEM 的解密/檢測（forward proxy 與 inbound inspection）與管理面 PQC TLS；PAN-OS 12.2（Ceres）再加入 GlobalProtect PQC/IKEv2 與 QUIC/HTTP3 解密。實際能力仍須依平台與官方支援矩陣驗證。檢查 TLS ClientHello、supported groups、Decryption Policy、no-decrypt 流量、只支援 PQC 的 client 行為與 Decryption Log，避免升級後才發現應用程式無法協商。
+- PAN-OS 12.1（Orion）起支援管理面 PQC TLS 與 crypto agility，12.1.2 起支援 TLS 1.3 PQC KEM 的解密/檢測（forward proxy、inbound inspection、Decryption Mirror 與 NPB）。GlobalProtect 自 PAN-OS 12.1.5 起支援 IKEv2 tunnel（需 GlobalProtect 6.4.1 Innovation，僅限 NGFW、不含 Prisma Access），PQC 需 GlobalProtect 6.4.1 搭配 PAN-OS 12.1.8 以上並走 IKEv2 tunnel。PAN-OS 12.2（Ceres）加入 Authentication Portal 的 TLS 1.3 PQC/hybrid 支援，以及憑證生命週期自動化與 cryptographic inventory。QUIC 查核時仍無法解密，官方建議封鎖 QUIC 讓流量回落到可解密的 TLS。實際能力仍須依平台與官方支援矩陣驗證。檢查 TLS ClientHello、supported groups、Decryption Policy、no-decrypt 流量、只支援 PQC 的 client 行為與 Decryption Log，避免升級後才發現應用程式無法協商。
 - 對未解密的 PQC/hybrid 流量建立 allow/block/log 治理策略。先觀察業務使用情況，再分階段執行；直接全面封鎖可能讓新版本瀏覽器、雲端服務或合作夥伴連線中斷。
 
 ### 遷移方法

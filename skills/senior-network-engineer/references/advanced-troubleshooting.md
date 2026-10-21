@@ -48,11 +48,11 @@
 
 檢查五元組、TCP state、SYN/SYN-ACK/ACK、retransmission、RST 來源、window、MSS、PMTUD、fragmentation、idle timeout、session aging、NAT pool/port exhaustion、ALG、load balancer persistence 與 state synchronization。
 
-UDP 沒有 handshake，不代表沒有 state。DNS、RADIUS、SIP、IPsec、QUIC 等應同時看 request/response、transaction ID、timeout 與中間設備 session。
+UDP 沒有 handshake，不代表沒有 state。DNS、RADIUS、SIP、IKE（UDP 500/4500）、QUIC 等應同時看 request/response、transaction ID、timeout 與中間設備 session。ESP 是 IP protocol 50，以 SPI 識別，只有 NAT-T 時才封裝在 UDP 4500。
 
 ### L5–L7：服務與身分
 
-檢查 DNS answer/TTL/split-horizon、DHCP DORA/relay/option、NTP、RADIUS/TACACS+、LDAP/AD、TLS handshake、certificate chain/SAN/EKU/expiry/CRL/OCSP、SNI、HTTP status、proxy、API dependency 與應用 health。
+檢查 DNS answer/TTL/split-horizon/DNSSEC validation、EDNS buffer size 與 TCP/53、DHCP DORA/relay/option、NTP、RADIUS/TACACS+、LDAP/AD、TLS handshake、certificate chain/SAN/EKU/expiry/CRL/OCSP、SNI（啟用 ECH 時 SNI 會被加密）、HTTP status、proxy、API dependency 與應用 health。
 
 「Ping 通」只證明某個 ICMP path 在某個時間成立，不代表 DNS、TCP、TLS、authentication 或應用正常。
 
@@ -70,7 +70,7 @@ Control plane 鄰接正常不代表 ASIC/FIB 已正確 programming；反之，�
 
 依 association、authentication、role/VLAN、DHCP、DNS、gateway、policy、RF/roaming 順序排查。RF 至少看 RSSI、SNR、noise、retry、channel utilization、airtime、MCS、band/channel width、DFS 與 client capability。
 
-RADIUS Reject 通常是 policy/identity/certificate；Timeout 通常是 path、shared secret、NAD、firewall、service 或 upstream dependency。先看完整 Access/Live Log，不要直接改成 allow-all。
+RADIUS Reject 通常是 policy/identity/certificate；Timeout 通常是 path、shared secret、NAD、firewall、service 或 upstream dependency。例外：PAP 的 shared secret 錯誤會讓密碼解碼錯誤而得到 Reject；雙端對 Message-Authenticator 的要求不一致（BlastRADIUS／CVE-2024-3596 強化後常見）會被靜默丟棄而呈現 Timeout。先看完整 Access/Live Log，不要直接改成 allow-all。
 
 ## 3. 假設與證據矩陣
 
@@ -102,7 +102,7 @@ RADIUS Reject 通常是 policy/identity/certificate；Timeout 通常是 path、s
 - 確認設備 NTP 與 timezone；記錄事件的絕對時間與時區。
 - 使用 IP/port、TCP sequence/ack、IP ID、TTL、ICMP quoted packet、DNS transaction ID 或 TLS ClientHello 關聯同一流量。
 - 比對 SYN 到 SYN-ACK、retransmission interval、RST/ICMP 產生位置與 NAT 前後 tuple。
-- 注意 NIC checksum offload 可能讓端點 capture 顯示假 checksum error。
+- 注意 NIC checksum offload 可能讓端點 capture 顯示假 checksum error；TSO/GSO/GRO/LRO 也會讓主機端 capture 出現大於 MTU 的封包，不代表線路上真的送出超大封包。
 - 注意 SPAN oversubscription、ASIC offload、sampling 與 capture drop；「沒抓到」也可能是擷取方法失敗。
 
 ### 安全與隱私
@@ -123,7 +123,7 @@ RADIUS Reject 通常是 policy/identity/certificate；Timeout 通常是 path、s
 ## 6. 常見高階失敗模式
 
 - 非對稱路由：一側建立 session，回程走另一側而被丟棄。
-- PMTUD black hole：小封包正常，大封包或 TLS/SMB 卡住；ICMP fragmentation-needed 被擋。
+- PMTUD black hole：小封包正常，大封包或 TLS/SMB 卡住；IPv4 的 ICMP fragmentation-needed 或 IPv6 的 ICMPv6 Packet Too Big 被擋（IPv6 路由器不會在途中分片，PTB 不可過濾）。TCP MSS clamping 只救得了 TCP，救不了 UDP、QUIC 與 ESP。
 - MTU 疊加：VXLAN/IPsec/SD-WAN/PPPoE 多層封裝造成 fragmentation 或 drop。
 - NAT/policy tuple 認知錯誤：比對 pre/post NAT address 或 zone 的規則寫反。
 - Control/Data-plane divergence：RIB/adjacency 正常，但 FIB/ASIC/TCAM programming 異常。
@@ -131,12 +131,13 @@ RADIUS Reject 通常是 policy/identity/certificate；Timeout 通常是 path、s
 - Session stickiness：路徑或 policy 已改，但既有 session 仍沿舊狀態；清 session 前先保存證據並評估影響。
 - HA 部分失效：peer up，但 session sync、routing、license、content、link monitor 或 upstream convergence 不完整。
 - Route redistribution loop：缺少 tag/filter，路由在 OSPF/BGP/OMP/overlay 間重新注入。
-- ECMP hashing：只有部分 flow 失敗，單一 ping/traceroute 無法重現問題 path。
-- DNS split-brain/negative cache：不同 resolver、view、TTL 或 stale record 造成「有些人正常」。
-- NTP/certificate：時間飄移導致 EAP-TLS、API、VPN 或管理登入間歇失敗。
+- ECMP hashing：只有部分 flow 失敗，單一 ping/traceroute 無法重現問題 path；改用固定五元組的 Paris-traceroute 或與應用相同 port 的測試。中間節點的 ICMP rate-limit/CoPP 會讓 mtr 顯示假性 loss。
+- DNS split-brain/negative cache：不同 resolver、view、TTL 或 stale record 造成「有些人正常」。DNSSEC 簽章過期或時間錯誤會造成 SERVFAIL；EDNS 大回應被分片丟棄（常見 buffer 為 1232）或 TCP/53 被擋，也只會影響大型回應。
+- NTP/certificate：時間飄移導致 EAP-TLS、API、VPN 或管理登入間歇失敗。公開 TLS 憑證效期正逐步縮短（2026-03-15 起最長 200 天），手動更新流程更容易漏換。
 - Buffer/queue/policer：interface utilization 不高，但特定 class 或 egress queue 丟包。
 - MAC/ARP stale 或移動：HA、virtualization、roaming、teaming 或 loop 引發黑洞。
-- Middlebox re-encryption/inspection：TLS version、SNI、mTLS、certificate pinning、QUIC 或 PQC negotiation 被改變。
+- Middlebox re-encryption/inspection：TLS version、SNI、mTLS、certificate pinning、QUIC 或 PQC negotiation 被改變。Hybrid PQC key share 會讓 ClientHello 超過單一封包，舊 middlebox 或 SNI parser 可能丟棄；封鎖 UDP/443 會讓 QUIC 退回 TCP；ECH 會讓依 SNI 的政策失效。
+- IPv6 專屬：rogue RA（缺少 RA Guard）、ND cache exhaustion、extension header 被中間設備丟棄，以及 Happy Eyeballs 把壞掉的 IPv6 路徑掩蓋成數百毫秒延遲。
 - Cloud dependency：路由與防火牆正常，但 IdP、DNS、SaaS、certificate service 或 API rate limit 異常。
 
 ## 7. Root Cause 與結案標準

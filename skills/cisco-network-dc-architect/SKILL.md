@@ -13,9 +13,13 @@ Prioritize operational stability, migration safety, root-cause evidence, observa
 
 Default to Traditional Chinese. Keep Cisco product names, protocols, and feature names in English where that is the field norm, such as `Spine-Leaf`, `VRF`, `BD`, `EPG`, `Contract`, `OMP`, `TCAM`, `SD-WAN Manager`, `vPC`, `StackWise`, and `Catalyst Center`.
 
-涉及 CVE、Cisco fixed release、Suggested/Recommended Release、EoL/EoS、Feature Navigator、ISSU 或 PQC 支援矩陣時，先查 Cisco PSIRT、Software Checker、Release Notes 與平台文件並標示查核日期。分開陳述 mitigation、workaround、SMU/patch 與正式升級，不要把 ACL 或關閉服務寫成已完成修補。
+涉及 CVE、Cisco fixed release、Suggested/Recommended Release、EoL/EoS、Feature Navigator、ISSU 或 PQC 支援矩陣時，先查 Cisco PSIRT、Software Checker、Release Notes 與平台文件並標示查核日期。分開陳述 mitigation、workaround、SMU/patch 與正式升級，不要把 ACL 或關閉服務寫成已完成修補。Cisco 自 2026-07 起改採 risk-based disclosure：advisory 固定在每月第一、三個週三 16:00 UTC 發布，並提前 7 天發出預告；IOS XE、IOS XR、NX-OS、Secure Firewall 與 ASA 以季度 Security Hardening Release 把同類弱點合併為 umbrella CVE（CVSS 取群組最高者），低風險問題不再個別發 advisory。弱點台帳要能對應 hardening release，不能只追單一 CVE。
 
-IOS XE 自 26.1 起改用日曆式版號（YY.release.maint，每年約兩個 feature release，例如 26.1.1 於 2026-04、26.2.1 於 2026-08 發布；26.x 每個 release 都屬 Extended，提供 48 個月支援，沒有 Standard track），17.x 與 26.x 的版本比較、release type 與升級路徑要分開查核，不要以數字大小推定新舊或支援狀態。
+IOS XE 自 26.1 起改用日曆式版號（YY.release.maint，每年約兩個 feature release，例如 26.1.1 於 2026-04、26.2.1 於 2026-08 發布，26.1.2 也已發布；26.x 每個 release 都屬 Extended，自 GA 起 48 個月提供弱點修補，Last Date of Support 約 54 個月，沒有 Standard track），Catalyst SD-WAN 也改用 26.x。17.x 與 26.x（SD-WAN 為 20.x 與 26.x）的版本比較、release type 與升級路徑要分開查核，不要以數字大小推定新舊或支援狀態。
+
+版本基準（2026-10-21 查核，引用前重查 TAC Recommended 與 release notes）：Catalyst 9000 交換器 TAC 建議 17.18.4 或 17.15.6；Catalyst 9800/CW9800 WLC 建議 17.18.4a 加 APSP2（26.1/26.2 已 GA，但 TAC 未普遍建議）；Secure Firewall FTD/FMC 已改用 10.x 版號（最新 10.1.0）；ISE 最新 train 為 3.5；Catalyst Center 最新為 3.3.1；Nexus Dashboard 最新為 4.3.1。
+
+查核時需優先確認的已遭利用弱點（快照，引用前重查 advisory 與 CISA KEV）：Catalyst SD-WAN Manager API 驗證繞過 CVE-2026-76504（CVSS 9.8，2026-09-30 列入 KEV，無 workaround，修正版 20.9.10.1、20.12.8.2、20.15.6.1、20.18.4.1、26.1.2.1、26.2.1，20.9 以前須遷移）；ISE CVE-2026-76460（CVSS 10，已列入 KEV，修正於 3.1 P12、3.2 P11、3.3 P12、3.4 P7、3.5 P4）。另外 2026-08 IOS XE Security Hardening Release 的修正版為 17.9.10、17.12.8、17.15.6、17.18.4/17.18.4a 與 26.1.2，Catalyst 3650/3850 的 16.12 不再修補。
 
 ## Response Style
 
@@ -130,7 +134,7 @@ Decision heuristics:
 - Nexus/vPC 要驗證 peer-keepalive、peer-link、consistency parameters、role、orphan port、Type-1/Type-2 mismatch、LACP、STP、FHRP、peer-gateway、auto-recovery 與 split-brain。流量黑洞先查 MAC/ARP/route 與兩端 forwarding state，不要只看 `show vpc brief` 顯示 up。
 - VXLAN BGP EVPN 要畫出 underlay/overlay、loopback/VTEP、NVE peer、VRF/VNI、VLAN/L2VNI、L3VNI、route type 2/3/5、anycast gateway、multihoming 與 route-target。驗證 control-plane route 與 hardware forwarding 是否一致。
 - ACI 封包流要追 endpoint learning、VLAN/VXLAN encapsulation、EPG、BD、VRF、zoning rule/Contract、L3Out route、COOP 與 border leaf。`fvCEp` 存在不代表 Contract、route 或 dataplane 一定正確；同時看 APIC fault/event/audit 與 leaf endpoint/zoning/route。
-- Nexus Dashboard 自 4.1 起已把 Fabric Controller（NDFC）、Insights 與 Orchestrator 整合為單一產品（2026-09-27 查核最新為 4.3.1）；部署、升級、備份與 RBAC 以整合後平台規劃，舊文件中 NDFC/NDI/NDO 分別部署的步驟要重新核對。
+- Nexus Dashboard 自 4.1 起已把 Fabric Controller（NDFC）、Insights 與 Orchestrator 整合為單一產品（2026-10-21 查核最新為 4.3.1；ND 3.x 與 ND/APIC M6 appliance 已公告 EoL）；部署、升級、備份與 RBAC 以整合後平台規劃，舊文件中 NDFC/NDI/NDO 分別部署的步驟要重新核對。
 - Catalyst SD-WAN（元件名稱：SD-WAN Manager、SD-WAN Controller、SD-WAN Validator，20.12/17.12 起更名）要分開查 control connection、OMP route/TLOC、BFD、centralized/localized policy、service route、NAT、transport color、SLA/APP-route、controller/manager compatibility 與 edge forwarding。Brownfield route redistribution 必須做 tag、metric、loop prevention 與失效情境測試。
 - Catalyst 9800/CW9800 Wireless 依 association、WPA/EAP、RADIUS/ISE、policy profile/tag、VLAN/FlexConnect、DHCP/DNS、client data path、RF/RRM 與 roaming 排查。Radioactive Trace 要限制 client MAC、時間與範圍，完成後停止 trace。
 - ISE 依 Policy Set、Authentication Policy、Identity Source、Authorization Policy/Profile、Live Logs、RADIUS attributes、EAP certificate、TrustSec/SGT、pxGrid、CoA、NAD 與 replication/node health 驗證。Reject 與 Timeout 不在同一故障域。
@@ -161,19 +165,20 @@ For Cisco Wireless issues, troubleshoot in this sequence:
 2. Addressing: DHCP, VLAN mapping, FlexConnect local switching, default gateway.
 3. RF: channel utilization, power, SNR/RSSI, interference, roaming, RRM behavior.
 
-Controller lifecycle (verify before quoting): C9800-40/-80 reached End-of-Sale on 2025-12-31 (Last Date of Support 2030-12-31); new designs should evaluate the CW9800 series (CW9800M/H1/H2 minimum IOS XE 17.14.1; CW9800L minimum 17.18.2). The 26.1 release notes still support C9800-L, C9800-40/-80, CW9800, 9800-CL, and EWC on Catalyst 9000 switches; EWC on Catalyst APs ended at 17.15.x (End-of-Sale 2024-11-29).
+Controller lifecycle (verify before quoting): C9800-40/-80 reached End-of-Sale on 2025-12-31 (Last Ship 2026-03-31, End of SW Maintenance 2027-12-31, Last Date of Support 2030-12-31; C9800-L and 9800-CL are not part of that notice); new designs should evaluate the CW9800 series (CW9800M replaces -40, CW9800H1/H2 replace -80; CW9800M/H1/H2 minimum IOS XE 17.14.1; CW9800L minimum 17.18.2). The 26.1/26.2 release notes still support C9800-L, C9800-40/-80, CW9800, 9800-CL, and EWC on Catalyst 9000 switches (SDA deployments only); EWC on Catalyst APs ended at 17.15.x (End-of-Sale 2024-11-29). AP support is shrinking: 26.1 drops the C9117 APs, and 26.2 drops the 1570, 1700, 2700, 3700, 1800i, 1815/1830/1840/1852, 2800, 3800 and 4800 APs, so check the AP inventory before upgrading.
 
 Use commands and tools such as:
 
 ```text
 # Catalyst 9800 WLC
 # show wireless client mac-address <client-mac> detail
-# show logging profile wireless filter mac <client-mac>
+# show logging profile wireless start last 30 minutes filter mac <client-mac> to-file bootflash:<file>
 # show ap summary
 # show wireless stats client detail
 # debug wireless mac <client-mac> monitor-time <seconds>   (Radioactive Trace)
 # no debug wireless mac <client-mac>
 # dir bootflash: | include ra_trace
+# more bootflash:<ra_trace-file>
 ```
 
 ## Security And Remote Access
@@ -231,11 +236,11 @@ For scripts, include input assumptions, device inventory format, credentials han
 
 - 解釋 Shor's algorithm 對 RSA/ECC/DH/ECDH、Grover's algorithm 對對稱式安全強度及 Harvest Now, Decrypt Later。區分 RFC 8784 PPK、NIST PQC、hybrid key exchange、QKD 與傳統加長 key size。
 - 使用 NIST 正式名稱 FIPS 203 ML-KEM、FIPS 204 ML-DSA、FIPS 205 SLH-DSA；KEM 用於 key establishment，signature 用於 authentication/integrity。
-- 以 2026-09-27 官方基準：IOS XE 17.11.1a 起在 Catalyst 8000V、8300 與 ASR 1000，17.12.1a 起再延伸至 ISR 1000 與 Catalyst 8500，提供 RFC 8784 IKEv2 PPK（manual 與 SKIP dynamic key）；IOS XE 26.1 起在指定 Cisco 8000 Series Secure Routers 的 autonomous mode 提供 IKEv2 hybrid ML-KEM（512/768/1024 搭配 P-256 或 X25519），同版也提供 SSH 的 hybrid ML-KEM；IKEv2 ML-DSA 簽章目前只見於 Cisco 開發者部落格的 26.2 實驗，查核時 8000 Series Secure Routers 尚無 26.2 release notes，須待官方 release notes 確認後才可宣稱支援。Catalyst switching 方面，IOS XE 26.1 起 C9350 Series Smart Switches 支援 PQC MACsec（在 EAP-TLS 1.3 handshake 中以 ML-KEM 建立金鑰，`access-session pqc-type pqc`；限 certificate-based MACsec 的 local authentication，且 PQC/hybrid 演算法不支援 FIPS mode；雙端 TLS 版本不一致會驗證失敗）；C9610 Series 自 26.1.1a 起提供以 LMS（NIST 核准的 PQC 簽章）為基礎的 LMS-signed bootloader secure boot。以上不代表其他 Catalyst 平台或以外部 RADIUS 驗證的 EAP-TLS 已支援 PQC。正式答覆必須用 Feature Navigator 與 exact platform/release/restriction 重新核對。
+- 以 2026-10-21 官方基準：IOS XE 17.11.1a 起提供 RFC 8784 IKEv2 PPK（manual 與 SKIP dynamic key），17.12.1a 起延伸至 ISR 1000 與 Catalyst 8500，現行文件平台包含 Catalyst 8000V/8200/8300/8500、ASR 1000、ISR 1000 與 C8100–C8500 Secure Routers。IOS XE 26.1 起在 C8100–C8500 Secure Routers 的 autonomous mode 提供 IKEv2 hybrid ML-KEM（512/768/1024 搭配 P-256 或 X25519，不支援 GETVPN），同版也提供 SSH hybrid ML-KEM（`mlkem768x25519-sha256`、`mlkem768nistp256-sha256`、`mlkem1024nistp384-sha384`，預設未啟用，FIPS mode 不支援）。26.2.x release notes 已發布，但未列 IKEv2 ML-DSA；該功能目前只見於 Cisco 開發者部落格的實機驗證，不可宣稱正式支援。Catalyst switching 方面，IOS XE 26.1 起 C9350 Series Smart Switches 支援 PQC MACsec（在 EAP-TLS 1.3 handshake 中以 ML-KEM 建立金鑰，`access-session pqc-type pqc`；限 certificate-based MACsec 的 local authentication；純 PQC 演算法不支援 FIPS mode，hybrid 與傳統演算法可在 FIPS mode 使用；一端只允許 TLS 1.3、另一端為 1.2/1.0 時驗證失敗，一端 1.2、另一端 `access-session tls-version all` 時以 TLS 1.2 成功但沒有 PQC；強制 PQC 時不會回落傳統 EC）；C9610 Series 自 26.1.1a 起提供以 LMS（NIST SP 800-208 核准的 stateful hash-based 簽章）為基礎的 LMS-signed bootloader secure boot。26.2.1 起 C9350/C9610 映像同時以 RSA 與 ML-DSA-87 雙簽章，C9610 另支援 ML-DSA；Catalyst 9800 WLC 26.2 的 Web Server 支援 TLS 1.3 ML-KEM。以上不代表其他 Catalyst 平台或以外部 RADIUS 驗證的 EAP-TLS 已支援 PQC。正式答覆必須用 Feature Navigator 與 exact platform/release/restriction 重新核對。
 - 不把 Cisco 全產品線概括成已支援 PQC。ACI/Nexus/Catalyst campus/WLC/ISE/ASA/FTD/UCS/management TLS 的能力、trust anchor、image signing 與協定支援必須各自查證；hardware root of trust 或 SHA-512 image verification 也不等於 data-plane PQC。
 - IKEv2 PPK 要管理 entropy、manual/SKIP key source、ID、rotation、lifetime、hub/spoke rekey 與 failover；ML-KEM hybrid 要測 IKE/Child SA、PFS、third-party interop、CPU/latency、scale 與 classical fallback。
-- PQC message 較大可能造成 fragmentation；Cisco 8000 IKEv2 ML-KEM-1024 官方文件特別提醒 MTU 1500 情境，並建議評估 `crypto ikev2 fragmentation mtu 1400`。PoC 必須觀察 IKE fragmentation、PMTUD、IPsec overhead、QoS/policer、中間防火牆與 packet loss。
-- PQC MACsec 要檢查 supplicant/authenticator、local authentication 限制、EAP-TLS 1.3（雙端版本須一致）、certificate/PKI、FIPS mode restriction、MKA/MACsec state、link failover 與 line-rate 資源。不要只驗證介面 up。
+- PQC message 較大可能造成 fragmentation；Cisco 8000 IKEv2 ML-KEM-1024 官方文件特別提醒 MTU 1500 情境，並建議評估 `crypto ikev2 fragmentation mtu 1400`。RFC 7383 IKE fragmentation 無法分片 IKE_SA_INIT，因此大型 ML-KEM key share 應走 RFC 9242 IKE_INTERMEDIATE 的 additional key exchange；直接放在 IKE_SA_INIT 會依賴 IP 分片。PoC 必須觀察 IKE fragmentation、PMTUD、IPsec overhead、QoS/policer、中間防火牆與 packet loss。
+- PQC MACsec 要檢查 supplicant/authenticator、local authentication 限制、EAP-TLS 1.3 版本協商、certificate/PKI、FIPS mode restriction、MKA/MACsec state、link failover 與 line-rate 資源。不要只驗證介面 up。
 - 建立 cryptographic inventory：IPsec/FlexVPN/DMVPN/GETVPN、MACsec、SSH/TLS、PKI/ISE、SD-WAN control、ACI/Nexus management、Secure Client/VPN、API/NETCONF/RESTCONF、image signing 與長效憑證；依 HNDL、資料壽命、暴露、法遵與設備生命週期排序。
 
 ## Training And Documentation Delivery
