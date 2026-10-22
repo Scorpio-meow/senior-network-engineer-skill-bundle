@@ -12,6 +12,7 @@
 
 ## 목차
 
+- [빠른 설치](#빠른-설치)
 - [포함된 스킬](#포함된-스킬)
 - [디렉터리 구조](#디렉터리-구조)
 - [설치 전 확인 사항](#설치-전-확인-사항)
@@ -21,6 +22,22 @@
 - [업데이트](#업데이트)
 - [시효성 정보](#시효성-정보)
 - [유지보수 규칙](#유지보수-규칙)
+
+## 빠른 설치
+
+[`skills`](https://github.com/vercel-labs/skills) 명령 한 줄로 5개 스킬을 설치할 수 있습니다. 이 명령은 컴퓨터에 있는 AI 도구를 감지해 각 도구에 맞는 폴더에 스킬을 배치합니다.
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'`는 5개 스킬을 한 번에 모두 설치합니다. 주 스킬은 상대 경로로 subskill을 읽으므로 일부만 설치하지 마세요.
+- `-g`는 개인 디렉터리에 설치합니다(모든 프로젝트에서 사용 가능). `-g`를 빼면 현재 프로젝트에만 설치됩니다.
+- 특정 도구에만 설치하려면 `-a`를 추가하세요(예: `-a claude-code -a codex`). 각 도구에 해당하는 값은 [skills 지원 목록](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)을 참조하세요. `-y`를 추가하면 확인 프롬프트를 건너뜁니다.
+- [Bun](https://bun.sh)이 없다면 `bunx` 대신 `npx`를 사용해도 됩니다(Node.js 22.20 이상 필요).
+- 여러 도구에 설치하면 `bunx skills`는 스킬을 공용 위치인 `~/.agents/skills/`(`-g` 없이 설치하면 프로젝트 내부의 `.agents/skills/`)에 두고, 다른 도구를 위한 링크를 생성합니다.
+- `-a antigravity`는 IDE의 이전 경로 `~/.gemini/antigravity/skills/`에 설치합니다. Antigravity App은 [공통 설치 명령](#공통-설치-명령)으로 `~/.gemini/config/skills`에 설치하세요. 다른 도구에서 설치 후 스킬이 로드되지 않을 때도 수동 설치로 전환해 [플랫폼별 설치](#플랫폼별-설치)에 나열된 폴더에 두세요.
+- Claude 웹/데스크톱과 ChatGPT 웹은 ZIP을 업로드해야 하므로 이 명령을 사용할 수 없습니다.
 
 ## 포함된 스킬
 
@@ -293,6 +310,7 @@ git pull --ff-only
 - 링크로 설치한 도구: pull 직후 변경 사항이 반영됩니다.
 - 복사로 설치한 도구: pull 후 복사 명령을 다시 실행하세요.
 - 업로드 방식 플랫폼(Claude, ChatGPT 웹): 변경된 스킬을 다시 패키징해 재업로드하세요.
+- `bunx skills`로 설치한 도구: `bunx skills update -g`를 실행해 업데이트하세요(소스는 GitHub의 기본 브랜치이며, `bunx skills check`는 확인만 하고 업데이트하지 않습니다). 제거하려면 `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle`을 실행하세요. 5개 스킬이 함께 제거됩니다. 설치할 때 `-g`를 붙이지 않았다면 이 두 명령에서도 `-g`를 빼세요.
 
 ## 시효성 정보
 

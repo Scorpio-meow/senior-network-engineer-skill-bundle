@@ -12,6 +12,7 @@ Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng v�
 
 ## Mục lục
 
+- [Cài đặt nhanh](#cài-đặt-nhanh)
 - [Các skill đi kèm](#các-skill-đi-kèm)
 - [Cấu trúc thư mục](#cấu-trúc-thư-mục)
 - [Trước khi cài đặt](#trước-khi-cài-đặt)
@@ -21,6 +22,22 @@ Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng v�
 - [Cập nhật](#cập-nhật)
 - [Thông tin có tính thời điểm](#thông-tin-có-tính-thời-điểm)
 - [Quy tắc bảo trì](#quy-tắc-bảo-trì)
+
+## Cài đặt nhanh
+
+Dùng lệnh [`skills`](https://github.com/vercel-labs/skills) để cài cả năm skill chỉ bằng một dòng lệnh; lệnh này sẽ phát hiện các công cụ AI trên máy tính của bạn và đặt skill vào thư mục tương ứng:
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'` cài đủ cả năm skill cùng lúc. Skill chính đọc các subskill qua đường dẫn tương đối, vì vậy đừng chỉ cài một vài skill trong số đó.
+- `-g` cài vào thư mục cá nhân (dùng được cho mọi dự án); bỏ `-g` thì chỉ cài vào dự án hiện tại.
+- Để chỉ cài cho một số công cụ cụ thể, hãy thêm `-a`, ví dụ `-a claude-code -a codex`; giá trị dành cho từng công cụ xem tại [danh sách hỗ trợ của skills](https://github.com/vercel-labs/skills/blob/main/docs/agents.md). Thêm `-y` để bỏ qua lời nhắc xác nhận.
+- Nếu chưa có [Bun](https://bun.sh), bạn cũng có thể thay `bunx` bằng `npx` (cần Node.js 22.20 trở lên).
+- Khi cài cho nhiều công cụ, `bunx skills` sẽ đặt skill tại vị trí dùng chung `~/.agents/skills/` (nếu không thêm `-g` thì là `.agents/skills/` bên trong dự án), rồi tạo liên kết cho các công cụ khác.
+- `-a antigravity` sẽ cài vào đường dẫn cũ của IDE là `~/.gemini/antigravity/skills/`; với Antigravity App, hãy dùng [lệnh cài đặt chung](#lệnh-cài-đặt-chung) để cài vào `~/.gemini/config/skills`. Nếu công cụ khác không đọc được skill sau khi cài, cũng hãy chuyển sang cài thủ công vào thư mục được liệt kê trong phần [Cài đặt theo từng nền tảng](#cài-đặt-theo-từng-nền-tảng).
+- Claude web/desktop và ChatGPT web cần tải lên tệp ZIP nên không áp dụng lệnh này.
 
 ## Các skill đi kèm
 
@@ -293,6 +310,7 @@ git pull --ff-only
 - Công cụ cài bằng liên kết: thay đổi có hiệu lực ngay sau khi pull.
 - Công cụ cài bằng cách sao chép: chạy lại lệnh sao chép sau khi pull.
 - Nền tảng dạng tải lên (Claude, ChatGPT web): đóng gói lại và tải lên lại các skill đã thay đổi.
+- Công cụ cài bằng `bunx skills`: chạy `bunx skills update -g` để cập nhật (nguồn là nhánh mặc định trên GitHub; `bunx skills check` chỉ kiểm tra mà không cập nhật). Để gỡ cài đặt, chạy `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle`, cả năm skill sẽ được gỡ cùng lúc. Nếu lúc cài không thêm `-g`, hãy bỏ `-g` khỏi cả hai lệnh này.
 
 ## Thông tin có tính thời điểm
 

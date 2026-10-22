@@ -12,6 +12,7 @@ El contenido sujeto a cambios en el tiempo (versiones, EoL, CVE, PQC, capacidade
 
 ## Contenido
 
+- [Instalación rápida](#instalación-rápida)
 - [Skills incluidas](#skills-incluidas)
 - [Estructura de directorios](#estructura-de-directorios)
 - [Antes de instalar](#antes-de-instalar)
@@ -21,6 +22,22 @@ El contenido sujeto a cambios en el tiempo (versiones, EoL, CVE, PQC, capacidade
 - [Actualización](#actualización)
 - [Información con vigencia limitada](#información-con-vigencia-limitada)
 - [Reglas de mantenimiento](#reglas-de-mantenimiento)
+
+## Instalación rápida
+
+Con el comando [`skills`](https://github.com/vercel-labs/skills) puede instalar las cinco skills en una sola línea; el comando detecta las herramientas de IA de su equipo y coloca las skills en las carpetas correspondientes:
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'` instala las cinco skills a la vez. La skill principal lee las subskills mediante rutas relativas; no instale solo algunas de ellas.
+- `-g` instala en el directorio personal (disponible para todos los proyectos); sin `-g`, se instala solo en el proyecto actual.
+- Para instalar solo en herramientas concretas, agregue `-a`, por ejemplo `-a claude-code -a codex`; consulte el valor de cada herramienta en la [lista de herramientas compatibles de skills](https://github.com/vercel-labs/skills/blob/main/docs/agents.md). Agregue `-y` para omitir la solicitud de confirmación.
+- Si no tiene [Bun](https://bun.sh), también puede reemplazar `bunx` por `npx` (requiere Node.js 22.20 o posterior).
+- Al instalar en varias herramientas, `bunx skills` coloca las skills en la ubicación común `~/.agents/skills/` (sin `-g`, en `.agents/skills/` dentro del proyecto) y luego crea enlaces para las demás herramientas.
+- `-a antigravity` instala en la ruta antigua del IDE, `~/.gemini/antigravity/skills/`; para Antigravity App, use los [comandos de instalación comunes](#comandos-de-instalación-comunes) para instalar en `~/.gemini/config/skills`. Si otra herramienta no carga las skills tras la instalación, cambie también a la instalación manual en las carpetas indicadas en [Instalación por plataforma](#instalación-por-plataforma).
+- Claude web/escritorio y ChatGPT web requieren subir archivos ZIP, por lo que este comando no se aplica a ellos.
 
 ## Skills incluidas
 
@@ -293,6 +310,7 @@ git pull --ff-only
 - Herramientas instaladas mediante enlaces: los cambios se aplican justo después del pull.
 - Herramientas instaladas mediante copia: vuelva a ejecutar el comando de copia después del pull.
 - Plataformas basadas en carga de archivos (Claude, ChatGPT web): vuelva a empaquetar y a subir las skills que cambiaron.
+- Herramientas instaladas mediante `bunx skills`: ejecute `bunx skills update -g` para actualizar (el origen es la rama predeterminada en GitHub; `bunx skills check` solo comprueba, sin actualizar). Para desinstalar, ejecute `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle`; las cinco skills se eliminan juntas. Si instaló sin `-g`, quite también `-g` de estos dos comandos.
 
 ## Información con vigencia limitada
 

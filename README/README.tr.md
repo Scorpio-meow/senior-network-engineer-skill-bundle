@@ -12,6 +12,7 @@ Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve
 
 ## İçindekiler
 
+- [Hızlı kurulum](#hızlı-kurulum)
 - [Dahil edilen skill'ler](#dahil-edilen-skilller)
 - [Dizin yapısı](#dizin-yapısı)
 - [Kurulumdan önce](#kurulumdan-önce)
@@ -21,6 +22,22 @@ Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve
 - [Güncelleme](#güncelleme)
 - [Zamana duyarlı bilgiler](#zamana-duyarlı-bilgiler)
 - [Bakım kuralları](#bakım-kuralları)
+
+## Hızlı kurulum
+
+[`skills`](https://github.com/vercel-labs/skills) komutuyla beş skill'in tamamını tek satırda kurun; komut bilgisayarınızdaki AI araçlarını algılar ve skill'leri ilgili klasörlere yerleştirir:
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'` beş skill'in tamamını tek seferde kurar. Ana skill, subskill'leri göreli yol üzerinden okur; bu nedenle yalnızca birkaçını kurmayın.
+- `-g` kişisel dizine kurar (tüm projelerde kullanılabilir); `-g` kaldırılırsa yalnızca mevcut projeye kurulur.
+- Yalnızca belirli araçlara kurmak için `-a` ekleyin, örneğin `-a claude-code -a codex`; her aracın değeri için [skills destek listesine](https://github.com/vercel-labs/skills/blob/main/docs/agents.md) bakın. Onay istemini atlamak için `-y` ekleyin.
+- [Bun](https://bun.sh) yoksa `bunx` yerine `npx` de kullanabilirsiniz (Node.js 22.20 veya üstü gerekir).
+- Birden fazla araca kurulum yapıldığında `bunx skills`, skill'leri ortak `~/.agents/skills/` konumuna (`-g` olmadan proje içindeki `.agents/skills/` konumuna) koyar, ardından diğer araçlar için link oluşturur.
+- `-a antigravity`, IDE'nin eski yolu olan `~/.gemini/antigravity/skills/` konumuna kurar; Antigravity App için [ortak kurulum komutlarıyla](#ortak-kurulum-komutları) `~/.gemini/config/skills` konumuna kurun. Diğer araçlar kurulumdan sonra skill'leri yüklemezse yine manuel kuruluma geçin ve skill'leri [Platforma göre kurulum](#platforma-göre-kurulum) bölümünde listelenen klasöre koyun.
+- Claude web/masaüstü ve ChatGPT web ZIP yüklemesi gerektirir; bu komut bunlar için geçerli değildir.
 
 ## Dahil edilen skill'ler
 
@@ -293,6 +310,7 @@ git pull --ff-only
 - Link ile kurulan araçlar: değişiklikler pull işleminden hemen sonra geçerli olur.
 - Kopyalanarak kurulan araçlar: pull işleminden sonra kopyalama komutunu yeniden çalıştırın.
 - Yükleme tabanlı platformlar (Claude, ChatGPT web): değişen skill'leri yeniden paketleyip yeniden yükleyin.
+- `bunx skills` ile kurulan araçlar: güncellemek için `bunx skills update -g` çalıştırın (kaynak, GitHub'daki varsayılan branch'tir; `bunx skills check` yalnızca denetler, güncellemez). Kaldırmak için `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle` çalıştırın; beş skill birlikte kaldırılır. Kurulumda `-g` eklemediyseniz bu iki komuttan da `-g` seçeneğini çıkarın.
 
 ## Zamana duyarlı bilgiler
 

@@ -12,6 +12,7 @@ Skill は [Agent Skills オープンフォーマット](https://agentskills.io/s
 
 ## 目次
 
+- [クイックインストール](#クイックインストール)
 - [収録 Skill](#収録-skill)
 - [ディレクトリ構成](#ディレクトリ構成)
 - [インストール前の注意](#インストール前の注意)
@@ -21,6 +22,22 @@ Skill は [Agent Skills オープンフォーマット](https://agentskills.io/s
 - [更新](#更新)
 - [時効性のある情報](#時効性のある情報)
 - [メンテナンスルール](#メンテナンスルール)
+
+## クイックインストール
+
+[`skills`](https://github.com/vercel-labs/skills) コマンドを使うと、1 行で 5 つの Skill をインストールできます。コンピューター上の AI ツールを検出し、対応するフォルダーに配置します：
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'` で 5 つの Skill をまとめてインストールします。メイン Skill は相対パスで subskill を読み込むため、一部だけをインストールしないでください。
+- `-g` は個人ディレクトリにインストールします（すべてのプロジェクトで使用可能）。`-g` を外すと現在のプロジェクトにのみインストールされます。
+- 特定のツールにだけインストールする場合は `-a` を追加します。例：`-a claude-code -a codex`。各ツールの値は [skills の対応一覧](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)を参照してください。`-y` を追加すると確認プロンプトをスキップできます。
+- [Bun](https://bun.sh) がない場合は、`bunx` を `npx` に置き換えても構いません（Node.js 22.20 以上が必要）。
+- 複数のツールにインストールする場合、`bunx skills` は Skill を共有の `~/.agents/skills/`（`-g` なしの場合はプロジェクト内の `.agents/skills/`）に配置し、他のツール用にリンクを作成します。
+- `-a antigravity` は IDE の旧パス `~/.gemini/antigravity/skills/` にインストールします。Antigravity App では[共通インストールコマンド](#共通インストールコマンド)で `~/.gemini/config/skills` にインストールしてください。他のツールでインストール後に読み込まれない場合も、手動インストールに切り替えて[プラットフォーム別インストール](#プラットフォーム別インストール)に記載のフォルダーに配置してください。
+- Claude Web 版/デスクトップ版と ChatGPT Web 版は ZIP のアップロードが必要なため、このコマンドは使用できません。
 
 ## 収録 Skill
 
@@ -293,6 +310,7 @@ git pull --ff-only
 - リンクでインストールしたツール：pull 後すぐに反映されます。
 - コピーでインストールしたツール：pull 後にコピーコマンドを再実行します。
 - アップロード方式のプラットフォーム（Claude、ChatGPT Web 版）：変更のあった Skill を再パッケージしてアップロードします。
+- `bunx skills` でインストールしたツール：`bunx skills update -g` を実行して更新します（取得元は GitHub 上の既定のブランチ。`bunx skills check` は確認のみで更新はしません）。削除するには `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle` を実行します。5 つの Skill がまとめて削除されます。インストール時に `-g` を付けなかった場合は、この 2 つのコマンドからも `-g` を外してください。
 
 ## 時効性のある情報
 

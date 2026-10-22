@@ -12,6 +12,7 @@ Konten yang sensitif terhadap waktu (versi, EoL, CVE, PQC, kapabilitas tool AI, 
 
 ## Daftar Isi
 
+- [Instalasi cepat](#instalasi-cepat)
 - [Skill yang disertakan](#skill-yang-disertakan)
 - [Struktur direktori](#struktur-direktori)
 - [Sebelum instalasi](#sebelum-instalasi)
@@ -21,6 +22,22 @@ Konten yang sensitif terhadap waktu (versi, EoL, CVE, PQC, kapabilitas tool AI, 
 - [Pembaruan](#pembaruan)
 - [Informasi yang sensitif terhadap waktu](#informasi-yang-sensitif-terhadap-waktu)
 - [Aturan pemeliharaan](#aturan-pemeliharaan)
+
+## Instalasi cepat
+
+Gunakan perintah [`skills`](https://github.com/vercel-labs/skills) untuk menginstal kelima skill dengan satu baris; perintah ini mendeteksi tool AI di komputer Anda dan menempatkan skill ke folder yang sesuai:
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'` menginstal kelima skill sekaligus. Skill utama membaca subskill melalui path relatif, jadi jangan hanya menginstal sebagian.
+- `-g` menginstal ke direktori pribadi (dapat digunakan di semua proyek); hapus `-g` untuk menginstal hanya ke proyek saat ini.
+- Untuk menginstal hanya ke tool tertentu, tambahkan `-a`, misalnya `-a claude-code -a codex`; nilai untuk setiap tool tercantum di [daftar dukungan skills](https://github.com/vercel-labs/skills/blob/main/docs/agents.md). Tambahkan `-y` untuk melewati prompt konfirmasi.
+- Jika tidak memiliki [Bun](https://bun.sh), Anda juga dapat mengganti `bunx` dengan `npx` (memerlukan Node.js 22.20 atau lebih baru).
+- Saat menginstal ke beberapa tool, `bunx skills` menempatkan skill di lokasi bersama `~/.agents/skills/` (tanpa `-g`, di `.agents/skills/` di dalam proyek), lalu membuat link untuk tool lainnya.
+- `-a antigravity` menginstal ke path lama IDE `~/.gemini/antigravity/skills/`; untuk Antigravity App, gunakan [perintah instalasi umum](#perintah-instalasi-umum) untuk menginstal ke `~/.gemini/config/skills`. Jika tool lain tidak memuat skill setelah instalasi, beralihlah juga ke instalasi manual dan letakkan skill di folder yang tercantum di [Instalasi per platform](#instalasi-per-platform).
+- Claude web/desktop dan ChatGPT web memerlukan unggahan ZIP; perintah ini tidak berlaku untuk keduanya.
 
 ## Skill yang disertakan
 
@@ -293,6 +310,7 @@ git pull --ff-only
 - Tool yang diinstal melalui link: perubahan langsung berlaku setelah pull.
 - Tool yang diinstal dengan cara menyalin: jalankan ulang perintah salin setelah pull.
 - Platform berbasis unggahan (Claude, ChatGPT web): kemas ulang dan unggah ulang skill yang berubah.
+- Tool yang diinstal dengan `bunx skills`: jalankan `bunx skills update -g` untuk memperbarui (sumbernya adalah branch default di GitHub; `bunx skills check` hanya memeriksa tanpa memperbarui). Untuk menghapus, jalankan `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle`; kelima skill akan dihapus sekaligus. Jika saat instalasi Anda tidak menambahkan `-g`, hapus juga `-g` dari kedua perintah ini.
 
 ## Informasi yang sensitif terhadap waktu
 

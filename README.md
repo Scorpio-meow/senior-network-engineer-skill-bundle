@@ -10,6 +10,7 @@ Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)�
 
 ## 目錄
 
+- [快速安裝](#快速安裝)
 - [包含的 Skill](#包含的-skill)
 - [目錄結構](#目錄結構)
 - [安裝前須知](#安裝前須知)
@@ -19,6 +20,22 @@ Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)�
 - [更新](#更新)
 - [時效性資訊](#時效性資訊)
 - [維護規則](#維護規則)
+
+## 快速安裝
+
+用 [`skills`](https://github.com/vercel-labs/skills) 指令一行安裝五個 Skill，它會偵測你電腦上的 AI 工具並放到對應的資料夾：
+
+```bash
+bunx skills add Scorpio-meow/senior-network-engineer-skill-bundle --skill '*' -g
+```
+
+- `--skill '*'` 一次裝齊五個 Skill。主 Skill 以相對路徑讀取 subskill，不要只裝其中幾個。
+- `-g` 裝到個人目錄（所有專案都能用）；拿掉 `-g` 則只裝到目前的專案。
+- 只裝給特定工具，加上 `-a`，例如 `-a claude-code -a codex`；各工具的值見 [skills 的支援清單](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)。加上 `-y` 可略過確認提示。
+- 沒有 [Bun](https://bun.sh) 的話，把 `bunx` 換成 `npx` 也可以（需要 Node.js 22.20 以上）。
+- 裝給多個工具時，`bunx skills` 會把 Skill 放在共用的 `~/.agents/skills/`（不加 `-g` 時是專案內的 `.agents/skills/`），再替其他工具建立連結。
+- `-a antigravity` 會裝到 IDE 的舊路徑 `~/.gemini/antigravity/skills/`；Antigravity App 請用[通用安裝指令](#通用安裝指令)裝到 `~/.gemini/config/skills`。其他工具裝完沒讀到時，也改用手動安裝，放到[各平台安裝](#各平台安裝)列出的資料夾。
+- Claude 網頁版/桌面版與 ChatGPT 網頁版要上傳 ZIP，不適用這個指令。
 
 ## 包含的 Skill
 
@@ -291,6 +308,7 @@ git pull --ff-only
 - 以連結安裝的工具：pull 後立即生效。
 - 以複製安裝的工具：pull 後重新執行複製指令。
 - 以上傳安裝的平台（Claude、ChatGPT 網頁版）：重新打包並上傳有變更的 Skill。
+- 以 `bunx skills` 安裝的工具：執行 `bunx skills update -g` 更新（來源是 GitHub 上的預設分支；`bunx skills check` 只檢查不更新）。移除時執行 `bunx skills remove -g Scorpio-meow/senior-network-engineer-skill-bundle`，五個 Skill 會一起移除。安裝時沒加 `-g` 的，這兩個指令也拿掉 `-g`。
 
 ## 時效性資訊
 
