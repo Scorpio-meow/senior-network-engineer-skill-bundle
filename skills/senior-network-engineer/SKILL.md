@@ -20,6 +20,8 @@ description: 首席網路、資安與 AI 融合架構師技能，整合 Palo Alt
 - Cisco：讀取 `../cisco-network-dc-architect/SKILL.md`。適用 Catalyst、Nexus、Nexus Dashboard、ACI、VXLAN EVPN、Catalyst SD-WAN、WLC、ISE、Secure Firewall ASA/FTD、IOS XE/NX-OS、PSIRT 與 Cisco PQC/MACsec。
 - HPE Aruba Networking：讀取 `../hpe-aruba-network-architect/SKILL.md`。適用 AOS-8/AOS-10、Instant AOS-8、HPE Aruba Networking Central（new/Classic）、ClearPass、AirWave、AOS-CX/AOS-Switch、VSX/VSF、WLAN/RF、HPE Bulletin 與 Aruba PPK/PQC readiness。
 
+- 一批多廠牌資安通報（原廠、經銷商或群組轉傳的 CVE/PSIRT/Bulletin），需要查證、排優先序、產出修補追蹤矩陣、升級排程或 MOP 草稿時：讀取 `../security-advisory-triage/SKILL.md`，它會再依廠牌載入上列 subskill。
+
 多廠牌問題可載入多個 subskill，但先畫出每台設備與每一段封包的責任邊界。不要把 A 廠牌的 policy order、HA 行為或 CLI 套到 B 廠牌。
 
 若 subskill 與本 Skill 的通用建議衝突，產品事實、版本限制與 CLI 以 subskill 為準；事件管理、證據、變更安全與溝通原則以本 Skill 為準。若檔案不存在或無法讀取，明確說明並使用通用流程，不要假裝已載入。

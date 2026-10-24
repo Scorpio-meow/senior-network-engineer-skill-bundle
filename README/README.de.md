@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | **Deutsch** | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-Ein persönliches Skill-Bundle für Senior Network Engineers: ein herstellerübergreifender Haupt-Skill plus vier herstellerspezifische Subskills, verwaltet in einem einzigen Git-Repository, damit mehrere Computer und AI-Tools eine gemeinsame Single Source of Truth nutzen.
+Ein persönliches Skill-Bundle für Senior Network Engineers: ein herstellerübergreifender Haupt-Skill, vier herstellerspezifische Subskills und ein Skill für die stapelweise Triage von Sicherheitshinweisen, verwaltet in einem einzigen Git-Repository, damit mehrere Computer und AI-Tools eine gemeinsame Single Source of Truth nutzen.
 
 Die Skills folgen dem [offenen Agent-Skills-Format](https://agentskills.io/specification) (jeder Ordner enthält `SKILL.md` und optional `references/`) und lassen sich in Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot und weiteren Tools installieren, die dieses Format unterstützen.
 
-Zeitkritische Inhalte (Versionen, EoL, CVEs, PQC, Funktionen und Installationspfade von AI-Tools) wurden mit Stand **2026-09-27** verifiziert.
+Zeitkritische Inhalte (Versionen, EoL, CVEs, PQC, Funktionen und Installationspfade von AI-Tools) wurden mit Stand **2026-09-27** verifiziert; die Sicherheitshinweise von Palo Alto, Fortinet und HPE Aruba vom Oktober 2026 wurden zusätzlich mit Stand **2026-10-24** verifiziert.
 
 > **Hinweis zur Sprache:** Die Skill-Inhalte sind in traditionellem Chinesisch verfasst und weisen die AI an, standardmäßig in traditionellem Chinesisch mit der in Taiwan üblichen Enterprise-IT-Terminologie zu antworten. Wenn Sie Antworten in einer anderen Sprache benötigen, geben Sie diese in Ihrer Anfrage ausdrücklich an.
 
@@ -31,6 +31,7 @@ Zeitkritische Inhalte (Versionen, EoL, CVEs, PQC, Funktionen und Installationspf
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS, FortiManager, FortiAnalyzer, SD-WAN, ZTNA, Migration von SSL VPN zu IPsec, PSIRT und PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst, Nexus/Nexus Dashboard, ACI, VXLAN EVPN, Catalyst SD-WAN, 9800/CW9800 WLC, ISE, Secure Firewall, PSIRT und PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10, Instant AOS-8, HPE Aruba Networking Central, ClearPass, AOS-CX/AOS-Switch, HPE Security Bulletins und PPK/PQC |
+| `security-advisory-triage` | Stapelweise Triage herstellerübergreifender Sicherheitshinweise. Prüft von Herstellern, Resellern oder Chatgruppen weitergeleitete CVE/PSIRT/Bulletins anhand der Originalquelle des Herstellers, erkennt Fehler und Marketingaussagen, ordnet sie den Assets des Kunden zu und erstellt eine Patch-Tracking-Matrix, einen Upgrade-Zeitplan und MOP-Entwürfe; Produktdetails übernehmen die oben genannten herstellerspezifischen Subskills |
 
 ## Verzeichnisstruktur
 
@@ -59,15 +60,19 @@ Zeitkritische Inhalte (Versionen, EoL, CVEs, PQC, Funktionen und Installationspf
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## Vor der Installation
 
-1. **Installieren Sie alle fünf Skills in denselben Ordner.** Der Haupt-Skill lädt die Subskills über den relativen Pfad `../<subskill>/SKILL.md`, der nur aufgelöst wird, wenn die fünf Ordner nebeneinander liegen.
+1. **Installieren Sie alle sechs Skills in denselben Ordner.** Der Haupt-Skill und `security-advisory-triage` laden andere Skills über den relativen Pfad `../<subskill>/SKILL.md`, der nur aufgelöst wird, wenn die sechs Ordner nebeneinander liegen.
 2. **Benennen Sie die Ordner nicht um.** Die meisten Tools verlangen, dass der Ordnername mit dem `name` in `SKILL.md` übereinstimmt, und überspringen einen Skill bei Abweichung möglicherweise stillschweigend.
-3. **Laden Sie auf Upload-basierten Plattformen (Claude Web/Desktop, ChatGPT Web) alle fünf hoch und aktivieren Sie sie.** Auf diesen Plattformen ist jeder Skill eigenständig. Laut Anthropic Help Center können Skills nicht explizit auf andere Skills verweisen, Claude kombiniert jedoch bei Bedarf automatisch mehrere Skills.
+3. **Laden Sie auf Upload-basierten Plattformen (Claude Web/Desktop, ChatGPT Web) alle sechs hoch und aktivieren Sie sie.** Auf diesen Plattformen ist jeder Skill eigenständig. Laut Anthropic Help Center können Skills nicht explizit auf andere Skills verweisen, Claude kombiniert jedoch bei Bedarf automatisch mehrere Skills.
 4. **Einmal installieren, toolübergreifend nutzen.** `~/.agents/skills` ist ein toolübergreifender Speicherort, der von Codex/ChatGPT Desktop, Cursor, GitHub Copilot und Gemini CLI gelesen wird; Claude Code und Antigravity benötigen eigene Verzeichnisse.
 
 ## Allgemeine Installationsbefehle
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # Für den Projektbereich .claude/skills verwenden
 Verfügbar in kostenpflichtigen Plänen (Pro, Max, Team, Enterprise).
 
 1. Aktivieren Sie die Codeausführung: **Settings > Capabilities > Code execution and file creation**. Bei Team/Enterprise muss ein Owner Skills und Codeausführung unter **Organization settings > Plugins & skills** aktivieren.
-2. Packen Sie jeden der fünf Skills in ein eigenes ZIP. Die oberste Ebene im ZIP muss der Skill-Ordner selbst sein (zum Beispiel `palo-alto-architect/SKILL.md`); legen Sie `SKILL.md` nicht direkt in das Stammverzeichnis des ZIP.
+2. Packen Sie jeden der sechs Skills in ein eigenes ZIP. Die oberste Ebene im ZIP muss der Skill-Ordner selbst sein (zum Beispiel `palo-alto-architect/SKILL.md`); legen Sie `SKILL.md` nicht direkt in das Stammverzeichnis des ZIP.
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ Verfügbar in kostenpflichtigen Plänen (Pro, Max, Team, Enterprise).
    }
    ```
 
-3. Öffnen Sie **Customize > Skills**, wählen Sie **+** → **Create skill** → **Upload a skill**, laden Sie die fünf ZIPs nacheinander hoch und aktivieren Sie alle.
+3. Öffnen Sie **Customize > Skills**, wählen Sie **+** → **Create skill** → **Upload a skill**, laden Sie die sechs ZIPs nacheinander hoch und aktivieren Sie alle.
 4. Beschreiben Sie Ihre Aufgabe in einer Unterhaltung, damit die Skills automatisch verwendet werden, oder geben Sie `/` im Eingabefeld ein, um einen Skill auszuwählen.
 
-**Längenbegrenzung der Beschreibung:** Laut Claude Help Center gilt für Beschreibungen ein Limit von 200 Zeichen (die Entwicklerdokumentation auf claude.com und die Agent-Skills-Spezifikation erlauben 1.024 Zeichen). Dieses Bundle hält sich an das strengere Limit von 200 Zeichen; die fünf Beschreibungen umfassen jeweils 161–177 Zeichen.
+**Längenbegrenzung der Beschreibung:** Laut Claude Help Center gilt für Beschreibungen ein Limit von 200 Zeichen (die Entwicklerdokumentation auf claude.com und die Agent-Skills-Spezifikation erlauben 1.024 Zeichen). Dieses Bundle hält sich an das strengere Limit von 200 Zeichen; die sechs Beschreibungen umfassen jeweils 135–177 Zeichen.
 
-**Alternative: alle fünf Skills auf einmal als Plugin hochladen** (ab Pro-Plan). Claude-Plugins benötigen ein `.claude-plugin/plugin.json`-Manifest, das in diesem Repository nicht enthalten ist; erzeugen Sie es beim Packen:
+**Alternative: alle sechs Skills auf einmal als Plugin hochladen** (ab Pro-Plan). Claude-Plugins benötigen ein `.claude-plugin/plugin.json`-Manifest, das in diesem Repository nicht enthalten ist; erzeugen Sie es beim Packen:
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ Laden Sie anschließend `dist/senior-network-engineer-bundle.zip` unter **Custom
 
 1. Wählen Sie in der Seitenleiste **Plugins**.
 2. Öffnen Sie im **Plugin Directory** den Tab **Skills**.
-3. Wählen Sie **Create** → **Upload from your computer** und laden Sie die fünf Skills nacheinander hoch. ChatGPT scannt jeden Upload zuerst; das Ergebnis kann „Needs Review“ oder „Blocked“ lauten.
+3. Wählen Sie **Create** → **Upload from your computer** und laden Sie die sechs Skills nacheinander hoch. ChatGPT scannt jeden Upload zuerst; das Ergebnis kann „Needs Review“ oder „Blocked“ lauten.
 
 Die offizielle Dokumentation von OpenAI legt das Dateiformat für den Upload nicht fest. Versuchen Sie zunächst die ZIPs pro Skill aus dem vorherigen Abschnitt; werden diese nicht akzeptiert, passen Sie sie gemäß den Hinweisen auf dem Upload-Bildschirm an.
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # Oder ~/.agents/skills; für den Projektbereich .g
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # Alle fünf Skills im selben Kategorieordner ablegen
+DEST=~/.hermes/skills/network   # Alle sechs Skills im selben Kategorieordner ablegen
 ```
 
 - Neue Skills werden in einer neuen Session wirksam (oder führen Sie `/reset` aus).
@@ -271,6 +276,12 @@ $senior-network-engineer Analysieren Sie diesen herstellerübergreifenden Netzwe
 ```
 
 Bei Fragen zu einem einzelnen Hersteller können Sie einen Subskill direkt aufrufen, etwa `palo-alto-architect`, `fortinet-security-fabric-architect`, `cisco-network-dc-architect` oder `hpe-aruba-network-architect`.
+
+Wenn Sie einen Stapel Sicherheitshinweise erhalten, können Sie `security-advisory-triage` aufrufen, zum Beispiel in Codex:
+
+```text
+$security-advisory-triage Das sind die Hinweise und Anhänge, die diese Woche in der Gruppe eingegangen sind. Prüfen Sie sie beim Hersteller und erstellen Sie daraus eine Patch-Tracking-Matrix und einen Upgrade-Zeitplan. Bitte antworten Sie auf Deutsch.
+```
 
 ## Aktualisierung
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## Wartungsregeln
 
 - Bearbeiten Sie die maßgeblichen Skills ausschließlich in `skills/`; bearbeiten Sie nicht die Kopien an den Installationsorten.
-- Halten Sie die fünf Skills auf derselben Ebene; halten Sie `SKILL.md` knapp und unter 500 Zeilen, Details gehören in ein nur eine Ebene tiefes `references/`.
+- Halten Sie die sechs Skills auf derselben Ebene; halten Sie `SKILL.md` knapp und unter 500 Zeilen, Details gehören in ein nur eine Ebene tiefes `references/`.
 - Der `name` im Frontmatter muss mit dem Ordnernamen übereinstimmen; `description` darf höchstens 200 Zeichen lang sein (passend zum Upload-Limit des Claude Help Center) und muss sowohl angeben, was der Skill tut, als auch, wann er ausgelöst werden soll.
 - Machen Sie keine Angaben zu CVEs, fixed releases, EoL, PQC, CLI, Lizenzierung oder Funktionen von AI-Plattformen aus dem Gedächtnis; stützen Sie sich auf Hersteller- bzw. offizielle Dokumentation und halten Sie das Verifizierungsdatum fest.
 - Committen Sie keine Kundenkonfigurationen, PCAPs, Konten, Passwörter, PSKs, privaten Schlüssel, API-Tokens, Lizenzen oder Ticket-Anhänge.

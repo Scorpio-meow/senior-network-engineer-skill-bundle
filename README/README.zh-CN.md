@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | **简体中文** | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-个人使用的资深网络工程师 Skill 套件：一个跨厂商主 Skill 加上四个厂商 subskill，集中在同一个 Git 仓库中，让多台电脑、多种 AI 工具共用同一份正本。
+个人使用的资深网络工程师 Skill 套件：一个跨厂商主 Skill、四个厂商 subskill，加上一个安全通告批量分流 Skill，集中在同一个 Git 仓库中，让多台电脑、多种 AI 工具共用同一份正本。
 
 Skill 采用 [Agent Skills 开放格式](https://agentskills.io/specification)（文件夹内含 `SKILL.md` 与可选的 `references/`），可安装到 Claude、ChatGPT/Codex、Google Antigravity、Gemini CLI、Cursor、GitHub Copilot 等支持此格式的工具。
 
-时效性内容（版本、EoL、CVE、PQC、AI 工具能力与安装路径）的核查基准日为 **2026-09-27**。
+时效性内容（版本、EoL、CVE、PQC、AI 工具能力与安装路径）的核查基准日为 **2026-09-27**；2026 年 10 月的 Palo Alto、Fortinet、HPE Aruba 安全通告另于 **2026-10-24** 核查。
 
 > **语言说明：** Skill 正文以繁体中文撰写，并指示 AI 默认使用繁体中文与台湾企业 IT 术语回答。如需其他语言，请在请求中明确说明。
 
@@ -31,6 +31,7 @@ Skill 采用 [Agent Skills 开放格式](https://agentskills.io/specification)�
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS、FortiManager、FortiAnalyzer、SD-WAN、ZTNA、SSL VPN 至 IPsec 迁移、PSIRT 与 PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst、Nexus/Nexus Dashboard、ACI、VXLAN EVPN、Catalyst SD-WAN、9800/CW9800 WLC、ISE、Secure Firewall、PSIRT 与 PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10、Instant AOS-8、HPE Aruba Networking Central、ClearPass、AOS-CX/AOS-Switch、HPE Security Bulletin 与 PPK/PQC |
+| `security-advisory-triage` | 多厂商安全通告批量分流。把原厂、经销商或群组转发的 CVE/PSIRT/Bulletin 回原厂查证、找出错误与营销说法、对应客户资产，产出补丁跟踪矩阵、升级排期与 MOP 草稿；产品细节交给上列厂商 subskill |
 
 ## 目录结构
 
@@ -59,15 +60,19 @@ Skill 采用 [Agent Skills 开放格式](https://agentskills.io/specification)�
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## 安装前须知
 
-1. **五个 Skill 一起安装到同一个文件夹。** 主 Skill 以相对路径 `../<subskill>/SKILL.md` 加载 subskill，只有五个文件夹并排时才能找到。
+1. **六个 Skill 一起安装到同一个文件夹。** 主 Skill 与 `security-advisory-triage` 以相对路径 `../<subskill>/SKILL.md` 加载其他 Skill，只有六个文件夹并排时才能找到。
 2. **不要修改文件夹名称。** 多数工具要求文件夹名称与 `SKILL.md` 的 `name` 一致，不一致时可能直接跳过不加载。
-3. **以上传方式安装的平台（Claude 网页版/桌面版、ChatGPT 网页版）五个都要上传并启用。** 这类平台中每个 Skill 各自独立，Anthropic 帮助中心表示 Skill 无法显式引用其他 Skill，但 Claude 会自动组合使用多个 Skill。
+3. **以上传方式安装的平台（Claude 网页版/桌面版、ChatGPT 网页版）六个都要上传并启用。** 这类平台中每个 Skill 各自独立，Anthropic 帮助中心表示 Skill 无法显式引用其他 Skill，但 Claude 会自动组合使用多个 Skill。
 4. **一次安装、多工具共用。** `~/.agents/skills` 是跨工具的共用位置，Codex/ChatGPT 桌面版、Cursor、GitHub Copilot、Gemini CLI 都会读取；Claude Code 与 Antigravity 则需要安装到各自的目录。
 
 ## 通用安装命令
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # 项目范围改用 .claude/skills
 适用于付费方案（Pro、Max、Team、Enterprise）。
 
 1. 开启代码执行：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise 需由 Owner 在 **Organization settings > Plugins & skills** 开启 Skills 与代码执行。
-2. 将五个 Skill 各自打包成 ZIP。ZIP 内的最上层必须是 Skill 文件夹本身（例如 `palo-alto-architect/SKILL.md`），不能把 `SKILL.md` 直接放在 ZIP 根目录。
+2. 将六个 Skill 各自打包成 ZIP。ZIP 内的最上层必须是 Skill 文件夹本身（例如 `palo-alto-architect/SKILL.md`），不能把 `SKILL.md` 直接放在 ZIP 根目录。
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # 项目范围改用 .claude/skills
    }
    ```
 
-3. 前往 **Customize > Skills**，选择 **+** → **Create skill** → **Upload a skill**，依次上传五个 ZIP，并全部开启。
+3. 前往 **Customize > Skills**，选择 **+** → **Create skill** → **Upload a skill**，依次上传六个 ZIP，并全部开启。
 4. 在对话中描述任务即可自动使用，或在输入框输入 `/` 选择 Skill。
 
-**description 长度限制**：Claude 帮助中心写明 description 上限为 200 字符（claude.com 开发者文档与 Agent Skills 规范为 1,024 字符）。本套件按较严格的 200 字符撰写，五个 description 均为 161–177 字符。
+**description 长度限制**：Claude 帮助中心写明 description 上限为 200 字符（claude.com 开发者文档与 Agent Skills 规范为 1,024 字符）。本套件按较严格的 200 字符撰写，六个 description 均为 135–177 字符。
 
-**替代方式：以 plugin 一次上传五个 Skill**（Pro 及以上方案）。Claude 的 plugin 需要 `.claude-plugin/plugin.json` 清单文件，本仓库未内置，可在打包时生成：
+**替代方式：以 plugin 一次上传六个 Skill**（Pro 及以上方案）。Claude 的 plugin 需要 `.claude-plugin/plugin.json` 清单文件，本仓库未内置，可在打包时生成：
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ EOF
 
 1. 在侧边栏选择 **Plugins**。
 2. 在 **Plugin Directory** 选择 **Skills** 标签页。
-3. 选择 **Create** → **Upload from your computer**，逐一上传五个 Skill。ChatGPT 会先扫描，结果可能显示“Needs Review”或“Blocked”。
+3. 选择 **Create** → **Upload from your computer**，逐一上传六个 Skill。ChatGPT 会先扫描，结果可能显示“Needs Review”或“Blocked”。
 
 OpenAI 官方文档未说明上传的文件格式；可先尝试上一节的单一 Skill ZIP，若不被接受，再按上传界面的说明调整。
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # 或 ~/.agents/skills；项目范围用 .github/sk
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # 五个 Skill 放在同一个分类文件夹下
+DEST=~/.hermes/skills/network   # 六个 Skill 放在同一个分类文件夹下
 ```
 
 - 新 Skill 在新 session 生效（或执行 `/reset`）。
@@ -271,6 +276,12 @@ $senior-network-engineer 请分析这个跨厂商网络异常，先列出证据�
 ```
 
 单一厂商问题可直接调用 subskill，例如 `palo-alto-architect`、`fortinet-security-fabric-architect`、`cisco-network-dc-architect` 或 `hpe-aruba-network-architect`。
+
+收到一批安全通告时，可调用 `security-advisory-triage`，例如在 Codex：
+
+```text
+$security-advisory-triage 这是本周群组收到的通告和附件，请回原厂查证，整理成补丁跟踪矩阵与升级排期。请用简体中文回答。
+```
 
 ## 更新
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## 维护规则
 
 - 只在 `skills/` 内修改 Skill 正本；不要直接修改安装位置的复制版本。
-- 保持五个 Skill 同层；`SKILL.md` 保持精简且少于 500 行，细节放入一层深度的 `references/`。
+- 保持六个 Skill 同层；`SKILL.md` 保持精简且少于 500 行，细节放入一层深度的 `references/`。
 - Frontmatter `name` 必须与文件夹名称一致；`description` 不超过 200 字符（配合 Claude 帮助中心的上传限制），并同时写明功能与触发时机。
 - 不凭记忆声称 CVE、fixed release、EoL、PQC、CLI、license 或 AI 平台功能；以原厂或官方文档为准并写明核查日期。
 - 不提交客户配置、PCAP、账号、密码、PSK、私钥、API token、license 或工单附件。

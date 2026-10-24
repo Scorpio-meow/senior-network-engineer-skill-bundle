@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | **日本語** | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-個人利用向けのシニアネットワークエンジニア Skill バンドルです。マルチベンダー対応のメイン Skill 1 つと、ベンダー別の subskill 4 つを 1 つの Git リポジトリにまとめ、複数のコンピューターや AI ツールで同じ正本を共有できるようにしています。
+個人利用向けのシニアネットワークエンジニア Skill バンドルです。マルチベンダー対応のメイン Skill 1 つ、ベンダー別の subskill 4 つ、セキュリティアドバイザリのバッチトリアージ Skill 1 つを 1 つの Git リポジトリにまとめ、複数のコンピューターや AI ツールで同じ正本を共有できるようにしています。
 
 Skill は [Agent Skills オープンフォーマット](https://agentskills.io/specification)（フォルダーに `SKILL.md` と任意の `references/` を含む）に準拠しており、Claude、ChatGPT/Codex、Google Antigravity、Gemini CLI、Cursor、GitHub Copilot など、このフォーマットに対応したツールにインストールできます。
 
-時効性のある内容（バージョン、EoL、CVE、PQC、AI ツールの機能とインストールパス）の確認基準日は **2026-09-27** です。
+時効性のある内容（バージョン、EoL、CVE、PQC、AI ツールの機能とインストールパス）の確認基準日は **2026-09-27** です。2026 年 10 月の Palo Alto、Fortinet、HPE Aruba のセキュリティアドバイザリについては、別途 **2026-10-24** にも確認しています。
 
 > **言語について：** Skill 本文は繁体字中国語で書かれており、AI には既定で繁体字中国語と台湾の企業 IT 用語で回答するよう指示しています。他の言語で回答が必要な場合は、リクエスト内で明示してください。
 
@@ -31,6 +31,7 @@ Skill は [Agent Skills オープンフォーマット](https://agentskills.io/s
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS、FortiManager、FortiAnalyzer、SD-WAN、ZTNA、SSL VPN から IPsec への移行、PSIRT と PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst、Nexus/Nexus Dashboard、ACI、VXLAN EVPN、Catalyst SD-WAN、9800/CW9800 WLC、ISE、Secure Firewall、PSIRT と PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10、Instant AOS-8、HPE Aruba Networking Central、ClearPass、AOS-CX/AOS-Switch、HPE Security Bulletin と PPK/PQC |
+| `security-advisory-triage` | マルチベンダーのセキュリティアドバイザリのバッチトリアージ。ベンダー、販売代理店、グループ経由で転送された CVE/PSIRT/Bulletin をベンダーの一次情報で裏取りし、誤りやマーケティング上の表現を洗い出し、顧客資産と照合して、パッチ適用トラッキングマトリクス、アップグレード計画、MOP ドラフトを作成。製品の詳細は上記のベンダー別 subskill に任せる |
 
 ## ディレクトリ構成
 
@@ -59,15 +60,19 @@ Skill は [Agent Skills オープンフォーマット](https://agentskills.io/s
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## インストール前の注意
 
-1. **5 つの Skill は同じフォルダーにまとめてインストールしてください。** メイン Skill は相対パス `../<subskill>/SKILL.md` で subskill を読み込むため、5 つのフォルダーが並んでいないと見つかりません。
+1. **6 つの Skill は同じフォルダーにまとめてインストールしてください。** メイン Skill と `security-advisory-triage` は相対パス `../<subskill>/SKILL.md` で他の Skill を読み込むため、6 つのフォルダーが並んでいないと見つかりません。
 2. **フォルダー名を変更しないでください。** 多くのツールはフォルダー名と `SKILL.md` の `name` の一致を要求し、一致しない場合は読み込まずにスキップすることがあります。
-3. **アップロード方式のプラットフォーム（Claude Web 版/デスクトップ版、ChatGPT Web 版）では 5 つすべてをアップロードして有効化してください。** これらのプラットフォームでは各 Skill が独立しています。Anthropic ヘルプセンターによると Skill は他の Skill を明示的に参照できませんが、Claude は複数の Skill を自動的に組み合わせて使用します。
+3. **アップロード方式のプラットフォーム（Claude Web 版/デスクトップ版、ChatGPT Web 版）では 6 つすべてをアップロードして有効化してください。** これらのプラットフォームでは各 Skill が独立しています。Anthropic ヘルプセンターによると Skill は他の Skill を明示的に参照できませんが、Claude は複数の Skill を自動的に組み合わせて使用します。
 4. **一度のインストールで複数ツールから共有できます。** `~/.agents/skills` はツール横断の共有場所で、Codex/ChatGPT デスクトップ版、Cursor、GitHub Copilot、Gemini CLI が読み込みます。Claude Code と Antigravity はそれぞれ専用のディレクトリへのインストールが必要です。
 
 ## 共通インストールコマンド
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # プロジェクト範囲では .claude/skills を
 有料プラン（Pro、Max、Team、Enterprise）で利用できます。
 
 1. コード実行を有効にします：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise では Owner が **Organization settings > Plugins & skills** で Skills とコード実行を有効にする必要があります。
-2. 5 つの Skill をそれぞれ個別の ZIP にパッケージします。ZIP 内の最上位は Skill フォルダーそのもの（例：`palo-alto-architect/SKILL.md`）である必要があり、`SKILL.md` を ZIP のルートに直接置いてはいけません。
+2. 6 つの Skill をそれぞれ個別の ZIP にパッケージします。ZIP 内の最上位は Skill フォルダーそのもの（例：`palo-alto-architect/SKILL.md`）である必要があり、`SKILL.md` を ZIP のルートに直接置いてはいけません。
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # プロジェクト範囲では .claude/skills を
    }
    ```
 
-3. **Customize > Skills** を開き、**+** → **Create skill** → **Upload a skill** を選択して 5 つの ZIP を順にアップロードし、すべて有効にします。
+3. **Customize > Skills** を開き、**+** → **Create skill** → **Upload a skill** を選択して 6 つの ZIP を順にアップロードし、すべて有効にします。
 4. 会話でタスクを説明すると自動的に使用されます。入力欄で `/` を入力して Skill を選ぶこともできます。
 
-**description の文字数制限**：Claude ヘルプセンターでは description の上限を 200 文字としています（claude.com の開発者ドキュメントと Agent Skills 仕様では 1,024 文字）。本バンドルはより厳しい 200 文字に合わせて記述しており、5 つの description はいずれも 161–177 文字です。
+**description の文字数制限**：Claude ヘルプセンターでは description の上限を 200 文字としています（claude.com の開発者ドキュメントと Agent Skills 仕様では 1,024 文字）。本バンドルはより厳しい 200 文字に合わせて記述しており、6 つの description はいずれも 135–177 文字です。
 
-**代替方法：plugin として 5 つの Skill を一括アップロード**（Pro 以上のプラン）。Claude の plugin には `.claude-plugin/plugin.json` マニフェストが必要ですが、本リポジトリには含まれていないため、パッケージ時に生成します：
+**代替方法：plugin として 6 つの Skill を一括アップロード**（Pro 以上のプラン）。Claude の plugin には `.claude-plugin/plugin.json` マニフェストが必要ですが、本リポジトリには含まれていないため、パッケージ時に生成します：
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ EOF
 
 1. サイドバーで **Plugins** を選択します。
 2. **Plugin Directory** で **Skills** タブを開きます。
-3. **Create** → **Upload from your computer** を選び、5 つの Skill を 1 つずつアップロードします。ChatGPT は最初にスキャンを行い、結果が「Needs Review」または「Blocked」と表示されることがあります。
+3. **Create** → **Upload from your computer** を選び、6 つの Skill を 1 つずつアップロードします。ChatGPT は最初にスキャンを行い、結果が「Needs Review」または「Blocked」と表示されることがあります。
 
 OpenAI の公式ドキュメントにはアップロードするファイル形式の説明がありません。まず前節の Skill 単位の ZIP を試し、受け付けられない場合はアップロード画面の説明に従って調整してください。
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # または ~/.agents/skills。プロジェクト�
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # 5 つの Skill を同じカテゴリーフォルダーに配置
+DEST=~/.hermes/skills/network   # 6 つの Skill を同じカテゴリーフォルダーに配置
 ```
 
 - 新しい Skill は新しい session で有効になります（または `/reset` を実行）。
@@ -271,6 +276,12 @@ $senior-network-engineer このマルチベンダー環境のネットワーク�
 ```
 
 単一ベンダーの問題は subskill を直接呼び出すこともできます。例：`palo-alto-architect`、`fortinet-security-fabric-architect`、`cisco-network-dc-architect`、`hpe-aruba-network-architect`。
+
+セキュリティアドバイザリをまとめて受け取ったときは、`security-advisory-triage` を呼び出せます。例えば Codex では：
+
+```text
+$security-advisory-triage 今週グループで受け取ったアドバイザリと添付ファイルです。ベンダーの一次情報で裏取りし、パッチ適用トラッキングマトリクスとアップグレード計画にまとめてください。日本語で回答してください。
+```
 
 ## 更新
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## メンテナンスルール
 
 - Skill の正本は `skills/` 内でのみ編集し、インストール先のコピーは直接編集しないでください。
-- 5 つの Skill は同じ階層に保ち、`SKILL.md` は簡潔に 500 行未満とし、詳細は 1 階層の `references/` に置いてください。
+- 6 つの Skill は同じ階層に保ち、`SKILL.md` は簡潔に 500 行未満とし、詳細は 1 階層の `references/` に置いてください。
 - Frontmatter の `name` はフォルダー名と一致させ、`description` は 200 文字以内（Claude ヘルプセンターのアップロード制限に合わせる）で、機能と発動タイミングの両方を記述してください。
 - CVE、fixed release、EoL、PQC、CLI、ライセンス、AI プラットフォームの機能を記憶に頼って記述せず、ベンダーまたは公式ドキュメントに基づき確認日を明記してください。
 - 顧客の設定、PCAP、アカウント、パスワード、PSK、秘密鍵、API token、ライセンス、チケット添付ファイルをコミットしないでください。

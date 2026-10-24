@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | **English** | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-A personal skill bundle for senior network engineers: one cross-vendor primary skill plus four vendor subskills, kept in a single Git repository so that multiple computers and AI tools share one source of truth.
+A personal skill bundle for senior network engineers: one cross-vendor primary skill, four vendor subskills and one security advisory triage skill, kept in a single Git repository so that multiple computers and AI tools share one source of truth.
 
 The skills follow the [Agent Skills open format](https://agentskills.io/specification) (each folder contains `SKILL.md` and an optional `references/`) and can be installed into Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot and other tools that support the format.
 
-Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and install paths) was verified as of **2026-09-27**.
+Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and install paths) was verified as of **2026-09-27**; the October 2026 Palo Alto, Fortinet and HPE Aruba security advisories were additionally checked on **2026-10-24**.
 
 > **Language note:** The skill content is written in Traditional Chinese and instructs the AI to answer in Traditional Chinese with Taiwan enterprise IT terminology by default. If you need answers in another language, state it explicitly in your request.
 
@@ -31,6 +31,7 @@ Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and insta
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS, FortiManager, FortiAnalyzer, SD-WAN, ZTNA, SSL VPN to IPsec migration, PSIRT and PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst, Nexus/Nexus Dashboard, ACI, VXLAN EVPN, Catalyst SD-WAN, 9800/CW9800 WLC, ISE, Secure Firewall, PSIRT and PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10, Instant AOS-8, HPE Aruba Networking Central, ClearPass, AOS-CX/AOS-Switch, HPE Security Bulletins and PPK/PQC |
+| `security-advisory-triage` | Batch triage of multi-vendor security advisories. Verifies CVE/PSIRT/bulletin items forwarded by vendors, resellers or chat groups against the original vendor sources, catches errors and marketing claims, maps them to customer assets, and produces a patch tracking matrix, upgrade schedule and MOP drafts; product details are delegated to the vendor subskills above |
 
 ## Directory structure
 
@@ -59,15 +60,19 @@ Time-sensitive content (versions, EoL, CVEs, PQC, AI tool capabilities and insta
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## Before you install
 
-1. **Install all five skills into the same folder.** The primary skill loads subskills through the relative path `../<subskill>/SKILL.md`, which only resolves when the five folders sit side by side.
+1. **Install all six skills into the same folder.** The primary skill and `security-advisory-triage` load other skills through the relative path `../<subskill>/SKILL.md`, which only resolves when the six folders sit side by side.
 2. **Do not rename the folders.** Most tools require the folder name to match the `name` in `SKILL.md` and may silently skip a skill when they differ.
-3. **On upload-based platforms (Claude web/desktop, ChatGPT web), upload and enable all five.** Each skill is independent on these platforms. The Anthropic Help Center states that skills cannot explicitly reference other skills, but Claude automatically combines multiple skills when appropriate.
+3. **On upload-based platforms (Claude web/desktop, ChatGPT web), upload and enable all six.** Each skill is independent on these platforms. The Anthropic Help Center states that skills cannot explicitly reference other skills, but Claude automatically combines multiple skills when appropriate.
 4. **Install once, share across tools.** `~/.agents/skills` is a cross-tool location read by Codex/ChatGPT desktop, Cursor, GitHub Copilot and Gemini CLI; Claude Code and Antigravity need their own directories.
 
 ## Common install commands
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # For project scope use .claude/skills
 Available on paid plans (Pro, Max, Team, Enterprise).
 
 1. Enable code execution: **Settings > Capabilities > Code execution and file creation**. On Team/Enterprise, an Owner must enable Skills and code execution in **Organization settings > Plugins & skills**.
-2. Package each of the five skills as its own ZIP. The top level inside the ZIP must be the skill folder itself (for example `palo-alto-architect/SKILL.md`); do not put `SKILL.md` directly at the ZIP root.
+2. Package each of the six skills as its own ZIP. The top level inside the ZIP must be the skill folder itself (for example `palo-alto-architect/SKILL.md`); do not put `SKILL.md` directly at the ZIP root.
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ Available on paid plans (Pro, Max, Team, Enterprise).
    }
    ```
 
-3. Go to **Customize > Skills**, choose **+** → **Create skill** → **Upload a skill**, upload the five ZIPs one by one, and enable all of them.
+3. Go to **Customize > Skills**, choose **+** → **Create skill** → **Upload a skill**, upload the six ZIPs one by one, and enable all of them.
 4. Describe your task in a conversation to use them automatically, or type `/` in the input box to pick a skill.
 
-**Description length limit:** The Claude Help Center states a 200-character limit for descriptions (the claude.com developer docs and the Agent Skills specification allow 1,024 characters). This bundle follows the stricter 200-character limit; the five descriptions are 161–177 characters each.
+**Description length limit:** The Claude Help Center states a 200-character limit for descriptions (the claude.com developer docs and the Agent Skills specification allow 1,024 characters). This bundle follows the stricter 200-character limit; the six descriptions are 135–177 characters each.
 
-**Alternative: upload all five skills at once as a plugin** (Pro plan or higher). Claude plugins require a `.claude-plugin/plugin.json` manifest, which this repository does not include; generate it when packaging:
+**Alternative: upload all six skills at once as a plugin** (Pro plan or higher). Claude plugins require a `.claude-plugin/plugin.json` manifest, which this repository does not include; generate it when packaging:
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ Then upload `dist/senior-network-engineer-bundle.zip` in **Customize > Plugins**
 
 1. Choose **Plugins** in the sidebar.
 2. In **Plugin Directory**, open the **Skills** tab.
-3. Choose **Create** → **Upload from your computer** and upload the five skills one by one. ChatGPT scans each upload first; the result may show "Needs Review" or "Blocked".
+3. Choose **Create** → **Upload from your computer** and upload the six skills one by one. ChatGPT scans each upload first; the result may show "Needs Review" or "Blocked".
 
 OpenAI's official docs do not specify the upload file format. Try the per-skill ZIPs from the previous section first; if they are not accepted, adjust according to the instructions on the upload screen.
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # Or ~/.agents/skills; for project scope use .githu
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # Put all five skills under the same category folder
+DEST=~/.hermes/skills/network   # Put all six skills under the same category folder
 ```
 
 - New skills take effect in a new session (or run `/reset`).
@@ -271,6 +276,12 @@ $senior-network-engineer Analyze this cross-vendor network incident. List the ev
 ```
 
 For single-vendor questions you can invoke a subskill directly, such as `palo-alto-architect`, `fortinet-security-fabric-architect`, `cisco-network-dc-architect` or `hpe-aruba-network-architect`.
+
+When you receive a batch of security advisories, invoke `security-advisory-triage`, for example in Codex:
+
+```text
+$security-advisory-triage Here are the advisories and attachments received in the group this week. Please verify them against the original vendors and compile a patch tracking matrix and upgrade schedule. Please answer in English.
+```
 
 ## Updating
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## Maintenance rules
 
 - Edit the canonical skills only inside `skills/`; do not edit the copies at install locations.
-- Keep the five skills at the same level; keep `SKILL.md` concise and under 500 lines, with details in one-level-deep `references/`.
+- Keep the six skills at the same level; keep `SKILL.md` concise and under 500 lines, with details in one-level-deep `references/`.
 - The frontmatter `name` must match the folder name; `description` must be at most 200 characters (to fit the Claude Help Center upload limit) and state both what the skill does and when to trigger it.
 - Do not claim CVEs, fixed releases, EoL, PQC, CLI, licensing or AI platform features from memory; rely on vendor or official documentation and record the verification date.
 - Do not commit customer configurations, PCAPs, accounts, passwords, PSKs, private keys, API tokens, licenses or ticket attachments.

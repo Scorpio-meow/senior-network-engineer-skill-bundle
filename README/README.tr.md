@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | **Türkçe** | [العربية](README.ar.md)
 
-Kıdemli ağ mühendisleri için kişisel bir skill paketi: üreticiler arası tek bir ana skill ve dört üreticiye özel subskill; birden fazla bilgisayarın ve AI aracının tek bir doğruluk kaynağını paylaşması için tek bir Git deposunda tutulur.
+Kıdemli ağ mühendisleri için kişisel bir skill paketi: üreticiler arası tek bir ana skill, dört üreticiye özel subskill ve güvenlik bildirimlerini toplu olarak sınıflandıran (triage) bir skill; birden fazla bilgisayarın ve AI aracının tek bir doğruluk kaynağını paylaşması için tek bir Git deposunda tutulur.
 
 Skill'ler [Agent Skills açık formatını](https://agentskills.io/specification) izler (her klasör `SKILL.md` ve isteğe bağlı bir `references/` içerir) ve Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot ile bu formatı destekleyen diğer araçlara kurulabilir.
 
-Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve kurulum yolları) **2026-09-27** itibarıyla doğrulanmıştır.
+Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve kurulum yolları) **2026-09-27** itibarıyla doğrulanmıştır; Ekim 2026 tarihli Palo Alto, Fortinet ve HPE Aruba güvenlik bildirimleri ayrıca **2026-10-24** tarihinde kontrol edilmiştir.
 
 > **Dil notu:** Skill içeriği Geleneksel Çince yazılmıştır ve AI'a varsayılan olarak Tayvan kurumsal BT terminolojisiyle Geleneksel Çince yanıt vermesini söyler. Yanıtları başka bir dilde istiyorsanız bunu isteğinizde açıkça belirtin.
 
@@ -31,6 +31,7 @@ Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS, FortiManager, FortiAnalyzer, SD-WAN, ZTNA, SSL VPN'den IPsec'e geçiş, PSIRT ve PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst, Nexus/Nexus Dashboard, ACI, VXLAN EVPN, Catalyst SD-WAN, 9800/CW9800 WLC, ISE, Secure Firewall, PSIRT ve PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10, Instant AOS-8, HPE Aruba Networking Central, ClearPass, AOS-CX/AOS-Switch, HPE Security Bulletins ve PPK/PQC |
+| `security-advisory-triage` | Çok üreticili güvenlik bildirimlerinin toplu triage'ı. Üretici, distribütör veya gruplar üzerinden iletilen CVE/PSIRT/Bulletin kayıtlarını üreticinin kaynağında doğrular, hataları ve pazarlama söylemlerini ayıklar, müşteri varlıklarıyla eşleştirir; yama takip matrisi, yükseltme takvimi ve MOP taslağı üretir; ürün ayrıntılarını yukarıdaki üreticiye özel subskill'lere bırakır |
 
 ## Dizin yapısı
 
@@ -59,15 +60,19 @@ Zamana duyarlı içerik (sürümler, EoL, CVE'ler, PQC, AI aracı yetenekleri ve
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## Kurulumdan önce
 
-1. **Beş skill'in tamamını aynı klasöre kurun.** Ana skill, subskill'leri `../<subskill>/SKILL.md` göreli yolu üzerinden yükler; bu yol yalnızca beş klasör yan yana durduğunda çözümlenir.
+1. **Altı skill'in tamamını aynı klasöre kurun.** Ana skill ve `security-advisory-triage`, diğer skill'leri `../<subskill>/SKILL.md` göreli yolu üzerinden yükler; bu yol yalnızca altı klasör yan yana durduğunda çözümlenir.
 2. **Klasörleri yeniden adlandırmayın.** Çoğu araç, klasör adının `SKILL.md` içindeki `name` ile eşleşmesini gerektirir; ikisi farklı olduğunda skill'i sessizce atlayabilir.
-3. **Yükleme tabanlı platformlarda (Claude web/masaüstü, ChatGPT web) beşini de yükleyip etkinleştirin.** Bu platformlarda her skill bağımsızdır. Anthropic Help Center, skill'lerin diğer skill'lere açıkça başvuramayacağını belirtir; ancak Claude uygun olduğunda birden fazla skill'i otomatik olarak birlikte kullanır.
+3. **Yükleme tabanlı platformlarda (Claude web/masaüstü, ChatGPT web) altısını da yükleyip etkinleştirin.** Bu platformlarda her skill bağımsızdır. Anthropic Help Center, skill'lerin diğer skill'lere açıkça başvuramayacağını belirtir; ancak Claude uygun olduğunda birden fazla skill'i otomatik olarak birlikte kullanır.
 4. **Bir kez kurun, araçlar arasında paylaşın.** `~/.agents/skills`; Codex/ChatGPT masaüstü, Cursor, GitHub Copilot ve Gemini CLI tarafından okunan, araçlar arası ortak bir konumdur; Claude Code ve Antigravity ise kendi dizinlerine ihtiyaç duyar.
 
 ## Ortak kurulum komutları
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # Proje kapsamı için .claude/skills kullanın
 Ücretli planlarda (Pro, Max, Team, Enterprise) kullanılabilir.
 
 1. Kod çalıştırmayı etkinleştirin: **Settings > Capabilities > Code execution and file creation**. Team/Enterprise'da bir Owner'ın **Organization settings > Plugins & skills** altında Skills ve kod çalıştırmayı etkinleştirmesi gerekir.
-2. Beş skill'in her birini ayrı bir ZIP olarak paketleyin. ZIP içindeki en üst düzey, skill klasörünün kendisi olmalıdır (örneğin `palo-alto-architect/SKILL.md`); `SKILL.md` dosyasını doğrudan ZIP kök dizinine koymayın.
+2. Altı skill'in her birini ayrı bir ZIP olarak paketleyin. ZIP içindeki en üst düzey, skill klasörünün kendisi olmalıdır (örneğin `palo-alto-architect/SKILL.md`); `SKILL.md` dosyasını doğrudan ZIP kök dizinine koymayın.
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # Proje kapsamı için .claude/skills kullanın
    }
    ```
 
-3. **Customize > Skills** bölümüne gidin, **+** → **Create skill** → **Upload a skill** seçin, beş ZIP'i tek tek yükleyin ve hepsini etkinleştirin.
+3. **Customize > Skills** bölümüne gidin, **+** → **Create skill** → **Upload a skill** seçin, altı ZIP'i tek tek yükleyin ve hepsini etkinleştirin.
 4. Skill'leri otomatik olarak kullanmak için bir sohbette görevinizi açıklayın veya bir skill seçmek için giriş kutusuna `/` yazın.
 
-**Açıklama uzunluğu sınırı:** Claude Help Center, açıklamalar için 200 karakterlik bir sınır belirtir (claude.com geliştirici dokümanları ve Agent Skills spesifikasyonu 1.024 karaktere izin verir). Bu paket daha katı olan 200 karakter sınırına uyar; beş açıklamanın her biri 161–177 karakterdir.
+**Açıklama uzunluğu sınırı:** Claude Help Center, açıklamalar için 200 karakterlik bir sınır belirtir (claude.com geliştirici dokümanları ve Agent Skills spesifikasyonu 1.024 karaktere izin verir). Bu paket daha katı olan 200 karakter sınırına uyar; altı açıklamanın her biri 135–177 karakterdir.
 
-**Alternatif: beş skill'in tamamını tek seferde bir plugin olarak yükleyin** (Pro plan veya üstü). Claude plugin'leri bir `.claude-plugin/plugin.json` manifest'i gerektirir; bu depo bunu içermez, paketleme sırasında oluşturun:
+**Alternatif: altı skill'in tamamını tek seferde bir plugin olarak yükleyin** (Pro plan veya üstü). Claude plugin'leri bir `.claude-plugin/plugin.json` manifest'i gerektirir; bu depo bunu içermez, paketleme sırasında oluşturun:
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ Ardından `dist/senior-network-engineer-bundle.zip` dosyasını **Customize > Pl
 
 1. Kenar çubuğunda **Plugins** öğesini seçin.
 2. **Plugin Directory** içinde **Skills** sekmesini açın.
-3. **Create** → **Upload from your computer** seçin ve beş skill'i tek tek yükleyin. ChatGPT her yüklemeyi önce tarar; sonuç "Needs Review" veya "Blocked" olarak görünebilir.
+3. **Create** → **Upload from your computer** seçin ve altı skill'i tek tek yükleyin. ChatGPT her yüklemeyi önce tarar; sonuç "Needs Review" veya "Blocked" olarak görünebilir.
 
 OpenAI'ın resmi dokümanları yükleme dosya biçimini belirtmez. Önce önceki bölümdeki skill başına ayrı ZIP'leri deneyin; kabul edilmezlerse yükleme ekranındaki talimatlara göre düzenleyin.
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # Veya ~/.agents/skills; proje kapsamı için .gith
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # Beş skill'in tamamını aynı kategori klasörüne koyun
+DEST=~/.hermes/skills/network   # Altı skill'in tamamını aynı kategori klasörüne koyun
 ```
 
 - Yeni skill'ler yeni bir session'da geçerli olur (veya `/reset` çalıştırın).
@@ -271,6 +276,12 @@ $senior-network-engineer Bu üreticiler arası ağ olayını analiz et. Önce ka
 ```
 
 Tek üreticili sorular için `palo-alto-architect`, `fortinet-security-fabric-architect`, `cisco-network-dc-architect` veya `hpe-aruba-network-architect` gibi bir subskill'i doğrudan çağırabilirsiniz.
+
+Bir grup güvenlik bildirimi aldığınızda `security-advisory-triage` skill'ini çağırabilirsiniz; örneğin Codex'te:
+
+```text
+$security-advisory-triage Bu hafta gruba gelen bildirimler ve ekleri bunlar. Üreticinin kaynağından doğrula, ardından yama takip matrisi ve yükseltme takvimi olarak düzenle. Lütfen Türkçe yanıt ver.
+```
 
 ## Güncelleme
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## Bakım kuralları
 
 - Kanonik skill'leri yalnızca `skills/` içinde düzenleyin; kurulum konumlarındaki kopyaları düzenlemeyin.
-- Beş skill'i aynı düzeyde tutun; `SKILL.md` dosyasını kısa ve 500 satırın altında tutun, ayrıntıları bir düzey derinliğindeki `references/` içine koyun.
+- Altı skill'i aynı düzeyde tutun; `SKILL.md` dosyasını kısa ve 500 satırın altında tutun, ayrıntıları bir düzey derinliğindeki `references/` içine koyun.
 - Frontmatter'daki `name` klasör adıyla eşleşmelidir; `description` en fazla 200 karakter olmalı (Claude Help Center yükleme sınırına uymak için) ve hem skill'in ne yaptığını hem de ne zaman tetikleneceğini belirtmelidir.
 - CVE'ler, fixed release'ler, EoL, PQC, CLI, lisanslama veya AI platform özellikleri hakkında hafızadan iddiada bulunmayın; üretici veya resmi dokümanlara dayanın ve doğrulama tarihini kaydedin.
 - Müşteri yapılandırmalarını, PCAP'leri, hesapları, parolaları, PSK'leri, özel anahtarları, API token'larını, lisansları veya destek kaydı (ticket) eklerini commit etmeyin.

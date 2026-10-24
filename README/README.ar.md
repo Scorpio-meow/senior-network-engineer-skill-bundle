@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | **العربية**
 
-حزمة مهارات شخصية لمهندسي الشبكات الأقدم: مهارة رئيسية واحدة متعددة الموردين إضافةً إلى أربع subskill خاصة بالموردين، محفوظة في مستودع Git واحد بحيث تتشارك عدة أجهزة وأدوات ذكاء اصطناعي مصدرًا واحدًا موثوقًا.
+حزمة مهارات شخصية لمهندسي الشبكات الأقدم: مهارة رئيسية واحدة متعددة الموردين وأربع subskill خاصة بالموردين، إضافةً إلى مهارة لفرز التنبيهات الأمنية (security advisories) دفعةً واحدة، محفوظة في مستودع Git واحد بحيث تتشارك عدة أجهزة وأدوات ذكاء اصطناعي مصدرًا واحدًا موثوقًا.
 
 تتبع المهارات [صيغة Agent Skills المفتوحة](https://agentskills.io/specification) (يحتوي كل مجلد على `SKILL.md` ومجلد `references/` اختياري)، ويمكن تثبيتها في Claude وChatGPT/Codex وGoogle Antigravity وGemini CLI وCursor وGitHub Copilot وغيرها من الأدوات التي تدعم هذه الصيغة.
 
-تم التحقق من المحتوى الحساس للوقت (الإصدارات وEoL وCVE وPQC وقدرات أدوات الذكاء الاصطناعي ومسارات التثبيت) حتى تاريخ **2026-09-27**.
+تم التحقق من المحتوى الحساس للوقت (الإصدارات وEoL وCVE وPQC وقدرات أدوات الذكاء الاصطناعي ومسارات التثبيت) حتى تاريخ **2026-09-27**؛ كما جرى التحقق إضافةً من التنبيهات الأمنية الصادرة في أكتوبر 2026 عن Palo Alto وFortinet وHPE Aruba بتاريخ **2026-10-24**.
 
 > **ملاحظة حول اللغة:** محتوى المهارات مكتوب باللغة الصينية التقليدية، ويوجّه الذكاء الاصطناعي افتراضيًا إلى الإجابة بالصينية التقليدية وباستخدام مصطلحات تقنية المعلومات المعتمدة في مؤسسات تايوان. إذا كنت بحاجة إلى إجابات بلغة أخرى، فاذكر ذلك صراحةً في طلبك.
 
@@ -31,6 +31,7 @@
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS وFortiManager وFortiAnalyzer وSD-WAN وZTNA والترحيل من SSL VPN إلى IPsec وPSIRT وPQC/QKD |
 | `cisco-network-dc-architect` | Catalyst وNexus/Nexus Dashboard وACI وVXLAN EVPN وCatalyst SD-WAN و9800/CW9800 WLC وISE وSecure Firewall وPSIRT وPQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10 وInstant AOS-8 وHPE Aruba Networking Central وClearPass وAOS-CX/AOS-Switch وHPE Security Bulletins وPPK/PQC |
+| `security-advisory-triage` | فرز دفعي للتنبيهات الأمنية متعددة الموردين. يتحقق من CVE/PSIRT/Bulletin التي يعيد المورد أو الموزّع أو المجموعات توجيهها بالرجوع إلى المورد الأصلي، ويكشف الأخطاء والادعاءات التسويقية، ويربطها بأصول العميل، ثم ينتج مصفوفة تتبع التصحيحات وجدول الترقية ومسودة MOP؛ وتُترك تفاصيل المنتجات إلى الـ subskill الخاصة بالموردين أعلاه |
 
 ## بنية المجلدات
 
@@ -59,15 +60,19 @@
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## قبل التثبيت
 
-1. **ثبّت المهارات الخمس جميعها في المجلد نفسه.** تحمّل المهارة الرئيسية الـ subskill عبر المسار النسبي `../<subskill>/SKILL.md`، ولا يُحلّ هذا المسار إلا عندما تكون المجلدات الخمسة متجاورة في المستوى نفسه.
+1. **ثبّت المهارات الست جميعها في المجلد نفسه.** تحمّل المهارة الرئيسية ومهارة `security-advisory-triage` المهارات الأخرى عبر المسار النسبي `../<subskill>/SKILL.md`، ولا يُحلّ هذا المسار إلا عندما تكون المجلدات الستة متجاورة في المستوى نفسه.
 2. **لا تُعِد تسمية المجلدات.** تشترط معظم الأدوات أن يطابق اسم المجلد قيمة `name` في `SKILL.md`، وقد تتجاهل المهارة بصمت عند اختلافهما.
-3. **على المنصات القائمة على الرفع (Claude للويب/سطح المكتب، وChatGPT للويب)، ارفع المهارات الخمس جميعها وفعّلها.** كل مهارة مستقلة على هذه المنصات. يذكر مركز مساعدة Anthropic أن المهارات لا يمكنها الإشارة صراحةً إلى مهارات أخرى، لكن Claude يجمع بين عدة مهارات تلقائيًا عند الحاجة.
+3. **على المنصات القائمة على الرفع (Claude للويب/سطح المكتب، وChatGPT للويب)، ارفع المهارات الست جميعها وفعّلها.** كل مهارة مستقلة على هذه المنصات. يذكر مركز مساعدة Anthropic أن المهارات لا يمكنها الإشارة صراحةً إلى مهارات أخرى، لكن Claude يجمع بين عدة مهارات تلقائيًا عند الحاجة.
 4. **ثبّت مرة واحدة وشارك بين الأدوات.** يُعدّ `~/.agents/skills` موقعًا مشتركًا بين الأدوات تقرؤه تطبيقات Codex/ChatGPT لسطح المكتب وCursor وGitHub Copilot وGemini CLI؛ أما Claude Code وAntigravity فيحتاجان إلى مجلداتهما الخاصة.
 
 ## أوامر التثبيت الشائعة
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # لنطاق المشروع استخدم .claude/sk
 متاح في الخطط المدفوعة (Pro وMax وTeam وEnterprise).
 
 1. فعّل تنفيذ الشيفرة: **Settings > Capabilities > Code execution and file creation**. في خطتي Team/Enterprise، يجب على Owner تفعيل Skills وتنفيذ الشيفرة من **Organization settings > Plugins & skills**.
-2. احزم كل مهارة من المهارات الخمس في ملف ZIP مستقل. يجب أن يكون المستوى الأعلى داخل ملف ZIP هو مجلد المهارة نفسه (مثل `palo-alto-architect/SKILL.md`)؛ لا تضع `SKILL.md` مباشرةً في جذر ملف ZIP.
+2. احزم كل مهارة من المهارات الست في ملف ZIP مستقل. يجب أن يكون المستوى الأعلى داخل ملف ZIP هو مجلد المهارة نفسه (مثل `palo-alto-architect/SKILL.md`)؛ لا تضع `SKILL.md` مباشرةً في جذر ملف ZIP.
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # لنطاق المشروع استخدم .claude/sk
    }
    ```
 
-3. انتقل إلى **Customize > Skills**، واختر **+** ← **Create skill** ← **Upload a skill**، ثم ارفع ملفات ZIP الخمسة واحدًا تلو الآخر وفعّلها جميعًا.
+3. انتقل إلى **Customize > Skills**، واختر **+** ← **Create skill** ← **Upload a skill**، ثم ارفع ملفات ZIP الستة واحدًا تلو الآخر وفعّلها جميعًا.
 4. صِف مهمتك في المحادثة لاستخدامها تلقائيًا، أو اكتب `/` في مربع الإدخال لاختيار مهارة.
 
-**حد طول الوصف:** يذكر مركز مساعدة Claude حدًا قدره 200 حرف للوصف (بينما تسمح وثائق المطورين على claude.com ومواصفة Agent Skills بـ 1,024 حرفًا). تلتزم هذه الحزمة بالحد الأكثر صرامة وهو 200 حرف؛ ويتراوح طول كل وصف من الأوصاف الخمسة بين 161 و177 حرفًا.
+**حد طول الوصف:** يذكر مركز مساعدة Claude حدًا قدره 200 حرف للوصف (بينما تسمح وثائق المطورين على claude.com ومواصفة Agent Skills بـ 1,024 حرفًا). تلتزم هذه الحزمة بالحد الأكثر صرامة وهو 200 حرف؛ ويتراوح طول كل وصف من الأوصاف الستة بين 135 و177 حرفًا.
 
-**بديل: ارفع المهارات الخمس دفعة واحدة على هيئة plugin** (خطة Pro أو أعلى). تتطلب plugins في Claude ملف manifest هو `.claude-plugin/plugin.json`، وهو غير مضمّن في هذا المستودع؛ لذا أنشئه عند الحزم:
+**بديل: ارفع المهارات الست دفعة واحدة على هيئة plugin** (خطة Pro أو أعلى). تتطلب plugins في Claude ملف manifest هو `.claude-plugin/plugin.json`، وهو غير مضمّن في هذا المستودع؛ لذا أنشئه عند الحزم:
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ EOF
 
 1. اختر **Plugins** من الشريط الجانبي.
 2. في **Plugin Directory**، افتح علامة التبويب **Skills**.
-3. اختر **Create** ← **Upload from your computer** وارفع المهارات الخمس واحدة تلو الأخرى. يفحص ChatGPT كل ملف مرفوع أولًا؛ وقد تظهر النتيجة "Needs Review" أو "Blocked".
+3. اختر **Create** ← **Upload from your computer** وارفع المهارات الست واحدة تلو الأخرى. يفحص ChatGPT كل ملف مرفوع أولًا؛ وقد تظهر النتيجة "Needs Review" أو "Blocked".
 
 لا تحدد الوثائق الرسمية لـ OpenAI صيغة ملف الرفع. جرّب أولًا ملفات ZIP الخاصة بكل مهارة من القسم السابق؛ وإذا لم تُقبل، فعدّلها وفقًا للتعليمات الظاهرة في شاشة الرفع.
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # أو ~/.agents/skills؛ لنطاق المشروع
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # ضع المهارات الخمس جميعها ضمن مجلد الفئة نفسه
+DEST=~/.hermes/skills/network   # ضع المهارات الست جميعها ضمن مجلد الفئة نفسه
 ```
 
 - تسري المهارات الجديدة في session جديدة (أو نفّذ `/reset`).
@@ -271,6 +276,12 @@ $senior-network-engineer حلّل حادثة الشبكة هذه متعددة ا
 ```
 
 بالنسبة إلى الأسئلة الخاصة بمورد واحد، يمكنك استدعاء subskill مباشرةً، مثل `palo-alto-architect` أو `fortinet-security-fabric-architect` أو `cisco-network-dc-architect` أو `hpe-aruba-network-architect`.
+
+عند استلام مجموعة من التنبيهات الأمنية، يمكنك استدعاء `security-advisory-triage`، على سبيل المثال في Codex:
+
+```text
+$security-advisory-triage هذه التنبيهات والمرفقات التي وصلت إلى المجموعة هذا الأسبوع. تحقّق منها لدى المورد الأصلي، ثم نظّمها في مصفوفة تتبع التصحيحات وجدول الترقية. يُرجى الإجابة باللغة العربية.
+```
 
 ## التحديث
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## قواعد الصيانة
 
 - عدّل المهارات المرجعية داخل `skills/` فقط؛ ولا تعدّل النسخ الموجودة في مواقع التثبيت.
-- أبقِ المهارات الخمس في المستوى نفسه؛ واجعل `SKILL.md` موجزًا وأقل من 500 سطر، مع وضع التفاصيل في `references/` بعمق مستوى واحد.
+- أبقِ المهارات الست في المستوى نفسه؛ واجعل `SKILL.md` موجزًا وأقل من 500 سطر، مع وضع التفاصيل في `references/` بعمق مستوى واحد.
 - يجب أن تطابق قيمة `name` في الـ frontmatter اسم المجلد؛ ويجب ألا يتجاوز `description` 200 حرف (ليتوافق مع حد الرفع في مركز مساعدة Claude)، وأن يوضح ما تفعله المهارة ومتى يجب تشغيلها.
 - لا تعتمد على الذاكرة في ادعاء CVE أو fixed release أو EoL أو PQC أو CLI أو الترخيص أو ميزات منصات الذكاء الاصطناعي؛ بل اعتمد على وثائق المورد أو الوثائق الرسمية وسجّل تاريخ التحقق.
 - لا تُودِع (commit) إعدادات العملاء أو ملفات PCAP أو الحسابات أو كلمات المرور أو PSK أو المفاتيح الخاصة أو API tokens أو التراخيص أو مرفقات التذاكر.

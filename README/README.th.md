@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | **ไทย** | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-ชุดสกิลส่วนตัวสำหรับวิศวกรเครือข่ายอาวุโส ประกอบด้วยสกิลหลักแบบข้ามผู้ผลิตหนึ่งตัวและ subskill เฉพาะผู้ผลิตอีกสี่ตัว เก็บไว้ใน Git repository เดียว เพื่อให้คอมพิวเตอร์และเครื่องมือ AI หลายตัวใช้แหล่งข้อมูลต้นฉบับเดียวกัน (single source of truth)
+ชุดสกิลส่วนตัวสำหรับวิศวกรเครือข่ายอาวุโส ประกอบด้วยสกิลหลักแบบข้ามผู้ผลิตหนึ่งตัว subskill เฉพาะผู้ผลิตสี่ตัว และสกิลสำหรับคัดแยก security advisory แบบเป็นชุดอีกหนึ่งตัว เก็บไว้ใน Git repository เดียว เพื่อให้คอมพิวเตอร์และเครื่องมือ AI หลายตัวใช้แหล่งข้อมูลต้นฉบับเดียวกัน (single source of truth)
 
 สกิลทั้งหมดเป็นไปตาม [Agent Skills open format](https://agentskills.io/specification) (แต่ละโฟลเดอร์มี `SKILL.md` และ `references/` ซึ่งมีหรือไม่มีก็ได้) และสามารถติดตั้งลงใน Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot และเครื่องมืออื่นที่รองรับรูปแบบนี้
 
-เนื้อหาที่ขึ้นกับเวลา (เวอร์ชัน, EoL, CVE, PQC, ความสามารถของเครื่องมือ AI และพาธการติดตั้ง) ได้รับการตรวจสอบ ณ วันที่ **2026-09-27**
+เนื้อหาที่ขึ้นกับเวลา (เวอร์ชัน, EoL, CVE, PQC, ความสามารถของเครื่องมือ AI และพาธการติดตั้ง) ได้รับการตรวจสอบ ณ วันที่ **2026-09-27** ส่วน security advisory ของ Palo Alto, Fortinet และ HPE Aruba ประจำเดือนตุลาคม 2026 ได้รับการตรวจสอบเพิ่มเติม ณ วันที่ **2026-10-24**
 
 > **หมายเหตุด้านภาษา:** เนื้อหาของสกิลเขียนเป็นภาษาจีนตัวเต็ม และกำหนดให้ AI ตอบเป็นภาษาจีนตัวเต็มโดยใช้คำศัพท์ IT องค์กรแบบไต้หวันเป็นค่าเริ่มต้น หากต้องการคำตอบเป็นภาษาอื่น ให้ระบุภาษาอย่างชัดเจนในคำขอ
 
@@ -31,6 +31,7 @@
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS, FortiManager, FortiAnalyzer, SD-WAN, ZTNA, การย้ายจาก SSL VPN ไป IPsec, PSIRT และ PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst, Nexus/Nexus Dashboard, ACI, VXLAN EVPN, Catalyst SD-WAN, 9800/CW9800 WLC, ISE, Secure Firewall, PSIRT และ PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10, Instant AOS-8, HPE Aruba Networking Central, ClearPass, AOS-CX/AOS-Switch, HPE Security Bulletins และ PPK/PQC |
+| `security-advisory-triage` | คัดแยก security advisory ของหลายผู้ผลิตแบบเป็นชุด ตรวจสอบ CVE/PSIRT/Bulletin ที่ผู้ผลิต ตัวแทนจำหน่าย หรือกลุ่มแชตส่งต่อมา โดยย้อนกลับไปยังต้นทางของผู้ผลิต, ค้นหาข้อผิดพลาดและคำกล่าวอ้างเชิงการตลาด, จับคู่กับสินทรัพย์ของลูกค้า แล้วจัดทำเมทริกซ์ติดตามการแพตช์, ตารางเวลาอัปเกรด และร่าง MOP โดยส่งต่อรายละเอียดของผลิตภัณฑ์ไปยัง subskill ของผู้ผลิตด้านบน |
 
 ## โครงสร้างไดเรกทอรี
 
@@ -59,15 +60,19 @@
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## ก่อนติดตั้ง
 
-1. **ติดตั้งสกิลทั้งห้าตัวไว้ในโฟลเดอร์เดียวกัน** สกิลหลักโหลด subskill ผ่านพาธสัมพัทธ์ `../<subskill>/SKILL.md` ซึ่งจะ resolve ได้ก็ต่อเมื่อโฟลเดอร์ทั้งห้าอยู่ระดับเดียวกันเท่านั้น
+1. **ติดตั้งสกิลทั้งหกตัวไว้ในโฟลเดอร์เดียวกัน** สกิลหลักและ `security-advisory-triage` โหลดสกิลอื่นผ่านพาธสัมพัทธ์ `../<subskill>/SKILL.md` ซึ่งจะ resolve ได้ก็ต่อเมื่อโฟลเดอร์ทั้งหกอยู่ระดับเดียวกันเท่านั้น
 2. **อย่าเปลี่ยนชื่อโฟลเดอร์** เครื่องมือส่วนใหญ่กำหนดให้ชื่อโฟลเดอร์ตรงกับ `name` ใน `SKILL.md` และอาจข้ามสกิลนั้นไปโดยไม่แจ้งเตือนหากไม่ตรงกัน
-3. **บนแพลตฟอร์มแบบอัปโหลด (Claude เว็บ/เดสก์ท็อป, ChatGPT เว็บ) ให้อัปโหลดและเปิดใช้งานครบทั้งห้าตัว** บนแพลตฟอร์มเหล่านี้แต่ละสกิลทำงานแยกกัน Anthropic Help Center ระบุว่าสกิลไม่สามารถอ้างอิงสกิลอื่นอย่างชัดแจ้งได้ แต่ Claude จะผสานการทำงานของหลายสกิลโดยอัตโนมัติเมื่อเหมาะสม
+3. **บนแพลตฟอร์มแบบอัปโหลด (Claude เว็บ/เดสก์ท็อป, ChatGPT เว็บ) ให้อัปโหลดและเปิดใช้งานครบทั้งหกตัว** บนแพลตฟอร์มเหล่านี้แต่ละสกิลทำงานแยกกัน Anthropic Help Center ระบุว่าสกิลไม่สามารถอ้างอิงสกิลอื่นอย่างชัดแจ้งได้ แต่ Claude จะผสานการทำงานของหลายสกิลโดยอัตโนมัติเมื่อเหมาะสม
 4. **ติดตั้งครั้งเดียว ใช้ร่วมกันได้หลายเครื่องมือ** `~/.agents/skills` เป็นตำแหน่งกลางที่ Codex/ChatGPT เดสก์ท็อป, Cursor, GitHub Copilot และ Gemini CLI อ่านได้ ส่วน Claude Code และ Antigravity ต้องใช้ไดเรกทอรีของตัวเอง
 
 ## คำสั่งติดตั้งทั่วไป
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # สำหรับขอบเขตโปรเ�
 ใช้ได้กับแพ็กเกจแบบชำระเงิน (Pro, Max, Team, Enterprise)
 
 1. เปิดใช้งาน code execution: **Settings > Capabilities > Code execution and file creation** สำหรับ Team/Enterprise ต้องให้ Owner เปิดใช้งาน Skills และ code execution ใน **Organization settings > Plugins & skills**
-2. แพ็กสกิลทั้งห้าตัวแยกเป็น ZIP ตัวละไฟล์ ระดับบนสุดภายใน ZIP ต้องเป็นโฟลเดอร์ของสกิลนั้นเอง (เช่น `palo-alto-architect/SKILL.md`) อย่าวาง `SKILL.md` ไว้ที่ root ของ ZIP โดยตรง
+2. แพ็กสกิลทั้งหกตัวแยกเป็น ZIP ตัวละไฟล์ ระดับบนสุดภายใน ZIP ต้องเป็นโฟลเดอร์ของสกิลนั้นเอง (เช่น `palo-alto-architect/SKILL.md`) อย่าวาง `SKILL.md` ไว้ที่ root ของ ZIP โดยตรง
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # สำหรับขอบเขตโปรเ�
    }
    ```
 
-3. ไปที่ **Customize > Skills** เลือก **+** → **Create skill** → **Upload a skill** อัปโหลด ZIP ทั้งห้าไฟล์ทีละไฟล์ แล้วเปิดใช้งานทั้งหมด
+3. ไปที่ **Customize > Skills** เลือก **+** → **Create skill** → **Upload a skill** อัปโหลด ZIP ทั้งหกไฟล์ทีละไฟล์ แล้วเปิดใช้งานทั้งหมด
 4. อธิบายงานของคุณในบทสนทนาเพื่อให้เรียกใช้อัตโนมัติ หรือพิมพ์ `/` ในช่องป้อนข้อความเพื่อเลือกสกิล
 
-**ข้อจำกัดความยาวของ description:** Claude Help Center ระบุว่า description จำกัดไว้ที่ 200 อักขระ (เอกสารนักพัฒนาของ claude.com และข้อกำหนด Agent Skills อนุญาตถึง 1,024 อักขระ) bundle นี้ยึดตามข้อจำกัด 200 อักขระซึ่งเข้มงวดกว่า โดย description ของทั้งห้าสกิลมีความยาว 161–177 อักขระ
+**ข้อจำกัดความยาวของ description:** Claude Help Center ระบุว่า description จำกัดไว้ที่ 200 อักขระ (เอกสารนักพัฒนาของ claude.com และข้อกำหนด Agent Skills อนุญาตถึง 1,024 อักขระ) bundle นี้ยึดตามข้อจำกัด 200 อักขระซึ่งเข้มงวดกว่า โดย description ของทั้งหกสกิลมีความยาว 135–177 อักขระ
 
-**ทางเลือก: อัปโหลดทั้งห้าสกิลพร้อมกันในรูปแบบ plugin** (แพ็กเกจ Pro ขึ้นไป) Claude plugin ต้องมี manifest `.claude-plugin/plugin.json` ซึ่ง repository นี้ไม่ได้ใส่ไว้ ให้สร้างขึ้นตอนแพ็กไฟล์:
+**ทางเลือก: อัปโหลดทั้งหกสกิลพร้อมกันในรูปแบบ plugin** (แพ็กเกจ Pro ขึ้นไป) Claude plugin ต้องมี manifest `.claude-plugin/plugin.json` ซึ่ง repository นี้ไม่ได้ใส่ไว้ ให้สร้างขึ้นตอนแพ็กไฟล์:
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ EOF
 
 1. เลือก **Plugins** ในแถบด้านข้าง
 2. ใน **Plugin Directory** เปิดแท็บ **Skills**
-3. เลือก **Create** → **Upload from your computer** แล้วอัปโหลดสกิลทั้งห้าตัวทีละตัว ChatGPT จะสแกนไฟล์ที่อัปโหลดแต่ละไฟล์ก่อน ผลลัพธ์อาจแสดงเป็น "Needs Review" หรือ "Blocked"
+3. เลือก **Create** → **Upload from your computer** แล้วอัปโหลดสกิลทั้งหกตัวทีละตัว ChatGPT จะสแกนไฟล์ที่อัปโหลดแต่ละไฟล์ก่อน ผลลัพธ์อาจแสดงเป็น "Needs Review" หรือ "Blocked"
 
 เอกสารทางการของ OpenAI ไม่ได้ระบุรูปแบบไฟล์สำหรับอัปโหลด ให้ลองใช้ ZIP แยกรายสกิลจากหัวข้อก่อนหน้าก่อน หากระบบไม่รับ ให้ปรับตามคำแนะนำบนหน้าจออัปโหลด
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # หรือ ~/.agents/skills; สำหรับ
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # วางสกิลทั้งห้าตัวไว้ใต้โฟลเดอร์หมวดหมู่เดียวกัน
+DEST=~/.hermes/skills/network   # วางสกิลทั้งหกตัวไว้ใต้โฟลเดอร์หมวดหมู่เดียวกัน
 ```
 
 - สกิลใหม่จะมีผลใน session ใหม่ (หรือรัน `/reset`)
@@ -271,6 +276,12 @@ $senior-network-engineer วิเคราะห์เหตุขัดข้�
 ```
 
 สำหรับคำถามที่เกี่ยวกับผู้ผลิตรายเดียว สามารถเรียกใช้ subskill ได้โดยตรง เช่น `palo-alto-architect`, `fortinet-security-fabric-architect`, `cisco-network-dc-architect` หรือ `hpe-aruba-network-architect`
+
+เมื่อได้รับ security advisory เป็นชุด สามารถเรียกใช้ `security-advisory-triage` ได้ ตัวอย่างเช่นใน Codex:
+
+```text
+$security-advisory-triage นี่คือประกาศและไฟล์แนบที่กลุ่มได้รับในสัปดาห์นี้ ช่วยตรวจสอบกับต้นทางของผู้ผลิต แล้วสรุปเป็นเมทริกซ์ติดตามการแพตช์และตารางเวลาอัปเกรด กรุณาตอบเป็นภาษาไทย
+```
 
 ## การอัปเดต
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## กฎการดูแลรักษา
 
 - แก้ไขสกิลฉบับหลักภายใน `skills/` เท่านั้น อย่าแก้ไขสำเนาที่อยู่ในตำแหน่งติดตั้ง
-- เก็บสกิลทั้งห้าตัวไว้ในระดับเดียวกัน ให้ `SKILL.md` กระชับและไม่เกิน 500 บรรทัด โดยย้ายรายละเอียดไปไว้ใน `references/` ที่ลึกเพียงหนึ่งระดับ
+- เก็บสกิลทั้งหกตัวไว้ในระดับเดียวกัน ให้ `SKILL.md` กระชับและไม่เกิน 500 บรรทัด โดยย้ายรายละเอียดไปไว้ใน `references/` ที่ลึกเพียงหนึ่งระดับ
 - `name` ใน frontmatter ต้องตรงกับชื่อโฟลเดอร์ `description` ต้องไม่เกิน 200 อักขระ (เพื่อให้ผ่านข้อจำกัดการอัปโหลดของ Claude Help Center) และต้องระบุทั้งสิ่งที่สกิลทำและเงื่อนไขที่ควรเรียกใช้
 - อย่ากล่าวอ้างข้อมูล CVE, fixed release, EoL, PQC, CLI, ไลเซนส์ หรือฟีเจอร์ของแพลตฟอร์ม AI จากความจำ ให้อ้างอิงเอกสารของผู้ผลิตหรือเอกสารทางการ และบันทึกวันที่ตรวจสอบ
 - ห้าม commit คอนฟิกของลูกค้า, PCAP, บัญชีผู้ใช้, รหัสผ่าน, PSK, private key, API token, ไลเซนส์ หรือไฟล์แนบของ ticket

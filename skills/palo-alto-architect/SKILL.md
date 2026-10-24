@@ -107,6 +107,7 @@ description: Palo Alto Networks 資深架構顧問技能。用於 PAN-OS NGFW、
 - 設計 NAT 時，明確列出 original/translated source 與 destination、U-turn NAT、no-NAT、Dynamic IP and Port、Static IP、bi-directional 適用性。NAT Rule 依 pre-NAT 條件比對；Security Policy 使用 original IP address 與 post-NAT zone，這是最常寫反的地方。用 `test nat-policy-match`、`test security-policy-match` 與 session 實際欄位驗證，不用猜的。
 - 設計 Security Policy 時，使用明確 source/destination zone、User-ID、App-ID、service、URL Category、tag 與 rule description；檢查 shadow rule、unused rule、policy hit count、最後命中時間、temporary rule 到期日與規則擁有者。
 - 對允許規則套用合適的 Security Profile Group：Antivirus、Anti-Spyware（含 DNS Policies，對應 Advanced DNS Security 訂閱）、Vulnerability Protection、URL Filtering、File Blocking、WildFire Analysis 與 Data Filtering；使用 Prisma AIRS 時，依 PAN-OS 版本另評估 AI Security profile。訂閱名稱以現行 SKU 為準：舊版 Threat Prevention 與 DNS Security 已於 2025-06-16 停售，由 Advanced Threat Prevention 與 Advanced DNS Security 取代；WildFire 已於 2024-03-01 停售，由 Advanced WildFire 取代（既有合約支援至到期）。例外必須限制 CVE/signature、來源、目的、應用程式與期限，不要整包關閉檢查。
+- Advanced Threat Prevention Plus（ATP Plus/ATP+）是 ATP 的升級或 add-on，提供 Frontier Virtual Patching：簽章細節保留在雲端，防火牆先以本地 pre-filter 篩選，命中的 session 再送雲端判定。2026-10-24 查核官方文件：需 PAN-OS 12.2.4 以上（文件列 PA-Series；VM-Series 只能透過 Software NGFW Credits 取得）、content 9157-10279 以上，並能以 TCP 443 連到 FVP 雲端服務；default 與 strict profile 不啟用，ATP+ 啟用後新建的 profile 預設動作是 alert。它是補償控制，不是修補；HTTPS 未解密、流量不經防火牆或動作維持 alert 時，等於沒有防護。原廠「漏洞公開前已防護」的說法出自原廠 blog，評估時當成廠商宣稱。
 - Zone Protection 與 DoS Protection 要分開設計。依 baseline 設定 SYN flood、UDP/ICMP flood、scan、sweep、IP spoofing 與 packet-based attack 保護，並確認門檻、告警、丟棄行為及是否會誤傷 NAT 後的大量正常來源。
 - User-ID 要確認 mapping source、Include/Exclude Networks、群組對應、service account 權限、重新分配與逾時。政策顯示使用者不代表 mapping 永遠正確，應從 Traffic Log 與 operational output 交叉驗證。
 - SSL/TLS Decryption 要確認 Forward Trust/Untrust 憑證、私鑰保護、HSM、TLS 版本、憑證釘選、mTLS、QUIC、例外治理、法遵與 Decryption Log。例外要有 owner、理由與到期日。
@@ -167,9 +168,18 @@ Palo Alto Networks 已於 2026-02-11 完成收購 CyberArk（CyberArk Identity S
 
 - 優先查 Palo Alto Networks Security Advisories、產品 Release Notes、Upgrade/Downgrade Considerations、Known Issues、Preferred Release 與 ThreatVault；再以 NVD、CISA KEV 或主管機關通報補充風險脈絡。
 - 不自行推定某個 Threat ID 能阻擋特定 CVE。只有原廠 advisory 明確列出 signature、Content Version、policy 前提或 workaround 時，才能宣稱具備緩解效果。
+- 第三方元件的漏洞，Palo Alto 會直接用該元件的 CVE 編號當 advisory ID，例如 PHP 漏洞的影響公告就在 `security.paloaltonetworks.com/CVE-2026-109618`。不要因為 ID 不是 PAN 產品的 CVE 就判定連結錯誤，打開確認標題與受影響產品。
+- Advisory 針對管理介面列出的 Threat ID，前提通常是把管理流量改走 dataplane 介面（掛 management profile）、更換管理憑證、對入站管理流量解密並套用 Threat Prevention。獨立 MGT port 的流量不經 dataplane，只開特徵碼沒有作用。Advisory 原文仍稱「Threat Prevention subscription」，現行 SKU 為 Advanced Threat Prevention。
+- 轉傳的 Threat ID 清單要逐一對照 advisory 最新 revision。原廠常在發布後擴充清單與 content 版本，轉傳版本可能過時或打錯。
 - 不只看 CVSS。同步評估是否列入 KEV、是否有公開 PoC/在野利用、攻擊面是否對外、是否需驗證、所需權限、資料敏感度、HA/DR 影響與可接受停機時間。
 - 分開確認 PAN-OS、Panorama、GlobalProtect App、Prisma Access Agent、Prisma Browser、Cloud NGFW、plugin、Cortex/Cortex Cloud、CyberArk 與第三方元件版本；同一 CVE 不一定影響所有平台或部署模式。
-- PAN-OS 生命週期以官方 End-of-Life Summary 為準。2026-09-27 查核：10.1、11.0 已完全 EoL；10.2 已 EoL、延伸支援至 2027-03-31；11.1 與 11.2 EoL 分別為 2027-05-03 與 2027-05-02（Extended Support+ 至 2027-08-31）；12.1 EoL 為 2028-08-28（Extended Support+ 至 2029-08-28）；最新主版本 12.2（Ceres，2026-07-30 發布）EoL 為 2029-07-30（Extended Support+ 至 2030-07-30）。生產環境仍以 Preferred Release 為預設。
+- PAN-OS 生命週期以官方 End-of-Life Summary 為準。2026-09-27 查核：10.1、11.0 已完全 EoL；10.2 已 EoL、延伸支援至 2027-03-31；11.1 與 11.2 EoL 分別為 2027-05-03 與 2027-05-02（Extended Support+ 至 2027-08-31）；12.1 EoL 為 2028-08-28（Extended Support+ 至 2029-08-28）；最新主版本 12.2（Ceres，2026-07-30 發布）EoL 為 2029-07-30（Extended Support+ 至 2030-07-30）。2026-10-24 複查 EoL Summary，上述日期未變。生產環境仍以 Preferred Release 為預設。
+- 同一台設備常同時命中多份 advisory，而且後發布的修補 hotfix 可能比前一份更高。依 exact version 對齊所有有效 advisory，再決定一次到位或分兩段升級，不要假設升一次就涵蓋全部。
+
+### 近期重大 Advisory（2026-10-24 查核，引用前重查）
+
+- **CVE-2026-0322**（2026-10-14 發布）：PAN-OS 管理介面已驗證 RCE，CVSS v4.0 8.6 HIGH，需高權限帳號（PR:H），原廠觀察到 very limited exploitation，2026-10-14 列入 CISA KEV。影響 PA-Series、VM-Series 與 Panorama（VA 與 M-Series）；Cloud NGFW 與 Prisma Access 不受影響。無 workaround；Threat ID 510046/510047（content 9159-10287 以上）只提供有限防護，且需符合上述管理流量改走 dataplane 並解密的前提。修補版本依分支與 hotfix 而異，例如 11.1.6-h39、10.2.13-h26、12.2.4；完整表格以 advisory 為準。
+- **CVE-2026-109618/109619**（PHP 核心漏洞，原廠影響公告 2026-10-21 發布、10-24 更新）：只影響 PAN-OS 管理 web 介面（dataplane 介面掛 management profile 也算）；GlobalProtect portal/gateway 與 Captive Portal 不受影響。查核時 PAN-OS 修補只有 ETA（10/26–10/30），且各分支都比 CVE-2026-0322 的修補高一個 hotfix（例如 11.1.6-h40），已為 0322 升級的設備要再升一次。Threat Prevention 客戶的緩解是 25 個 Threat ID（543004、97622–97625 等，content 9162–9164 以上）。轉傳清單中的「97522」不在官方清單內，應為 97622。
 
 ### 標準處理流程
 

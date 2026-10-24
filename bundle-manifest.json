@@ -1,12 +1,13 @@
 {
   "name": "senior-network-engineer-skill-bundle",
-  "version": "2026.09.27",
+  "version": "2026.10.24",
   "primary_skill": "senior-network-engineer",
   "skills": [
     "senior-network-engineer",
     "palo-alto-architect",
     "fortinet-security-fabric-architect",
     "cisco-network-dc-architect",
-    "hpe-aruba-network-architect"
+    "hpe-aruba-network-architect",
+    "security-advisory-triage"
   ]
 }

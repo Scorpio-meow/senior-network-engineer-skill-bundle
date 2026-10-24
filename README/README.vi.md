@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | **Tiếng Việt** | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-Bộ skill cá nhân dành cho kỹ sư mạng cấp cao: một skill chính đa hãng cùng bốn subskill theo từng hãng, được lưu trong một Git repository duy nhất để nhiều máy tính và công cụ AI dùng chung một nguồn dữ liệu chuẩn (single source of truth).
+Bộ skill cá nhân dành cho kỹ sư mạng cấp cao: một skill chính đa hãng, bốn subskill theo từng hãng và một skill phân loại hàng loạt thông báo bảo mật (security advisory), được lưu trong một Git repository duy nhất để nhiều máy tính và công cụ AI dùng chung một nguồn dữ liệu chuẩn (single source of truth).
 
 Các skill tuân theo [định dạng mở Agent Skills](https://agentskills.io/specification) (mỗi thư mục chứa `SKILL.md` và thư mục `references/` tùy chọn) và có thể cài vào Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot cùng các công cụ khác hỗ trợ định dạng này.
 
-Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng và đường dẫn cài đặt của công cụ AI) được xác minh tính đến ngày **2026-09-27**.
+Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng và đường dẫn cài đặt của công cụ AI) được xác minh tính đến ngày **2026-09-27**; các thông báo bảo mật tháng 10/2026 của Palo Alto, Fortinet và HPE Aruba được xác minh bổ sung vào ngày **2026-10-24**.
 
 > **Lưu ý về ngôn ngữ:** Nội dung skill được viết bằng tiếng Trung phồn thể và mặc định yêu cầu AI trả lời bằng tiếng Trung phồn thể với thuật ngữ IT doanh nghiệp Đài Loan. Nếu cần câu trả lời bằng ngôn ngữ khác, hãy nêu rõ ngôn ngữ đó trong yêu cầu của bạn.
 
@@ -31,6 +31,7 @@ Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng v�
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS, FortiManager, FortiAnalyzer, SD-WAN, ZTNA, chuyển đổi từ SSL VPN sang IPsec, PSIRT và PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst, Nexus/Nexus Dashboard, ACI, VXLAN EVPN, Catalyst SD-WAN, 9800/CW9800 WLC, ISE, Secure Firewall, PSIRT và PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10, Instant AOS-8, HPE Aruba Networking Central, ClearPass, AOS-CX/AOS-Switch, HPE Security Bulletins và PPK/PQC |
+| `security-advisory-triage` | Phân loại hàng loạt thông báo bảo mật của nhiều hãng. Đối chiếu CVE/PSIRT/Bulletin do hãng, nhà phân phối hoặc nhóm chat chuyển tiếp với nguồn gốc từ hãng, phát hiện sai sót và cách diễn đạt mang tính tiếp thị, ánh xạ vào tài sản của khách hàng, rồi tạo ma trận theo dõi bản vá, lịch nâng cấp và bản nháp MOP; chi tiết sản phẩm giao cho các subskill của từng hãng ở trên |
 
 ## Cấu trúc thư mục
 
@@ -59,15 +60,19 @@ Nội dung có tính thời điểm (phiên bản, EoL, CVE, PQC, khả năng v�
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## Trước khi cài đặt
 
-1. **Cài cả năm skill vào cùng một thư mục.** Skill chính tải các subskill qua đường dẫn tương đối `../<subskill>/SKILL.md`, đường dẫn này chỉ phân giải được khi năm thư mục nằm cạnh nhau.
+1. **Cài cả sáu skill vào cùng một thư mục.** Skill chính và `security-advisory-triage` tải các skill khác qua đường dẫn tương đối `../<subskill>/SKILL.md`, đường dẫn này chỉ phân giải được khi sáu thư mục nằm cạnh nhau.
 2. **Không đổi tên thư mục.** Phần lớn công cụ yêu cầu tên thư mục khớp với `name` trong `SKILL.md` và có thể âm thầm bỏ qua skill khi hai giá trị này khác nhau.
-3. **Trên các nền tảng dạng tải lên (Claude web/desktop, ChatGPT web), hãy tải lên và bật cả năm skill.** Trên các nền tảng này, mỗi skill hoạt động độc lập. Anthropic Help Center cho biết skill không thể tham chiếu tường minh đến skill khác, nhưng Claude sẽ tự động kết hợp nhiều skill khi phù hợp.
+3. **Trên các nền tảng dạng tải lên (Claude web/desktop, ChatGPT web), hãy tải lên và bật cả sáu skill.** Trên các nền tảng này, mỗi skill hoạt động độc lập. Anthropic Help Center cho biết skill không thể tham chiếu tường minh đến skill khác, nhưng Claude sẽ tự động kết hợp nhiều skill khi phù hợp.
 4. **Cài một lần, dùng chung cho nhiều công cụ.** `~/.agents/skills` là vị trí dùng chung giữa các công cụ, được Codex/ChatGPT desktop, Cursor, GitHub Copilot và Gemini CLI đọc; Claude Code và Antigravity cần thư mục riêng.
 
 ## Lệnh cài đặt chung
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # Với phạm vi dự án, dùng .claude/skills
 Khả dụng trên các gói trả phí (Pro, Max, Team, Enterprise).
 
 1. Bật thực thi mã: **Settings > Capabilities > Code execution and file creation**. Với Team/Enterprise, Owner phải bật Skills và thực thi mã trong **Organization settings > Plugins & skills**.
-2. Đóng gói từng skill trong năm skill thành một tệp ZIP riêng. Cấp trên cùng bên trong ZIP phải là chính thư mục skill (ví dụ `palo-alto-architect/SKILL.md`); không đặt `SKILL.md` trực tiếp tại gốc của ZIP.
+2. Đóng gói từng skill trong sáu skill thành một tệp ZIP riêng. Cấp trên cùng bên trong ZIP phải là chính thư mục skill (ví dụ `palo-alto-architect/SKILL.md`); không đặt `SKILL.md` trực tiếp tại gốc của ZIP.
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ Khả dụng trên các gói trả phí (Pro, Max, Team, Enterprise).
    }
    ```
 
-3. Vào **Customize > Skills**, chọn **+** → **Create skill** → **Upload a skill**, lần lượt tải lên năm tệp ZIP và bật tất cả.
+3. Vào **Customize > Skills**, chọn **+** → **Create skill** → **Upload a skill**, lần lượt tải lên sáu tệp ZIP và bật tất cả.
 4. Mô tả tác vụ trong cuộc hội thoại để skill được dùng tự động, hoặc gõ `/` trong ô nhập liệu để chọn skill.
 
-**Giới hạn độ dài mô tả:** Claude Help Center nêu giới hạn 200 ký tự cho phần mô tả (tài liệu dành cho nhà phát triển trên claude.com và đặc tả Agent Skills cho phép 1.024 ký tự). Bundle này tuân theo giới hạn 200 ký tự chặt chẽ hơn; mỗi mô tả trong năm skill dài 161–177 ký tự.
+**Giới hạn độ dài mô tả:** Claude Help Center nêu giới hạn 200 ký tự cho phần mô tả (tài liệu dành cho nhà phát triển trên claude.com và đặc tả Agent Skills cho phép 1.024 ký tự). Bundle này tuân theo giới hạn 200 ký tự chặt chẽ hơn; mỗi mô tả trong sáu skill dài 135–177 ký tự.
 
-**Phương án thay thế: tải cả năm skill lên cùng lúc dưới dạng plugin** (gói Pro trở lên). Plugin của Claude yêu cầu manifest `.claude-plugin/plugin.json`, repository này không kèm tệp đó; hãy tạo nó khi đóng gói:
+**Phương án thay thế: tải cả sáu skill lên cùng lúc dưới dạng plugin** (gói Pro trở lên). Plugin của Claude yêu cầu manifest `.claude-plugin/plugin.json`, repository này không kèm tệp đó; hãy tạo nó khi đóng gói:
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ Sau đó tải `dist/senior-network-engineer-bundle.zip` lên tại **Customize 
 
 1. Chọn **Plugins** ở thanh bên.
 2. Trong **Plugin Directory**, mở tab **Skills**.
-3. Chọn **Create** → **Upload from your computer** và lần lượt tải lên năm skill. ChatGPT sẽ quét từng tệp tải lên trước; kết quả có thể hiển thị "Needs Review" hoặc "Blocked".
+3. Chọn **Create** → **Upload from your computer** và lần lượt tải lên sáu skill. ChatGPT sẽ quét từng tệp tải lên trước; kết quả có thể hiển thị "Needs Review" hoặc "Blocked".
 
 Tài liệu chính thức của OpenAI không quy định định dạng tệp tải lên. Hãy thử các tệp ZIP cho từng skill ở phần trước; nếu không được chấp nhận, hãy điều chỉnh theo hướng dẫn trên màn hình tải lên.
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # Hoặc ~/.agents/skills; với phạm vi dự án
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # Đặt cả năm skill trong cùng một thư mục category
+DEST=~/.hermes/skills/network   # Đặt cả sáu skill trong cùng một thư mục category
 ```
 
 - Skill mới có hiệu lực trong session mới (hoặc chạy `/reset`).
@@ -271,6 +276,12 @@ $senior-network-engineer Hãy phân tích sự cố mạng đa hãng này. Trư�
 ```
 
 Với câu hỏi chỉ liên quan đến một hãng, bạn có thể gọi trực tiếp subskill, chẳng hạn `palo-alto-architect`, `fortinet-security-fabric-architect`, `cisco-network-dc-architect` hoặc `hpe-aruba-network-architect`.
+
+Khi nhận được một loạt thông báo bảo mật, bạn có thể gọi `security-advisory-triage`, ví dụ trong Codex:
+
+```text
+$security-advisory-triage Đây là các thông báo và tệp đính kèm mà nhóm nhận được trong tuần này. Hãy đối chiếu với nguồn của hãng để xác minh, rồi tổng hợp thành ma trận theo dõi bản vá và lịch nâng cấp. Vui lòng trả lời bằng tiếng Việt.
+```
 
 ## Cập nhật
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## Quy tắc bảo trì
 
 - Chỉ chỉnh sửa bản chuẩn của skill bên trong `skills/`; không chỉnh sửa các bản sao tại vị trí cài đặt.
-- Giữ năm skill ở cùng một cấp; giữ `SKILL.md` ngắn gọn và dưới 500 dòng, phần chi tiết đặt trong `references/` sâu một cấp.
+- Giữ sáu skill ở cùng một cấp; giữ `SKILL.md` ngắn gọn và dưới 500 dòng, phần chi tiết đặt trong `references/` sâu một cấp.
 - `name` trong frontmatter phải khớp với tên thư mục; `description` tối đa 200 ký tự (để phù hợp giới hạn tải lên của Claude Help Center) và phải nêu rõ cả chức năng của skill lẫn thời điểm kích hoạt nó.
 - Không khẳng định CVE, fixed release, EoL, PQC, CLI, cấp phép hay tính năng nền tảng AI dựa trên trí nhớ; hãy dựa vào tài liệu của hãng hoặc tài liệu chính thức và ghi lại ngày xác minh.
 - Không commit cấu hình của khách hàng, PCAP, tài khoản, mật khẩu, PSK, private key, API token, license hay tệp đính kèm của ticket.

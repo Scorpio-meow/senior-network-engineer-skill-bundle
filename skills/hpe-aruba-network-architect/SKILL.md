@@ -15,7 +15,7 @@ Use Traditional Chinese by default and use Taiwan enterprise IT terminology: 預
 
 涉及 CVE、fixed release、Long Supported Release、EoS、AOS/Instant/ClearPass/Central 支援矩陣或 PQC 能力時，先查 HPE Aruba Networking Security Bulletin、Release Notes 與官方文件並標示查核日期。清楚區分 workaround、正式修補與風險接受。
 
-版本基準（2026-09-27 查核，引用前重查 release notes 與 lifecycle portal）：AOS-8 與 Instant AOS-8 的 Long Supported Release 為 8.10 與 8.13，8.12 為 Short Supported Release（SSR 最多約 2 年修補，8.12.0.7 於 2026-03 發布，已接近或達到支援終點，不應作為新目標版本）；AOS-8 尚未公布官方 EoL 日期；AOS-10 最新 train 為 10.8；ClearPass 6.14 為 LSR（2026-05-27 首發），6.12 為 SSR，沒有 6.13，依政策，前一個 LSR 6.11 在 6.14 發布後已過 End of Support，但查核時仍有累積修補（6.11.15，2026-08），實際支援狀態以 lifecycle portal 為準。
+版本基準（2026-09-27 查核，引用前重查 release notes 與 lifecycle portal）：AOS-8 與 Instant AOS-8 的 Long Supported Release 為 8.10 與 8.13，8.12 為 Short Supported Release（SSR 最多約 2 年修補，8.12.0.7 於 2026-03 發布，已接近或達到支援終點，不應作為新目標版本）；AOS-8 尚未公布官方 EoL 日期；AOS-10 最新 train 為 10.8；ClearPass 6.14 為 LSR（2026-05-27 首發），6.12 為 SSR，沒有 6.13；6.11 也是 LSR。2026-10-24 更正：HPESBNW05171（2026-10-22）明列當下支援的分支為 6.14.x 與 6.11.x，6.11 仍在支援內，6.12 不在支援清單；先前依政策推定 6.11 已過 End of Support 的說法與 Bulletin 不符，以 Bulletin 與 lifecycle portal 為準。
 
 ## First Questions
 
@@ -165,6 +165,11 @@ For training or documentation, answer in this shape:
 - 不只看 CVSS。確認受影響 service 是否啟用、management/UI/RADIUS/SSH/API 是否可達、是否需要驗證、是否有公開 PoC/active exploitation、部署位置、資料敏感度與 failure domain。
 - 分開盤點 AOS 8 Mobility Conductor/Controller、AOS 10 Gateway/AP、Instant AOS、AOS-CX、AOS-Switch、ClearPass、AirWave、Central On-Premises、UXI 與 client/VIA；同一 Bulletin 可能只影響特定 branch、model 或 component。
 - 只有 Bulletin 明確列出的 workaround 才能視為原廠支援緩解。限制管理來源、關閉 Web UI 或調整 ACL 可以降低風險，但不能寫成已正式修補。
+- HPE 會先發 Advance Notification Bulletin，只預告日期與產品，沒有 CVE 或版本（例如 HPESBNW05159 於 2026-10-15 預告 10/22 的 AOS 公告）。收到預告時先盤點資產並預留窗口。
+- 一份 Bulletin 可能同時涵蓋 AOS-8、AOS-10 與 Instant AOS-8，而且 Instant 不一定另列版號表。此時依 AOS-8 分支版號判定，並到 HPE Networking Support Portal 確認 Instant 映像已上架。
+- 已到 End of Maintenance 的分支在 Bulletin 中「presumed to be affected」但不提供修補，判定為需跨分支升級。
+- ClearPass 修補可能分兩段：先升到最新 patch，再套 hotfix。Bulletin 改版會改變修補方式，以最新 revision 為準。
+- networkingsupport.hpe.com 的通知頁可公開瀏覽，訂閱（Manage Subscriptions）需登入；SI 與客戶都應訂閱 Security 類通知。
 
 ### Remediation Workflow
 
@@ -176,6 +181,22 @@ For training or documentation, answer in this shape:
 6. 定義 staged rollout：lab、單一 AP/site、secondary/subscriber/standby、擴大批次；明確設定停止條件、console/OOB、checkpoint rollback、image fallback 與 cluster recovery。
 7. 變更後驗證 AP join、SSID、802.1X/MAC Auth/Guest、RADIUS/CoA、DHCP/DNS、roaming、RF、UBT、VSX/VSF、routing、PoE、Central compliance、syslog/SNMP 與關鍵應用。
 8. 更新弱點台帳，附 Bulletin/CVE、資產、版本、暴露面、修補證據、負責人、期限、回滾與殘餘風險。
+
+### 近期重大 Bulletin（2026-10-24 查核，引用前重查）
+
+- **HPESBNW05162**（2026-10-22）：AOS-8 與 AOS-10 多重漏洞，一份涵蓋 Mobility Conductor、Mobility Controller、Mobility Gateway、AOS-10 AP 與 AOS-8 Instant AP；72 個 CVE，最高 CVSS 10.0（含未驗證 RCE），查核時未見公開 exploit，未列入 KEV。
+
+  | 分支 | 修補版本 |
+  |---|---|
+  | AOS-8.10 | 8.10.0.24 以上 |
+  | AOS-8.13 | 8.13.3.1 以上 |
+  | AOS-10.4 | 10.4.1.14 以上 |
+  | AOS-10.7 | 10.7.2.7 以上 |
+  | AOS-10.8 | 10.8.1.2 以上 |
+
+  8.12、8.11、10.3、10.5、10.6 不在修補清單內，需跨分支升級。原廠 workaround：CLI 與 Web 管理限制在專用 L2/VLAN 或以 L3 防火牆政策控管，並啟用 accounting。
+- **HPESBNW05171**（ClearPass PHP2Shell，CVE-2026-109618/109619，2026-10-22 發布、10-23 rev.2）：影響 6.14.1 與 6.11.16 以下。修補方式是升到 6.14.1 或 6.11.16 後，再套對應的 PHP hotfix patch；只升到 6.14.1/6.11.16 只有部分緩解。原廠建議在完成前把 Guest Portal 與所有管理介面從公網撤下。
+- **HPESBNW05158**（ClearPass，2026-10-06）：6.14.0 與 6.11.15 以下受影響，修補為 6.14.1 與 6.11.16；與 05171 可在同一次升級處理。
 
 ## PQC, Quantum Security, And Crypto Agility
 

@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | **粵語** | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-個人用嘅資深網絡工程師 Skill 套件：一個跨廠牌主 Skill，加埋四個廠牌 subskill，全部集中喺同一個 Git repository，等多部電腦、多種 AI 工具都可以共用同一份正本。
+個人用嘅資深網絡工程師 Skill 套件：一個跨廠牌主 Skill、四個廠牌 subskill，再加一個安全通報批次分流 Skill，全部集中喺同一個 Git repository，等多部電腦、多種 AI 工具都可以共用同一份正本。
 
 Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)（每個資料夾入面有 `SKILL.md` 同選用嘅 `references/`），可以安裝到 Claude、ChatGPT/Codex、Google Antigravity、Gemini CLI、Cursor、GitHub Copilot 等支援呢個格式嘅工具。
 
-時效性內容（版本、EoL、CVE、PQC、AI 工具功能同安裝路徑）嘅查核基準日係 **2026-09-27**。
+時效性內容（版本、EoL、CVE、PQC、AI 工具功能同安裝路徑）嘅查核基準日係 **2026-09-27**；2026 年 10 月嘅 Palo Alto、Fortinet、HPE Aruba 安全通報另外喺 **2026-10-24** 查核。
 
 > **語言說明：** Skill 內容係用繁體中文寫嘅，並預設指示 AI 用繁體中文同台灣企業 IT 用語回答。如果你想用其他語言回答，請喺要求入面講明。
 
@@ -31,6 +31,7 @@ Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)�
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS、FortiManager、FortiAnalyzer、SD-WAN、ZTNA、SSL VPN 轉 IPsec 遷移、PSIRT 同 PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst、Nexus/Nexus Dashboard、ACI、VXLAN EVPN、Catalyst SD-WAN、9800/CW9800 WLC、ISE、Secure Firewall、PSIRT 同 PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10、Instant AOS-8、HPE Aruba Networking Central、ClearPass、AOS-CX/AOS-Switch、HPE Security Bulletin 同 PPK/PQC |
+| `security-advisory-triage` | 多廠牌安全通報批次分流。將原廠、經銷商或者群組轉傳嘅 CVE/PSIRT/Bulletin 返原廠查證、揪出錯誤同行銷講法、對應客戶資產，產出修補追蹤矩陣、升級排程同 MOP 草稿；產品細節交俾上面嘅廠牌 subskill |
 
 ## 目錄結構
 
@@ -59,15 +60,19 @@ Skill 採用 [Agent Skills 開放格式](https://agentskills.io/specification)�
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## 安裝前要留意嘅嘢
 
-1. **五個 Skill 要一齊裝喺同一個資料夾。** 主 Skill 用相對路徑 `../<subskill>/SKILL.md` 載入 subskill，一定要五個資料夾並排擺先搵得到。
+1. **六個 Skill 要一齊裝喺同一個資料夾。** 主 Skill 同 `security-advisory-triage` 用相對路徑 `../<subskill>/SKILL.md` 載入其他 Skill，一定要六個資料夾並排擺先搵得到。
 2. **唔好改資料夾名。** 大部分工具要求資料夾名同 `SKILL.md` 入面嘅 `name` 一致，唔一致嘅話可能會直接略過、唔載入。
-3. **用上載方式安裝嘅平台（Claude 網頁版/桌面版、ChatGPT 網頁版），五個都要上載同啟用。** 呢類平台每個 Skill 各自獨立；Anthropic 說明中心表示 Skill 唔可以明確引用其他 Skill，不過 Claude 會自動配搭多個 Skill 一齊用。
+3. **用上載方式安裝嘅平台（Claude 網頁版/桌面版、ChatGPT 網頁版），六個都要上載同啟用。** 呢類平台每個 Skill 各自獨立；Anthropic 說明中心表示 Skill 唔可以明確引用其他 Skill，不過 Claude 會自動配搭多個 Skill 一齊用。
 4. **裝一次、多個工具共用。** `~/.agents/skills` 係跨工具嘅共用位置，Codex/ChatGPT 桌面版、Cursor、GitHub Copilot、Gemini CLI 都會讀取；Claude Code 同 Antigravity 就要裝去佢哋各自嘅目錄。
 
 ## 通用安裝指令
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # 項目範圍改用 .claude/skills
 適用於付費計劃（Pro、Max、Team、Enterprise）。
 
 1. 開啟程式碼執行：**Settings > Capabilities > Code execution and file creation**。Team/Enterprise 要由 Owner 喺 **Organization settings > Plugins & skills** 開啟 Skills 同程式碼執行。
-2. 將五個 Skill 逐個打包做 ZIP。ZIP 入面最上層一定要係 Skill 資料夾本身（例如 `palo-alto-architect/SKILL.md`），唔可以將 `SKILL.md` 直接擺喺 ZIP 根目錄。
+2. 將六個 Skill 逐個打包做 ZIP。ZIP 入面最上層一定要係 Skill 資料夾本身（例如 `palo-alto-architect/SKILL.md`），唔可以將 `SKILL.md` 直接擺喺 ZIP 根目錄。
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # 項目範圍改用 .claude/skills
    }
    ```
 
-3. 去 **Customize > Skills**，揀 **+** → **Create skill** → **Upload a skill**，逐個上載五個 ZIP，然後全部開啟。
+3. 去 **Customize > Skills**，揀 **+** → **Create skill** → **Upload a skill**，逐個上載六個 ZIP，然後全部開啟。
 4. 喺對話入面描述任務就會自動使用，或者喺輸入框輸入 `/` 揀 Skill。
 
-**description 長度限制**：Claude 說明中心寫明 description 上限係 200 字元（claude.com 開發者文件同 Agent Skills 規格係 1,024 字元）。呢個套件跟較嚴格嘅 200 字元嚟寫，五個 description 都係 161–177 字元。
+**description 長度限制**：Claude 說明中心寫明 description 上限係 200 字元（claude.com 開發者文件同 Agent Skills 規格係 1,024 字元）。呢個套件跟較嚴格嘅 200 字元嚟寫，六個 description 都係 135–177 字元。
 
-**替代方式：用 plugin 一次過上載五個 Skill**（Pro 或以上計劃）。Claude 嘅 plugin 需要 `.claude-plugin/plugin.json` 清單檔，呢個 repository 冇內置，可以喺打包嗰陣產生：
+**替代方式：用 plugin 一次過上載六個 Skill**（Pro 或以上計劃）。Claude 嘅 plugin 需要 `.claude-plugin/plugin.json` 清單檔，呢個 repository 冇內置，可以喺打包嗰陣產生：
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ EOF
 
 1. 喺側邊欄揀 **Plugins**。
 2. 喺 **Plugin Directory** 揀 **Skills** 分頁。
-3. 揀 **Create** → **Upload from your computer**，逐個上載五個 Skill。ChatGPT 會先掃描，結果可能顯示「Needs Review」或者「Blocked」。
+3. 揀 **Create** → **Upload from your computer**，逐個上載六個 Skill。ChatGPT 會先掃描，結果可能顯示「Needs Review」或者「Blocked」。
 
 OpenAI 官方文件冇講明上載嘅檔案格式；可以先試上一節嘅單一 Skill ZIP，如果唔接受，再按上載畫面嘅說明調整。
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # 或者 ~/.agents/skills；項目範圍用 .github
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # 五個 Skill 擺喺同一個分類資料夾下面
+DEST=~/.hermes/skills/network   # 六個 Skill 擺喺同一個分類資料夾下面
 ```
 
 - 新 Skill 要開新 session 先生效（或者執行 `/reset`）。
@@ -271,6 +276,12 @@ $senior-network-engineer 請分析呢個跨廠牌網絡異常，先列出證據�
 ```
 
 單一廠牌嘅問題可以直接呼叫 subskill，例如 `palo-alto-architect`、`fortinet-security-fabric-architect`、`cisco-network-dc-architect` 或者 `hpe-aruba-network-architect`。
+
+收到一批安全通報嗰陣，可以呼叫 `security-advisory-triage`，例如喺 Codex：
+
+```text
+$security-advisory-triage 呢個係今個星期群組收到嘅通報同附件，請返原廠查證，整理成修補追蹤矩陣同升級排程。請用廣東話回答。
+```
 
 ## 更新
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## 維護規則
 
 - 只喺 `skills/` 入面修改 Skill 正本；唔好直接改安裝位置嘅複製版本。
-- 保持五個 Skill 喺同一層；`SKILL.md` 要保持精簡，少過 500 行，細節擺入一層深嘅 `references/`。
+- 保持六個 Skill 喺同一層；`SKILL.md` 要保持精簡，少過 500 行，細節擺入一層深嘅 `references/`。
 - Frontmatter `name` 一定要同資料夾名一致；`description` 唔可以超過 200 字元（配合 Claude 說明中心嘅上載限制），並且要同時寫明功能同觸發時機。
 - 唔好憑記憶宣稱 CVE、fixed release、EoL、PQC、CLI、license 或者 AI 平台功能；要以原廠或者官方文件為準，並寫明查核日期。
 - 唔好提交客戶設定、PCAP、帳戶、密碼、PSK、私鑰、API token、license 或者工單附件。

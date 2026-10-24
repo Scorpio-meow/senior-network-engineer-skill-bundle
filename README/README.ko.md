@@ -2,11 +2,11 @@
 
 [繁體中文](../README.md) | [English](README.en.md) | [简体中文](README.zh-CN.md) | [粵語](README.yue.md) | [日本語](README.ja.md) | **한국어** | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [Tiếng Việt](README.vi.md) | [Bahasa Indonesia](README.id.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [العربية](README.ar.md)
 
-시니어 네트워크 엔지니어를 위한 개인용 스킬 번들입니다. 멀티 벤더 주 스킬 1개와 벤더별 subskill 4개로 구성되며, 여러 컴퓨터와 AI 도구가 하나의 source of truth를 공유할 수 있도록 단일 Git 저장소에서 관리합니다.
+시니어 네트워크 엔지니어를 위한 개인용 스킬 번들입니다. 멀티 벤더 주 스킬 1개, 벤더별 subskill 4개, 보안 권고문 일괄 분류 스킬 1개로 구성되며, 여러 컴퓨터와 AI 도구가 하나의 source of truth를 공유할 수 있도록 단일 Git 저장소에서 관리합니다.
 
 스킬은 [Agent Skills open format](https://agentskills.io/specification)을 따르며(각 폴더에 `SKILL.md`와 선택 사항인 `references/`가 포함됨), Claude, ChatGPT/Codex, Google Antigravity, Gemini CLI, Cursor, GitHub Copilot 등 이 형식을 지원하는 도구에 설치할 수 있습니다.
 
-시효성 있는 내용(버전, EoL, CVE, PQC, AI 도구 기능 및 설치 경로)은 **2026-09-27** 기준으로 검증되었습니다.
+시효성 있는 내용(버전, EoL, CVE, PQC, AI 도구 기능 및 설치 경로)은 **2026-09-27** 기준으로 검증되었으며, 2026년 10월의 Palo Alto, Fortinet, HPE Aruba 보안 권고문은 **2026-10-24**에 추가로 확인했습니다.
 
 > **언어 안내:** 스킬 본문은 번체 중국어로 작성되어 있으며, 기본적으로 AI가 대만 기업 IT 용어를 사용해 번체 중국어로 답변하도록 지시합니다. 다른 언어로 답변을 받으려면 요청에 해당 언어를 명시하세요.
 
@@ -31,6 +31,7 @@
 | `fortinet-security-fabric-architect` | FortiGate/FortiOS, FortiManager, FortiAnalyzer, SD-WAN, ZTNA, SSL VPN에서 IPsec으로의 마이그레이션, PSIRT 및 PQC/QKD |
 | `cisco-network-dc-architect` | Catalyst, Nexus/Nexus Dashboard, ACI, VXLAN EVPN, Catalyst SD-WAN, 9800/CW9800 WLC, ISE, Secure Firewall, PSIRT 및 PQC/MACsec |
 | `hpe-aruba-network-architect` | AOS-8/AOS-10, Instant AOS-8, HPE Aruba Networking Central, ClearPass, AOS-CX/AOS-Switch, HPE Security Bulletins 및 PPK/PQC |
+| `security-advisory-triage` | 멀티 벤더 보안 권고문 일괄 분류. 벤더, 리셀러 또는 그룹 채팅방에서 전달받은 CVE/PSIRT/Bulletin을 벤더 원문으로 교차 검증하고, 오류와 마케팅성 표현을 걸러내며, 고객 자산에 매핑해 패치 추적 매트릭스, 업그레이드 일정, MOP 초안을 작성합니다. 제품별 세부 사항은 위의 벤더별 subskill에 맡깁니다 |
 
 ## 디렉터리 구조
 
@@ -59,15 +60,19 @@
     │       └── product-scope.md
     ├── cisco-network-dc-architect/
     │   └── SKILL.md
-    └── hpe-aruba-network-architect/
-        └── SKILL.md
+    ├── hpe-aruba-network-architect/
+    │   └── SKILL.md
+    └── security-advisory-triage/
+        ├── SKILL.md
+        └── references/
+            └── templates.md
 ```
 
 ## 설치 전 확인 사항
 
-1. **5개 스킬을 모두 같은 폴더에 설치하세요.** 주 스킬은 상대 경로 `../<subskill>/SKILL.md`로 subskill을 로드하므로, 5개 폴더가 나란히 있어야만 경로가 올바르게 해석됩니다.
+1. **6개 스킬을 모두 같은 폴더에 설치하세요.** 주 스킬과 `security-advisory-triage`는 상대 경로 `../<subskill>/SKILL.md`로 다른 스킬을 로드하므로, 6개 폴더가 나란히 있어야만 경로가 올바르게 해석됩니다.
 2. **폴더 이름을 변경하지 마세요.** 대부분의 도구는 폴더 이름이 `SKILL.md`의 `name`과 일치해야 하며, 일치하지 않으면 해당 스킬을 경고 없이 건너뛸 수 있습니다.
-3. **업로드 방식 플랫폼(Claude 웹/데스크톱, ChatGPT 웹)에서는 5개를 모두 업로드하고 활성화하세요.** 이러한 플랫폼에서는 각 스킬이 독립적으로 동작합니다. Anthropic Help Center에 따르면 스킬은 다른 스킬을 명시적으로 참조할 수 없지만, Claude는 필요에 따라 여러 스킬을 자동으로 조합해 사용합니다.
+3. **업로드 방식 플랫폼(Claude 웹/데스크톱, ChatGPT 웹)에서는 6개를 모두 업로드하고 활성화하세요.** 이러한 플랫폼에서는 각 스킬이 독립적으로 동작합니다. Anthropic Help Center에 따르면 스킬은 다른 스킬을 명시적으로 참조할 수 없지만, Claude는 필요에 따라 여러 스킬을 자동으로 조합해 사용합니다.
 4. **한 번 설치하고 여러 도구에서 공유하세요.** `~/.agents/skills`는 Codex/ChatGPT 데스크톱, Cursor, GitHub Copilot, Gemini CLI가 공통으로 읽는 도구 간 공용 위치입니다. Claude Code와 Antigravity는 각자의 디렉터리가 필요합니다.
 
 ## 공통 설치 명령
@@ -145,7 +150,7 @@ DEST=~/.claude/skills        # 프로젝트 범위는 .claude/skills 사용
 유료 플랜(Pro, Max, Team, Enterprise)에서 사용할 수 있습니다.
 
 1. 코드 실행을 활성화하세요: **Settings > Capabilities > Code execution and file creation**. Team/Enterprise에서는 Owner가 **Organization settings > Plugins & skills**에서 Skills와 코드 실행을 활성화해야 합니다.
-2. 5개 스킬을 각각 별도의 ZIP으로 패키징하세요. ZIP 내부의 최상위는 스킬 폴더 자체여야 하며(예: `palo-alto-architect/SKILL.md`), `SKILL.md`를 ZIP 루트에 바로 두지 마세요.
+2. 6개 스킬을 각각 별도의 ZIP으로 패키징하세요. ZIP 내부의 최상위는 스킬 폴더 자체여야 하며(예: `palo-alto-architect/SKILL.md`), `SKILL.md`를 ZIP 루트에 바로 두지 마세요.
 
    ```bash
    mkdir -p dist && cd skills
@@ -161,12 +166,12 @@ DEST=~/.claude/skills        # 프로젝트 범위는 .claude/skills 사용
    }
    ```
 
-3. **Customize > Skills**로 이동하여 **+** → **Create skill** → **Upload a skill**을 선택하고, 5개 ZIP을 하나씩 업로드한 뒤 모두 활성화하세요.
+3. **Customize > Skills**로 이동하여 **+** → **Create skill** → **Upload a skill**을 선택하고, 6개 ZIP을 하나씩 업로드한 뒤 모두 활성화하세요.
 4. 대화에서 작업 내용을 설명하면 자동으로 사용되며, 입력창에 `/`를 입력해 스킬을 직접 선택할 수도 있습니다.
 
-**Description 길이 제한:** Claude Help Center에서는 description을 200자로 제한합니다(claude.com 개발자 문서와 Agent Skills 사양은 1,024자까지 허용). 이 번들은 더 엄격한 200자 제한을 따르며, 5개 description은 각각 161–177자입니다.
+**Description 길이 제한:** Claude Help Center에서는 description을 200자로 제한합니다(claude.com 개발자 문서와 Agent Skills 사양은 1,024자까지 허용). 이 번들은 더 엄격한 200자 제한을 따르며, 6개 description은 각각 135–177자입니다.
 
-**대안: 5개 스킬을 plugin으로 한 번에 업로드**(Pro 플랜 이상). Claude plugin에는 `.claude-plugin/plugin.json` manifest가 필요하지만 이 저장소에는 포함되어 있지 않으므로, 패키징할 때 생성하세요.
+**대안: 6개 스킬을 plugin으로 한 번에 업로드**(Pro 플랜 이상). Claude plugin에는 `.claude-plugin/plugin.json` manifest가 필요하지만 이 저장소에는 포함되어 있지 않으므로, 패키징할 때 생성하세요.
 
 ```bash
 mkdir -p dist/snet-plugin/.claude-plugin
@@ -174,8 +179,8 @@ cp -R skills dist/snet-plugin/
 cat > dist/snet-plugin/.claude-plugin/plugin.json <<'EOF'
 {
   "name": "senior-network-engineer-bundle",
-  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba",
-  "version": "2026.09.27"
+  "description": "Senior network engineer skills for Palo Alto, Fortinet, Cisco and HPE Aruba, plus security advisory triage",
+  "version": "2026.10.24"
 }
 EOF
 (cd dist/snet-plugin && zip -r ../senior-network-engineer-bundle.zip .)
@@ -191,7 +196,7 @@ EOF
 
 1. 사이드바에서 **Plugins**를 선택하세요.
 2. **Plugin Directory**에서 **Skills** 탭을 여세요.
-3. **Create** → **Upload from your computer**를 선택하고 5개 스킬을 하나씩 업로드하세요. ChatGPT는 업로드된 파일을 먼저 검사하며, 결과로 "Needs Review" 또는 "Blocked"가 표시될 수 있습니다.
+3. **Create** → **Upload from your computer**를 선택하고 6개 스킬을 하나씩 업로드하세요. ChatGPT는 업로드된 파일을 먼저 검사하며, 결과로 "Needs Review" 또는 "Blocked"가 표시될 수 있습니다.
 
 OpenAI 공식 문서에는 업로드 파일 형식이 명시되어 있지 않습니다. 먼저 이전 섹션의 스킬별 ZIP을 시도하고, 받아들여지지 않으면 업로드 화면의 안내에 따라 조정하세요.
 
@@ -254,7 +259,7 @@ DEST=~/.copilot/skills       # 또는 ~/.agents/skills, 프로젝트 범위는 .
 ### Hermes Agent
 
 ```bash
-DEST=~/.hermes/skills/network   # 5개 스킬을 모두 같은 카테고리 폴더에 배치
+DEST=~/.hermes/skills/network   # 6개 스킬을 모두 같은 카테고리 폴더에 배치
 ```
 
 - 새 스킬은 새 session에서 적용됩니다(또는 `/reset` 실행).
@@ -271,6 +276,12 @@ $senior-network-engineer 이 멀티 벤더 네트워크 장애를 분석해 주�
 ```
 
 단일 벤더 관련 질문은 `palo-alto-architect`, `fortinet-security-fabric-architect`, `cisco-network-dc-architect`, `hpe-aruba-network-architect` 등의 subskill을 직접 호출할 수 있습니다.
+
+보안 권고문을 한꺼번에 받았을 때는 `security-advisory-triage`를 호출할 수 있습니다. 예를 들어 Codex에서는 다음과 같습니다.
+
+```text
+$security-advisory-triage 이번 주 그룹 채팅방에서 받은 권고문과 첨부 파일입니다. 벤더 원문으로 확인한 뒤 패치 추적 매트릭스와 업그레이드 일정으로 정리해 주세요. 한국어로 답변해 주세요.
+```
 
 ## 업데이트
 
@@ -305,7 +316,7 @@ git pull --ff-only
 ## 유지보수 규칙
 
 - 원본 스킬은 `skills/` 안에서만 수정하고, 설치 위치의 사본은 수정하지 마세요.
-- 5개 스킬은 같은 계층에 두고, `SKILL.md`는 500줄 이내로 간결하게 유지하며 세부 내용은 한 단계 깊이의 `references/`에 두세요.
+- 6개 스킬은 같은 계층에 두고, `SKILL.md`는 500줄 이내로 간결하게 유지하며 세부 내용은 한 단계 깊이의 `references/`에 두세요.
 - frontmatter의 `name`은 폴더 이름과 일치해야 하며, `description`은 200자 이하(Claude Help Center 업로드 제한에 맞춤)로 스킬의 기능과 트리거 조건을 모두 기술해야 합니다.
 - CVE, fixed release, EoL, PQC, CLI, 라이선스 또는 AI 플랫폼 기능을 기억에 의존해 단정하지 말고, 벤더 또는 공식 문서를 근거로 삼아 검증 날짜를 기록하세요.
 - 고객 설정, PCAP, 계정, 비밀번호, PSK, 개인 키, API 토큰, 라이선스 또는 티켓 첨부 파일을 커밋하지 마세요.

@@ -23,7 +23,7 @@ When version-specific FortiOS, FortiManager, FortiAnalyzer, or product lifecycle
 
 涉及 CVE、fixed release、Mature/Feature release、Upgrade Path、EoL、FortiGuard signature 或 PQC 支援矩陣時，先查 Fortinet PSIRT 與官方文件並標示查核日期。明確區分 temporary mitigation、正式修補與風險接受，不要把 IPS signature 或關閉對外服務直接寫成已完成修補。
 
-版本基準（2026-09-27 查核，引用前重查）：FortiOS 8.0 已 GA（8.0.0 於 2026-04-21、8.0.1 於 2026-09-15）；7.6 為 Mature train，官方 Recommended Release 以 Fortinet Community「Recommended Release for FortiOS」為準（查核時頁面為 2026-06 版本，多數機型為 7.6.6；7.6.7 已發布，引用前重查）；7.0 已於 2025-09-30 End of Support，7.2 於 2026-09-30 End of Support；依官方公告 CSB-260330-1，7.4 與 7.6 支援期各延長一年（7.4 EoS 2028-11-11、7.6 EoS 2030-01-25）。生產環境不要只因新功能直接跳 8.0，先核對 Upgrade Path、Known Issues 與 SSL VPN 移除影響。
+版本基準（2026-09-27 查核，引用前重查）：FortiOS 8.0 已 GA（8.0.0 於 2026-04-21、8.0.1 於 2026-09-15）；7.6 為 Mature train，官方 Recommended Release 以 Fortinet Community「Recommended Release for FortiOS」為準（查核時頁面為 2026-06 版本，多數機型為 7.6.6；2026-10-24 複查仍未更新，而 7.6.6 已在 10/21 hardening release 的受影響範圍內，見「近期重大 PSIRT」）；7.0 已於 2025-09-30 End of Support，7.2 於 2026-09-30 End of Support；依官方公告 CSB-260330-1，7.4 與 7.6 支援期各延長一年（7.4 EoS 2028-11-11、7.6 EoS 2030-01-25）。生產環境不要只因新功能直接跳 8.0，先核對 Upgrade Path、Known Issues 與 SSL VPN 移除影響。
 
 ## Answer Patterns
 
@@ -154,6 +154,10 @@ Explain what each command proves. Do not dump commands without interpretation.
 - 不只看 CVSS。同步確認是否 active exploitation、攻擊是否需驗證、受影響 component 是否啟用、是否對 Internet 暴露、是否有 IPS signature/workaround、資料敏感度與設備在網路中的 blast radius。
 - 分開盤點 FortiOS/FortiProxy、FortiManager、FortiAnalyzer、FortiClient/EMS、FortiWeb、FortiMail、FortiNAC/FortiNAC-F、FortiAuthenticator、FortiSIEM/SOAR/EDR/FortiEndpoint、FortiAP/FortiSwitch 與 cloud service；相同 CVE 不代表所有產品都受影響。
 - 只有 PSIRT 明確列出 signature、minimum FortiGuard package、設定前提或 workaround 時，才能宣稱可緩解。IPS 擋到攻擊封包不等於管理面或本機服務已完成修補。
+- Fortinet 可能先發 security hardening release（只列受影響與修補版本，沒有 CVE 與 FG-IR），再於每月 PSIRT 公告日（當月第二個週二）公布細節。細節公開後攻擊者可以比對修補差異，對外暴露的設備要排在公布日之前完成。
+- 同一次修補，FortiOS 與 FortiManager/FortiAnalyzer 的修補 build 可能不同，要逐產品對照，不要套用同一個版號。
+- 多產品升級依 release notes「Fortinet Security Fabric upgrade」的順序：FortiAnalyzer → FortiManager → FortiGate → FortiExtender → FortiSwitch → FortiAP → FortiClient EMS → FortiClient → 其他產品。FMG/FAZ 版本要大於等於被管 FortiGate（Community Technical Tip 98902），升級前先看 FMG/FAZ release notes 支援的 FortiOS 版本範圍。
+- Community「Recommended Release for FortiOS」每季更新，可能落後於緊急修補。修補期間以 PSIRT 列出的 fixed build 為目標，並註明與 Recommended Release 的差異。
 
 ### Remediation Workflow
 
@@ -165,6 +169,21 @@ Explain what each command proves. Do not dump commands without interpretation.
 6. 依官方 HA upgrade 程序執行；不要假設 uninterruptible-upgrade 一定無中斷。定義停止條件、manual failover、downgrade image/config compatibility 與 console/OOB 回復方式。
 7. 升級後驗證 HA、route/BGP/OSPF、policy/NAT、IPsec/remote access、SD-WAN SLA、UTM、FSSO/LDAP/RADIUS、FortiManager install、FortiAnalyzer logging 與核心應用。
 8. 更新弱點台帳：CVE/FG-IR、資產、版本、暴露面、利用狀態、處置、證據、負責人、期限、回滾與殘餘風險。
+
+### 近期重大 PSIRT（2026-10-24 查核，引用前重查）
+
+- **Security Hardening Release**（Fortinet blog，2026-10-21）：修補由 AI 輔助測試發現的 Critical 與 High 問題，FG-IR 細節預定 2026-11-10 公布；查核時尚無 FG-IR 編號。FortiOS、FMG、FAZ 修補於 10/22 釋出。
+
+  | 產品 | 修補版本 |
+  |---|---|
+  | FortiOS | 8.0.2 / 7.6.8 / 7.4.13 / 7.2.14 |
+  | FortiManager、FortiAnalyzer | 8.0.2 / 7.6.8 / 7.4.12 / 7.2.13 |
+  | FortiMail | 8.0.2 / 7.6.7 / 7.4.9（7.2 須升至 7.4 以上） |
+  | FortiAuthenticator | 8.0.4 / 6.6.11 |
+
+  FortiOS 7.0 與 6.4 沒有修補版本，只能跨分支升級或汰換；7.2 雖已過 EoS 仍提供 7.2.14。原廠暫時措施：管理改走 out-of-band、把 HTTPS/SSH 管理限制在信任 IP 或在外部介面停用、FortiManager 管理介面不對 Internet 開放、管理員強制 MFA、監控異常登入。
+- **升級注意**：FMG 7.4.12、7.6.8、8.0.2 的 Special Notice 要求 LDAPS server 指定 CA 憑證，否則升級後該 LDAPS 項目遺失、LDAP 管理員無法登入；FMG 7.4.12 在大型環境密集作業時有 fgfmsd/dmserver crash 的已知問題；FMG 安裝 policy 到 FortiOS 7.4.13 可能誤推 `unset strict-web-check`（bug 1352425）。升級前逐項讀 release notes。
+- **PHP2Shell**（FG-IR-26-186，2026-10-21）：FortiOS、FortiManager、FortiAnalyzer、FortiProxy、FortiWeb、FortiMail、FortiAuthenticator 等不受影響；FortiDDoS、FortiSOAR 等仍在調查。偵測用 IPS 62657、62658（IPS DB 37.317）；保護的是防火牆後方的 PHP 伺服器，不能取代伺服器端升級。
 
 ## PQC, Quantum Security, And Crypto Agility
 
